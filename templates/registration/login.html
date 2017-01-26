@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-6 offset-3" style="position:relative;top:30vh">
+      <div class="card">
+        <div class="card-header">
+          {% if form.errors %}
+          <p>Your username and password didn't match. Please try again.</p>
+          {% endif %}
+
+          {% if next %}
+              {% if user.is_authenticated %}
+              <p>Your account doesn't have access to this page. To proceed,
+              please login with an account that has access.</p>
+              {% else %}
+              <p>Please login to see this page.</p>
+              {% endif %}
+          {% endif %}
+          <h2 class="form-signin-heading card-title">Please sign in</h2>
+        </div>
+        <div class="card-block">
+          <form class="form-signin" action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <!-- <label for="id_username">Username</label> -->
+            <input class="form-control" placeholder="Username"autofocus="" id="id_username" maxlength="254" name="username" type="text" required /><br>
+            <!-- <label for="id_password">Password</label> -->
+            <input id="id_password" name="password" type="password" placeholder="Password" class="form-control" required /><br>
+            <input type="submit" value="Sign in" class="btn btn-lg btn-primary btn-block" />
+            <input type="hidden" name="next" value="{{ next }}" /><br>
+          </form>
+        </div>
+          {# Assumes you setup the password_reset view in your URLconf #}
+        <div class="card-footer">
+          <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
