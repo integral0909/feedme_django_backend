@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-import sales.models as models
+import main.models as models
 from rest_framework import serializers
 
 
