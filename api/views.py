@@ -26,3 +26,13 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = serializers.Group
+
+
+class RestaurantViewSet(viewsets.ModelViewSet):
+    queryset = models.Restaurant.objects.all()
+    serializer_class = serializers.Restaurant
+
+
+class DishViewSet(viewsets.ModelViewSet):
+    queryset = models.Dish.objects.all()
+    serializer_class = serializers.Dish

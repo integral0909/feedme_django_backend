@@ -53,7 +53,7 @@ class Feedback(Creatable):
     User feedback about the app itself
     """
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    has_positive_sentiment = models.BooleanField();
+    has_positive_sentiment = models.BooleanField()
     gave_rating = models.BooleanField(default=False)
     content = models.TextField(blank=True, default='')
 
@@ -82,6 +82,7 @@ class Restaurant(Creatable):
     cuisines = models.ManyToManyField(Cuisine)
     information = models.TextField(blank=True, default='')
     highlights = models.ManyToManyField(Highlight)
+    blogs = models.ManyToManyField(Blog)
     phone_number = models.CharField(max_length=20, blank=True, default='')
     suburb = models.CharField(max_length=55, blank=True, default='')
     instagram_user = models.CharField(max_length=61, blank=True, default='')
@@ -95,7 +96,7 @@ class OpeningTime(models.Model):
     """
     Follows http://schema.org/OpeningHoursSpecification
 
-    Also ref http://stackoverflow.com/questions/1036603/storing-business-hours-in-a-database
+    Ref http://stackoverflow.com/questions/1036603/storing-business-hours-in-a-database
     """
     SUNDAY = 'sun'
     MONDAY = 'mon'
@@ -154,6 +155,6 @@ class Report(Creatable):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL,
                              related_name='reports')
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,
-                             related_name='reports')
+                                   related_name='reports')
     content = models.TextField(default='')
     type = models.CharField(max_length=55)
