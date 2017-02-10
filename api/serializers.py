@@ -64,14 +64,14 @@ class Keyword(serializers.ModelSerializer):
 class Restaurant(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-detail')
     cuisines = Cuisine(many=True)
-    hightlights = Highlight(many=True)
+    highlights = Highlight(many=True)
     opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
 
     class Meta:
         model = models.Restaurant
         fields = ('url', 'name', 'image_url', 'address', 'cuisines', 'information',
-                  'hightlights', 'blogs', 'phone_number', 'suburb', 'instagram_user',
+                  'highlights', 'blogs', 'phone_number', 'suburb', 'instagram_user',
                   'time_offset_minutes', 'tripadvisor_widget', 'location',
                   'opening_times')
 

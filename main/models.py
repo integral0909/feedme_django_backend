@@ -28,6 +28,7 @@ class Profile(models.Model):
     country = models.CharField(max_length=255, blank=True, default='')
     state = models.CharField(max_length=255, blank=True, default='')
     city = models.CharField(max_length=255, blank=True, default='')
+    firebase_id = models.CharField(max_length=255, default='', blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -46,6 +47,7 @@ class Blog(Creatable):
     image_url = models.URLField(blank=True, default='')
     title = models.CharField(max_length=255)
     url = models.URLField()
+    firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
 
 
 class Feedback(Creatable):
@@ -64,21 +66,27 @@ class Highlight(models.Model):
 
     For example, "Vegetarian dishes" might be one and "Outdoor Seating" another.
     """
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100,
                             help_text="A slug helps query highlights via url")
 
+    def __str__(self):
+        return self.name
+
 
 class Cuisine(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=50,
                             help_text="A slug helps query cuisines via url")
+
+    def __str__(self):
+        return self.name
 
 
 class Restaurant(Creatable):
     name = models.CharField(max_length=255)
-    image_url = models.URLField()
-    address = models.CharField(max_length=255, blank=True, default='')
+    image_url = models.URLField(max_length=600)
+    address = models.TextField(blank=True, default='')
     cuisines = models.ManyToManyField(Cuisine)
     information = models.TextField(blank=True, default='')
     highlights = models.ManyToManyField(Highlight)
@@ -90,6 +98,18 @@ class Restaurant(Creatable):
                                               default=0)
     tripadvisor_widget = models.TextField(blank=True, default='')
     location = gis_models.PointField(default="POINT(0.0 0.0)", blank=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
+    quandoo_id = models.BigIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.latitude = self.location.y
+        self.longitude = self.location.x
+        super(Restaurant, self).save(*args, **kwargs)
 
 
 class OpeningTime(models.Model):
@@ -127,7 +147,7 @@ class Keyword(models.Model):
     """
     Keywords can be used to describe dishes.
     """
-    word = models.CharField(max_length=255)
+    word = models.CharField(max_length=255, unique=True)
 
 
 class Dish(Creatable):
@@ -138,6 +158,7 @@ class Dish(Creatable):
     title = models.CharField(max_length=255)
     instagram_user = models.CharField(max_length=61, blank=True, default='')
     keywords = models.ManyToManyField(Keyword)
+    firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
 
 
 class Like(Creatable):
