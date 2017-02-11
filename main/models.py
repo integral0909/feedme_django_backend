@@ -160,6 +160,9 @@ class Dish(Creatable):
     keywords = models.ManyToManyField(Keyword)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Like(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
