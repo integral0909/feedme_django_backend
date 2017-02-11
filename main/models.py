@@ -24,32 +24,41 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     fb_id = models.BigIntegerField(null=True, blank=True)
-    photo_url = models.URLField(max_length=255, blank=True, default='')
+    photo_url = models.URLField(max_length=600, blank=True, default='')
     provider = models.CharField(max_length=55, blank=True, default='')
     bio = models.TextField(blank=True, default='')
     country = models.CharField(max_length=255, blank=True, default='')
     state = models.CharField(max_length=255, blank=True, default='')
     city = models.CharField(max_length=255, blank=True, default='')
-    firebase_id = models.CharField(max_length=255, default='', blank=True)
+    firebase_id = models.CharField(max_length=400, default='', blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            Profile.objects.create(user=instance)
+    # @receiver(post_save, sender=User)
+    # def create_user_profile(sender, instance, created, **kwargs):
+    #     if created:
+    #         Profile.objects.create(user=instance)
+    #
+    # @receiver(post_save, sender=User)
+    # def save_user_profile(sender, instance, **kwargs):
+    #     instance.profile.save()
 
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.profile.save()
+    def __str__(self):
+        return self.user.__str__()
+
+    class Meta:
+        unique_together = (('user', 'firebase_id'), )
 
 
 class Blog(Creatable):
     author = models.CharField(max_length=255, blank=True, default='')
-    image_url = models.URLField(blank=True, default='')
+    image_url = models.URLField(blank=True, default='', max_length=600)
     title = models.CharField(max_length=255)
     url = models.URLField()
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Feedback(Creatable):

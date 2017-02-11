@@ -33,20 +33,22 @@ class Profile(serializers.HyperlinkedModelSerializer):
                   'city', 'created', 'updated')
 
 
-class Highlight(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='highlight-detail')
+class Highlight(serializers.ModelSerializer):
+    def to_representation(self, obj):
+        return obj.name
 
     class Meta:
         model = models.Highlight
-        fields = '__all__'
+        fields = ('name', 'slug')
 
 
-class Cuisine(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='cuisine-detail')
+class Cuisine(serializers.ModelSerializer):
+    def to_representation(self, obj):
+        return obj.name
 
     class Meta:
         model = models.Cuisine
-        fields = '__all__'
+        fields = ('name', 'slug')
 
 
 class OpeningTime(serializers.ModelSerializer):
@@ -56,6 +58,9 @@ class OpeningTime(serializers.ModelSerializer):
 
 
 class Keyword(serializers.ModelSerializer):
+    def to_representation(self, obj):
+        return obj.word
+
     class Meta:
         model = models.Keyword
         fields = ('word', )

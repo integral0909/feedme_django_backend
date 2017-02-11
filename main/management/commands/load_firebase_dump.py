@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
 from main.models import Restaurant, Cuisine, OpeningTime, Highlight, Dish, Keyword
 from main.lib.firebase_loaders import *
 import os
 import simplejson as json
 
 
-def load_restaurant(key, item):
+def load_restaurants(key, item):
     restaurant = save_restaurant(item, key)
     save_manytomany(restaurant, item.get('cuisines', []), 'Cuisine', 'name')
     for opt in item.get('otherOptions', []):
@@ -19,9 +20,31 @@ def load_restaurant(key, item):
                         opens=opens, closes=closes).save()
 
 
-def load_dish(key, item):
+def load_dishes(key, item):
     dish = save_dish(item, key)
     save_manytomany(dish, item.get('keywords', {}), 'Keyword', 'word')
+
+
+def load_blogs(key, item):
+    blog = save_blog(item, key)
+
+
+def load_restaurant_blogs(key, item):
+    try:
+        restaurant = Restaurant.objects.get(firebase_id=key)
+        for blog_fbase_id in item:
+            blog = Blog.objects.get(firebase_id=blog_fbase_id)
+            restaurant.blogs.add(blog)
+    except Restaurant.DoesNotExist:
+        print("Restaurant does not exist:", key)
+
+
+def load_users(key, item):
+    user = save_user(item, key)
+
+
+def load_likes(key, item):
+    like = save_like(item, key)
 
 
 class Command(BaseCommand):

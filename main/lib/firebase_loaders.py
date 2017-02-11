@@ -1,6 +1,7 @@
-from main.models import Restaurant, Cuisine, Highlight, Dish, Keyword
+from main.models import Restaurant, Cuisine, Highlight, Dish, Keyword, Blog, Profile, Like
 import datetime
 from django.utils.text import slugify
+from django.contrib.auth.models import User
 
 
 def int_to_time(seconds):
@@ -34,6 +35,55 @@ def save_dish(item, key):
     }
     dish, created = Dish.objects.update_or_create(**params)
     return dish
+
+
+def save_blog(item, key):
+    params = {
+        'firebase_id': key, 'author': item.get('author', ''),
+        'image_url': item.get('imageURL', ''), 'title': item.get('title', ''),
+        'url': item.get('url', '')
+    }
+    blog, created = Blog.objects.update_or_create(**params)
+    return blog
+
+
+def save_user(item, key):
+    try:
+        user = User.objects.get(profile__firebase_id=key)
+    except User.DoesNotExist:
+        try:
+            pdata = item['providerData'][0]
+        except KeyError:
+            return False
+        params = {
+            'email': pdata.get('email', '')[:254],
+            'username': pdata.get('uid', pdata.get('email', ''))[:150],
+            'first_name': item.get('firstname', '')[:30],
+            'last_name': item.get('lastname', '')[:30],
+        }
+        user = User(**params)
+        user.save()
+        save_profile(pdata, key, user).save()
+    return user
+
+
+def save_profile(pdata, key, user):
+    profile = Profile(provider=pdata['providerID'], firebase_id=key, user=user)
+    if pdata['providerID'] == 'facebook.com':
+        profile.fb_id = pdata['uid']
+        profile.photo_url = pdata.get('photoURL', '')
+    return profile
+
+
+def save_like(item, key):
+    for junk_key, dish_item in item.items():
+        print(dish_item, junk_key)
+        try:
+            dish = Dish.objects.get(firebase_id=dish_item['_dish'])
+            user = User.objects.get(profile__firebase_id=dish_item['_user'])
+            like = Like(dish=dish, user=user, did_like=dish_item['didLike'])
+        except Dish.DoesNotExist:
+            print('Does not exist:', dish_item['_dish'], dish_item['_user'])
 
 
 def save_manytomany(parent, list, mtm_class_name, prop_name):
