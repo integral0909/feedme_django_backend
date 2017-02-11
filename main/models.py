@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.gis.db import models as gis_models
+from django.utils.text import slugify
+from django.utils.html import format_html, format_html_join
 
 
 class Creatable(models.Model):
@@ -67,20 +69,28 @@ class Highlight(models.Model):
     For example, "Vegetarian dishes" might be one and "Outdoor Seating" another.
     """
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100,
+    slug = models.SlugField(max_length=100, unique=True,
                             help_text="A slug helps query highlights via url")
 
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Highlight, self).save(*args, **kwargs)
+
 
 class Cuisine(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=50,
+    slug = models.SlugField(max_length=50, unique=True,
                             help_text="A slug helps query cuisines via url")
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Cuisine, self).save(*args, **kwargs)
 
 
 class Restaurant(Creatable):
@@ -142,18 +152,33 @@ class OpeningTime(models.Model):
     valid_from = models.DateField(null=True, blank=True)
     valid_through = models.DateField(null=True, blank=True)
 
+    def __str__(self):
+        return "{} Open: {}, Close: {}, {}".format(self.restaurant,
+                                                   self.opens.isoformat(),
+                                                   self.closes.isoformat(),
+                                                   self.day_of_week)
+
 
 class Keyword(models.Model):
     """
     Keywords can be used to describe dishes.
     """
     word = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True,
+                            help_text="A slug helps query via url")
+
+    def __str__(self):
+        return self.word
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.word)
+        super(Keyword, self).save(*args, **kwargs)
 
 
 class Dish(Creatable):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,
                                    related_name='dishes')
-    image_url = models.URLField(blank=True, default='')
+    image_url = models.URLField(blank=True, default='', max_length=600)
     price = models.IntegerField(default=0)
     title = models.CharField(max_length=255)
     instagram_user = models.CharField(max_length=61, blank=True, default='')
@@ -162,6 +187,15 @@ class Dish(Creatable):
 
     def __str__(self):
         return self.title
+
+    def price_format(self):
+        return "${0:.2f}".format(self.price/100)
+
+    def keyword_list_html(self):
+        return format_html_join(
+            '\n', '{}<br>', ((keyword.word, ) for keyword in self.keywords.all())
+        )
+    keyword_list_html.short_description = 'keywords'
 
 
 class Like(Creatable):
