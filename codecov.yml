@@ -1,0 +1,38 @@
+codecov:
+  notify:
+    require_ci_to_pass: true
+comment:
+  behavior: default
+  layout: header, diff
+  require_changes: false
+coverage:
+  notify:
+    slack:
+      default:
+        url: "https://hooks.slack.com/services/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"
+        threshold: 0.01
+        attachments: "sunburst, diff"
+  precision: 2
+  range:
+  - 70.0
+  - 100.0
+  round: down
+  status:
+    changes: false
+    patch: true
+    project: true
+  ignore:
+  - manage.py
+  - auth/admin.py
+  - auth/models.py
+  - auth/views.py
+  - main/management/*
+parsers:
+  gcov:
+    branch_detection:
+      conditional: true
+      loop: true
+      macro: false
+      method: false
+  javascript:
+    enable_partials: false
