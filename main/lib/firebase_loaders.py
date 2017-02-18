@@ -1,5 +1,6 @@
 from main.models import Restaurant, Cuisine, Highlight, Dish, Keyword, Blog, Profile, Like
 import datetime
+from urllib.parse import urlparse
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 
@@ -28,10 +29,16 @@ def save_restaurant(item, key):
 
 def save_dish(item, key):
     restaurant = Restaurant.objects.get(firebase_id=item['_restaurant'])
+    instagram_user = item.get('instagramUser', '').replace('@', '')
+    if 'instagram.com' in instagram_user:
+        insta_url = urlparse(instagram_user)
+        instagram_user = insta_url.path.replace('/', '')
+    if len(instagram_user) > 61:
+        instagram_user = ''
     params = {
         'firebase_id': key, 'restaurant': restaurant, 'title': item['title'],
         'price': int(item['price']*100), 'image_url': item['imageURL'],
-        'instagram_user': item.get('instagramUser', '')
+        'instagram_user': instagram_user
     }
     dish, created = Dish.objects.update_or_create(**params)
     return dish
@@ -77,13 +84,16 @@ def save_profile(pdata, key, user):
 
 def save_like(item, key):
     for junk_key, dish_item in item.items():
-        print(dish_item, junk_key)
+        # print(dish_item, junk_key)
         try:
             dish = Dish.objects.get(firebase_id=dish_item['_dish'])
             user = User.objects.get(profile__firebase_id=dish_item['_user'])
             like = Like(dish=dish, user=user, did_like=dish_item['didLike'])
+            like.save()
         except Dish.DoesNotExist:
-            print('Does not exist:', dish_item['_dish'], dish_item['_user'])
+            print('Dish Does not exist:', dish_item['_dish'])
+        except User.DoesNotExist:
+            print('User Does not exist:', dish_item['_user'])
         except TypeError:
             print('Type error: {}\nKey: {}'.format(dish_item, junk_key))
             continue
