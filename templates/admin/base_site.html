@@ -1,9 +1,9 @@
 {% extends "admin/base.html" %}
 
-{% block title %}{{ title }} | {{ site_title|default:_('Site Admin') }}{% endblock %}
+{% block title %}{{ title }} | {{ site_title|default:_('Feedmee Admin') }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">Site Admin</a></h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Feedmee Admin</a></h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

@@ -1,12 +1,8 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.contrib.auth.models import User, Group
 from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
 import api.serializers as serializers
-from sales.models import (Order, Customer, Address, TaxLine, LineItem, ShippingLine,
-                          DiscountCode)
+import main.models as models
 import api.filters as filters
 
 
@@ -30,3 +26,17 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = serializers.Group
+
+
+class RestaurantViewSet(viewsets.ModelViewSet):
+    queryset = models.Restaurant.objects.all()
+    serializer_class = serializers.Restaurant
+
+
+class DishViewSet(viewsets.ModelViewSet):
+    queryset = models.Dish.objects.all()
+    serializer_class = serializers.Dish
+
+class DeliveryProviderViewSet(viewsets.ModelViewSet):
+    queryset = models.DeliveryProvider.objects.all()
+    serializer_class = serializers.DeliveryProvider
