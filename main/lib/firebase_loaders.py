@@ -84,19 +84,38 @@ def save_like(item, key):
             like = Like(dish=dish, user=user, did_like=dish_item['didLike'])
         except Dish.DoesNotExist:
             print('Does not exist:', dish_item['_dish'], dish_item['_user'])
+        except TypeError:
+            print('Type error: {}\nKey: {}'.format(dish_item, junk_key))
+            continue
 
 
 def save_manytomany(parent, list, mtm_class_name, prop_name):
+    """
+    Save a list of items from Firebase as a many to many in Django.
+
+    parent: The parent object, i.e. an instance of Restaurant
+    list: The list from Firebase
+    mtm_class_name: The name of the class in a ManyToMany relationship, i.e. Highlight
+    prop_name: The name of the primary property used to get/save objects, i.e. name.
+
+    This function also checks for the existence of a similar object via slug.
+    This prevents duplicates arising from different capitalisations.
+
+    Note: This function only works with Firebase lists of strings to be
+          transformed into django objects.
+    """
     mtm_class = globals()[mtm_class_name]
     mtm_name = mtm_class_name.lower()+'s'
     params = {}
     defaults = {}
+    max_length = mtm_class._meta.get_field(prop_name).max_length
     for new_item in list:
         if len(new_item) > 1:
-            params[prop_name] = new_item
+            new_item_trimmed = new_item[:max_length]
+            params[prop_name] = new_item_trimmed
             if hasattr(mtm_class, 'slug'):
-                params['slug'] = slugify(new_item)
+                params['slug'] = slugify(new_item_trimmed)
                 del params[prop_name]
-                defaults[prop_name] = new_item
+                defaults[prop_name] = new_item_trimmed
             obj, created = mtm_class.objects.get_or_create(defaults=defaults, **params)
             getattr(parent, mtm_name).add(obj)

@@ -29,6 +29,11 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     DEBUG = True
 
+if os.environ['DEPLOYMENT'] == 'LOCAL':
+    TMP_PATH = 'tmp/'
+else:
+    TMP_PATH = '/tmp/'
+
 ALLOWED_HOSTS = []
 
 

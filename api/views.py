@@ -36,3 +36,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
 class DishViewSet(viewsets.ModelViewSet):
     queryset = models.Dish.objects.all()
     serializer_class = serializers.Dish
+
+class DeliveryProviderViewSet(viewsets.ModelViewSet):
+    queryset = models.DeliveryProvider.objects.all()
+    serializer_class = serializers.DeliveryProvider

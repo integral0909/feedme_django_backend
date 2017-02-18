@@ -66,19 +66,28 @@ class Keyword(serializers.ModelSerializer):
         fields = ('word', )
 
 
+class DeliveryProvider(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='deliveryprovider-detail')
+
+    class Meta:
+        model = models.DeliveryProvider
+        fields = ('url', 'name', 'slug', 'title', 'description', 'logo_url')
+
+
 class Restaurant(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-detail')
     cuisines = Cuisine(many=True)
     highlights = Highlight(many=True)
     opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
+    delivery_provider = DeliveryProvider()
 
     class Meta:
         model = models.Restaurant
         fields = ('url', 'name', 'image_url', 'address', 'cuisines', 'information',
                   'highlights', 'blogs', 'phone_number', 'suburb', 'instagram_user',
                   'time_offset_minutes', 'tripadvisor_widget', 'location',
-                  'opening_times')
+                  'opening_times', 'delivery_provider', 'delivery_link')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):

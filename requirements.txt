@@ -19,3 +19,4 @@ pytz==2016.10
 s3transfer==0.1.10
 simplejson==3.10.0
 six==1.10.0
+wget==3.2

@@ -34,6 +34,8 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    # These signals were meant to prevent multiple calls to save but they actually
+    # broke the whole process.
     # @receiver(post_save, sender=User)
     # def create_user_profile(sender, instance, created, **kwargs):
     #     if created:
@@ -121,6 +123,9 @@ class Restaurant(Creatable):
     longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
     quandoo_id = models.BigIntegerField(blank=True, null=True)
+    delivery_provider = models.ForeignKey('DeliveryProvider', on_delete=models.SET_NULL,
+                                          null=True, blank=True)
+    delivery_link = models.URLField(max_length=512, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -129,6 +134,36 @@ class Restaurant(Creatable):
         self.latitude = self.location.y
         self.longitude = self.location.x
         super(Restaurant, self).save(*args, **kwargs)
+
+    def cuisine_list_html(self):
+        return format_html_join(
+            '\n', '{}<br>', ((cuisine.name, ) for cuisine in self.cuisines.all())
+        )
+    cuisine_list_html.short_description = 'cuisines'
+
+    def highlight_list_html(self):
+        return format_html_join(
+            '\n', '{}<br>', ((highlight.name, ) for highlight in self.highlights.all())
+        )
+    highlight_list_html.short_description = 'highlights'
+
+
+class DeliveryProvider(models.Model):
+    """
+    A provider of food delivery services
+    """
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=50, unique=True)
+    title = models.CharField(max_length=255, blank=True, default='')
+    description = models.TextField()
+    logo_url = models.URLField()
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(DeliveryProvider, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 
 class OpeningTime(models.Model):
