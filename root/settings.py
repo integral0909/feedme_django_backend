@@ -141,7 +141,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-AWS_STORAGE_BUCKET_NAME = 'fm-static'
+AWS_STORAGE_BUCKET_NAME = 'fdme-static'
 AWS_ACCESS_KEY_ID = os.environ['AWS_S3_STATIC_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_S3_STATIC_KEY']
 
@@ -176,7 +176,7 @@ DBBACKUP_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 DBBACKUP_STORAGE_OPTIONS = {
     'access_key': AWS_ACCESS_KEY_ID,
     'secret_key': AWS_SECRET_ACCESS_KEY,
-    'bucket_name': 'fm-dbbackup'
+    'bucket_name': 'fdme-dbbackup'
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
