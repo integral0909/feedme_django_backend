@@ -34,7 +34,10 @@ if os.environ['DEPLOYMENT'] == 'LOCAL':
 else:
     TMP_PATH = '/tmp/'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
+    '.feedmeeapp.com',
+]
 
 
 # Application definition
