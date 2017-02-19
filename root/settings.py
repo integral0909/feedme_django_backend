@@ -25,6 +25,8 @@ PROJECT_TITLE_ABBR = 'FM'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
+LOGIN_REDIRECT_URL = '/admin/'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     DEBUG = True
@@ -37,6 +39,8 @@ else:
 ALLOWED_HOSTS = [
     'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
     '.feedmeeapp.com',
+    'localhost',
+    'localhost:8000'
 ]
 
 
