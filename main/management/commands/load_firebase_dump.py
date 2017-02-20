@@ -53,6 +53,9 @@ def chunkify(lst, n):
 
 
 def run_chunked_iter(iterable_item, worker_func, args=None, num_threads=8):
+    """
+    Split the provideed iterable into chunks, process each chunk in a separate thread
+    """
     threads = []
     chunked_iterables = chunkify(iterable_item, num_threads)
     for chunk in chunked_iterables:
@@ -65,6 +68,7 @@ def run_chunked_iter(iterable_item, worker_func, args=None, num_threads=8):
     for t in threads:
         t.join()
 
+
 def worker(chunk, func):
     for key, item in chunk:
         func(key, item)
@@ -72,12 +76,12 @@ def worker(chunk, func):
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('table', nargs='+', type=str)
-        parser.add_argument('filepath', nargs='+', type=str)
+        parser.add_argument('table', nargs='1', type=str)
+        parser.add_argument('filepath', nargs='1', type=str)
 
     def handle(self, *args, **options):
-        for idx, path in enumerate(options['filepath']):
-            with open(path) as jdata:
-                data = json.load(jdata, use_decimal=True)
-                func = globals()['load_{}'.format(options['table'][idx])]
-                run_chunked_iter(list(data.items()), worker, args=(func, ))
+        path = options['filepath']
+        with open(path) as jdata:
+            data = json.load(jdata, use_decimal=True)
+            func = globals()['load_{}'.format(options['table'])]
+            run_chunked_iter(list(data.items()), worker, args=(func, ))
