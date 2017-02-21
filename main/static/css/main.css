@@ -1,0 +1,30 @@
+body {
+  font-size: 0.93rem;
+}
+.container {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+#restaurant-header-img {
+  width: 100%;
+  width: 100vw;
+  padding-bottom: 65%;
+  background-size: cover;
+  background-position: center center;
+  margin-bottom: 25px;
+}
+.TA_selfserveprop {
+    display: inline-block;
+}
+.dish-card > .card-img-top {
+  width: 100%;
+  padding-bottom: 65%;
+  background-size: cover;
+  background-position: center center;
+}
+a.share-link {
+  color: #000;
+}
+a.share-link > i {
+  color:#f55;
+}

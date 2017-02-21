@@ -1,0 +1,42 @@
+{% extends "app_base.html" %}
+
+{% load static %}
+
+{% block title %} | {{restaurant.name}}{% endblock %}
+
+{% block content %}
+<div id="restaurant-header-img" style="background-image: url({{restaurant.image_url}})"></div>
+<div class="container">
+  <h3>{{restaurant.name}}</h3>
+  <p>{{restaurant.information}}</p>
+  <div class="text-center center-block">
+    {{restaurant.tripadvisor_widget|safe}}
+  </div>
+</div>
+<hr>
+<div class="container">
+  <h5>Popular from {{restaurant.name}}</h5>
+  {% for dish in restaurant.dishes.all %}
+  <div class="card dish-card" style="width: 15rem;">
+    <div class="card-img-top" style="background-image: url({{dish.image_url}})">
+
+    </div>
+    <div class="card-block">
+      <h7 class="card-title">{{dish.title}}</h7>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<hr style="margin-bottom:0">
+<iframe width="100%" height="250" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?q={{restaurant.address|urlencode}}&key=AIzaSyD43bZIYjqsoDW4ftvZBImQjIZpozBYgrE"></iframe>
+</div>
+<hr style="margin-top:0">
+<div class="container text-right">
+  <a href="https://m.uber.com/ul/?client_id=dYQVNYl6gk7mchfQlJ4SAFwblCa5Qc8U&action=setPickup&dropoff[latitude]={{restaurant.latitude}}&dropoff[longitude]={{restaurant.longitude}}&dropoff[nickname]={{rrestaurant.name|urlencode}}&dropoff[formatted_address]={{restaurant.address|urlencode}}&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d&link_text=View%20team%20roster&partner_deeplink=partner%3A%2F%2Fteam%2F9383" class="share-link">UBER <i class="fa fa-share" aria-hidden="true"></i></a>
+</div>
+<hr>
+{% for cuisine in restaurant.cuisines.all %}
+{{cuisine.name}}<br>
+{% endfor %}
+
+{% endblock %}

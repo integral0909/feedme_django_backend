@@ -106,6 +106,7 @@ class Cuisine(models.Model):
 
 class Restaurant(Creatable):
     name = models.CharField(max_length=255)
+    slug = models.SlugField(default='')
     image_url = models.URLField(max_length=600)
     address = models.TextField(blank=True, default='')
     cuisines = models.ManyToManyField(Cuisine)
@@ -146,6 +147,24 @@ class Restaurant(Creatable):
             '\n', '{}<br>', ((highlight.name, ) for highlight in self.highlights.all())
         )
     highlight_list_html.short_description = 'highlights'
+
+    def save(self, depth=0, *args, **kwargs):
+        """
+        Make slugs unique
+        """
+        if depth > 1000:
+            print('Slug recursion error restaurant', self.name)
+        if depth > 0:
+            name = '{}-{}'.format(self.name, depth)
+        else:
+            name = self.name
+        self.slug = slugify(name)
+        try:
+            Restaurant.objects.get(slug=self.slug)
+        except Restaurant.DoesNotExist:
+            return super(Restaurant, self).save(*args, **kwargs)
+        self.save(depth=depth+1, *args, **kwargs)
+
 
 
 class DeliveryProvider(models.Model):
