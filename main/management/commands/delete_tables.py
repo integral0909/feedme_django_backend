@@ -11,5 +11,6 @@ class Command(BaseCommand):
         for table in options['tables']:
             if table == 'User':
                 User.objects.filter(is_staff=False).delete()
+                continue
             ModelObj = globals()[table]
             ModelObj.objects.all().delete()

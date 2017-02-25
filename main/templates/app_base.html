@@ -7,35 +7,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel='stylesheet' href="{% static 'css/main.css' %}">
     <link rel='stylesheet' href="{% static 'css/font-awesome.min.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,900&amp;subset=latin-ext,vietnamese" rel="stylesheet">
     <title>Feedmee{% block page-title %}{%endblock%}</title>
   </head>
   <body>
     <style>
 
     </style>
-    <nav class="navbar navbar-toggleable-md navbar-inverse bg-danger">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="#">Feedmee</a>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#">Disabled</a>
-          </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
-      </div>
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-navbar">
+        <div class="row">
+          <ul class="nav navbar-nav mr-auto">
+            <li class="nav-item"><a class="navbar-brand" href="#"><img id="nav-logo" src="{% static 'icons/feedmee_logo.svg' %}"></a></li>
+          </ul>
+          <ul class="navbar-nav ml-auto" style="margin-right: 15px;">
+            <li class="nav-item right"><a href="/" class="nav-link" id="nav-getapp">Get app</a></li>
+          </ul>
+        </div>
     </nav>
     {% block content %}{% endblock %}
 

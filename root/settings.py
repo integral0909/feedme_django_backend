@@ -18,6 +18,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_TITLE = 'Feedmee'
 PROJECT_TITLE_ABBR = 'FM'
 
+UBER = {
+    'clientid': 'eKsp3zbX6lPB_S1_aU4KDwWryKmMGWvt'
+}
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/

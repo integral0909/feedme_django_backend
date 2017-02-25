@@ -1,7 +1,9 @@
 body {
-  font-size: 0.93rem;
+  font-size: 14px;
+  font-family: 'Muli', sans-serif;
+  color: #4A4A4A;
 }
-.container {
+.container-padded {
   padding-left: 25px;
   padding-right: 25px;
 }
@@ -24,7 +26,62 @@ body {
 }
 a.share-link {
   color: #000;
+  font-weight: 900;
 }
-a.share-link > i {
-  color:#f55;
+a.share-link > i,
+#more-info-accordion > .card .card-header i {
+  color:#e73d57;
+}
+.bg-navbar {
+  background-color: #E73D57;
+}
+#nav-logo {
+  height: 32px;
+  margin: -10px 0;
+  margin-top: -16px;
+}
+#nav-getapp {
+  color: #FFF;
+  border: 2px solid #FFF;
+  border-radius: 40px;
+  padding: 3px 15px;
+  margin-top: 3px;
+}
+#more-info-accordion > .card {
+  margin: 10px 0;
+  border-radius: 35px;
+  overflow: hidden;
+  box-shadow: none;
+  background-color: #f8f8f8;
+}
+#more-info-accordion > .card .card-block,
+#more-info-accordion > .card .card-header {
+  background-color: #f8f8f8;
+  border-bottom: none;
+}
+#more-info-accordion > .card .card-header a {
+  color: #9B9B9B;
+}
+table.opening-times > tbody > tr > td {
+  padding: 4px;
+}
+table.opening-times > tbody > tr > td:first-child {
+  padding-right: 13px;
+}
+h3.fm-typog {
+  font-size: 17px;
+  font-weight: 900;
+}
+.text-danger {
+  color: #E73D57;
+}
+.bg-grey {
+  background-color: #f8f8f8;
+}
+footer {
+  padding: 30px;
+  color: #9B9B9B;
+}
+footer > ul > li > a {
+  color: #9B9B9B;
 }
