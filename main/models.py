@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.contrib.gis.db import models as gis_models
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
+from main.lib import weekdays
 
 
 class Creatable(models.Model):
@@ -150,30 +151,12 @@ class Restaurant(Creatable):
 
     def get_displayable_opening_times(self):
         opening_times = []
-        (sun_count, mon_count, tue_count, wed_count,
-         thu_count, fri_count, sat_count) = [0, 0, 0, 0, 0, 0, 0]
-        for opentime in self.opening_times.all():
-            if opentime.day_of_week == 'sun':
-                opening_times.insert(sun_count, opentime.display_format())
-                sun_count += 1
-            if opentime.day_of_week == 'mon':
-                opening_times.insert(mon_count + 1, opentime.display_format())
-                mon_count += 1
-            if opentime.day_of_week == 'tue':
-                opening_times.insert(tue_count + 2, opentime.display_format())
-                tue_count += 1
-            if opentime.day_of_week == 'wed':
-                opening_times.insert(wed_count + 3, opentime.display_format())
-                wed_count += 1
-            if opentime.day_of_week == 'thu':
-                opening_times.insert(thu_count + 4, opentime.display_format())
-                thu_count += 1
-            if opentime.day_of_week == 'fri':
-                opening_times.insert(fri_count + 5, opentime.display_format())
-                fri_count += 1
-            if opentime.day_of_week == 'sat':
-                opening_times.insert(sat_count + 6, opentime.display_format())
-                sat_count += 1
+        for weekday in list(weekdays.DAYWEEK_MAP.keys()):
+            openingtimes_set = self.opening_times.filter(day_of_week=weekday)
+            for opentime in openingtimes_set:
+                opening_times.append(opentime.display_format())
+            if len(openingtimes_set) == 0:
+                opening_times.append((weekdays.convert(weekday), 'CLOSED', ''))
         return opening_times
 
     def save(self, depth=0, *args, **kwargs):
@@ -254,9 +237,7 @@ class OpeningTime(models.Model):
                 self.closes.strftime('%I:%M%p').lstrip('0'))
 
     def get_day_of_week(self):
-        for choice in self.WEEKDAY_CHOICES:
-            if choice[0] == self.day_of_week:
-                return choice[1]
+        return weekdays.convert(self.day_of_week)
 
 
 class Keyword(models.Model):
@@ -324,3 +305,10 @@ class Report(Creatable):
                                    related_name='reports')
     content = models.TextField(default='')
     type = models.CharField(max_length=55)
+
+
+def in_list(item, L):
+    for i in L:
+        if item in i:
+            return L.index(i)
+    return -1

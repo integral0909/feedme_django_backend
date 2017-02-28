@@ -90,3 +90,4 @@ ENV/
 .ropeproject
 tmp
 dumps
+font-awesome.css
