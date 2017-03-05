@@ -39,6 +39,7 @@ if os.environ['DEPLOYMENT'] == 'LOCAL':
     TMP_PATH = 'tmp/'
 else:
     TMP_PATH = '/tmp/'
+CITIES_DATA_DIR = TMP_PATH+'/cities/data'
 
 ALLOWED_HOSTS = [
     'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
@@ -53,6 +54,8 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'webapp',
     'main',
+    'api',
+    'cities',
     'dbbackup',
     'storages',
     'rest_framework',
@@ -67,8 +70,13 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.authentication.FirebaseJWTBackend',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     'PAGE_SIZE': 20
 }
 
@@ -116,6 +124,12 @@ DATABASES = {
         'HOST': os.environ['RDS_HOSTNAME'],
         'PORT': os.environ['RDS_PORT']
     }
+}
+
+
+FIREBASE_JWT_BACKEND = {
+    'target_audience': 'feedmee-appsppl-dev',
+    'cert_url': 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
 }
 
 
