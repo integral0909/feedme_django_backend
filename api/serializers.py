@@ -20,7 +20,7 @@ class Group(serializers.HyperlinkedModelSerializer):
 class Blog(serializers.ModelSerializer):
     class Meta:
         model = models.Blog
-        fields = ('author', 'image_url', 'title', 'url')
+        fields = ('author', 'image_url', 'title', 'url', 'firebase_id')
 
 
 class Profile(serializers.HyperlinkedModelSerializer):
@@ -87,7 +87,8 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'image_url', 'address', 'cuisines', 'information',
                   'highlights', 'blogs', 'phone_number', 'suburb', 'instagram_user',
                   'time_offset_minutes', 'tripadvisor_widget', 'location',
-                  'opening_times', 'delivery_provider', 'delivery_link')
+                  'opening_times', 'delivery_provider', 'delivery_link',
+                  'firebase_id')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):
@@ -97,5 +98,5 @@ class Dish(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Dish
-        fields = ('url', 'restaurant', 'image_url', 'price', 'title', 'instagram_user',
-                  'keywords')
+        fields = ('url', 'restaurant', 'image_url', 'price', 'title',
+                  'instagram_user', 'keywords', 'firebase_id')
