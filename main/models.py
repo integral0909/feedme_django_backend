@@ -120,7 +120,7 @@ class Restaurant(Creatable):
     time_offset_minutes = models.IntegerField(help_text="Multiply hours by 60",
                                               default=0)
     tripadvisor_widget = models.TextField(blank=True, default='')
-    location = gis_models.PointField(default="POINT(0.0 0.0)", blank=True)
+    location = gis_models.PointField(default="POINT(0.0 0.0)", blank=True, db_index=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
