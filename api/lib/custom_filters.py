@@ -9,9 +9,9 @@ M_IN_DEGREE = 111111
 def reduce_by_distance(request, queryset):
     location = request.query_params.get('from_location', '').split(',')
     meters = request.query_params.get('max_distance_meters', '')
-    degrees = meters_to_degrees(meters)
     try:
         if len(location) * len(meters) > 0:
+            degrees = meters_to_degrees(meters)
             point = Point(float(location[0]), float(location[1]))
             queryset = queryset.filter(
                 restaurant__location__dwithin=(
