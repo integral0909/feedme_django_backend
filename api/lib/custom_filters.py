@@ -5,7 +5,7 @@ M_IN_DEGREE = 111111
 
 
 def reduce_by_distance(request, queryset):
-    location = request.query_params.get('from_location', []).split(',')
+    location = request.query_params.get('from_location', '').split(',')
     meters = request.query_params.get('max_distance_meters', '')
     degrees = meters_to_degrees(meters)
     if len(location) * len(meters) > 0:
