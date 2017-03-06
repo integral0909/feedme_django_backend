@@ -86,8 +86,9 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
         model = models.Restaurant
         fields = ('url', 'name', 'image_url', 'address', 'cuisines', 'information',
                   'highlights', 'blogs', 'phone_number', 'suburb', 'instagram_user',
-                  'time_offset_minutes', 'tripadvisor_widget', 'location',
-                  'opening_times', 'delivery_provider', 'delivery_link',
+                  'time_offset_minutes', 'time_offset_hours', 'tripadvisor_widget',
+                  'location', 'latitude', 'longitude', 'opening_times',
+                  'delivery_provider', 'delivery_link', 'app_opening_times',
                   'firebase_id')
 
 

@@ -137,6 +137,9 @@ class Restaurant(Creatable):
         self.longitude = self.location.x
         super(Restaurant, self).save(*args, **kwargs)
 
+    def time_offset_hours(self):
+        return self.time_offset_minutes / 60
+
     def cuisine_list_html(self):
         return format_html_join(
             '\n', '{}<br>', ((cuisine.name, ) for cuisine in self.cuisines.all())
@@ -157,6 +160,21 @@ class Restaurant(Creatable):
                 opening_times.append(opentime.display_format())
             if len(openingtimes_set) == 0:
                 opening_times.append((weekdays.convert(weekday), 'CLOSED', ''))
+        return opening_times
+
+    def app_opening_times(self):
+        opening_times = {}
+        for weekday in list(weekdays.DAYWEEK_MAP.keys()):
+            weekday_long = weekdays.convert(weekday)
+            day_arr = []
+            openingtimes_set = self.opening_times.filter(day_of_week=weekday)
+            for opentime in openingtimes_set:
+                opens = opentime.as_seconds('opens') - (self.time_offset_minutes * 60)
+                closes = opentime.as_seconds('closes') - (self.time_offset_minutes * 60)
+                opentime_arr = [opens, closes]
+                day_arr.append(opentime_arr)
+            if len(day_arr) > 0:
+                opening_times[weekday_long] = day_arr
         return opening_times
 
     def save(self, depth=0, *args, **kwargs):
@@ -238,6 +256,15 @@ class OpeningTime(models.Model):
 
     def get_day_of_week(self):
         return weekdays.convert(self.day_of_week)
+
+    def as_seconds(self, field):
+        if field not in ['opens', 'closes']:
+            return None
+        time = getattr(self, field)
+        seconds = time.second
+        seconds += time.minute * 60
+        seconds += time.hour * 60 * 60
+        return seconds
 
 
 class Keyword(models.Model):
