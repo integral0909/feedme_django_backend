@@ -35,7 +35,6 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
 
     def authenticate(self, request):
         token = self._get_auth_token(request)
-        print(token)
         if token is None:
             return None
         #  Need to save tokens and look them up from Database before re-decoding

@@ -4,9 +4,11 @@ import traceback
 import sys
 
 M_IN_DEGREE = 111111
+# http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters
 
 
 def reduce_by_distance(request, queryset):
+    # http://stackoverflow.com/questions/11557182/how-to-return-a-record-with-the-lowest-distance-from-a-point-using-geodjango
     location = request.query_params.get('from_location', '').split(',')
     meters = request.query_params.get('max_distance_meters', '')
     try:
@@ -25,4 +27,5 @@ def reduce_by_distance(request, queryset):
 
 
 def meters_to_degrees(meters):
+    # add property test
     return float(meters) / M_IN_DEGREE

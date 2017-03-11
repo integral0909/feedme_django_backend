@@ -42,10 +42,7 @@ class DishViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if self.request.query_params.get('saved') == 'true':
-            qs = models.Like.objects.filter(user=self.request.user)
-            queryset = []
-            for result in qs.all():
-                queryset.append(result.dish)
+            queryset = models.Dish.objects.filter(likes__user=self.request.user)
         else:
             queryset = custom_filters.reduce_by_distance(request, queryset)
             queryset = self.filter_queryset(queryset)
