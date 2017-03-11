@@ -73,6 +73,7 @@ class LikesList(APIView):
         try:
             user = request.user
             did_like = request.data.get("did_like")
+            print(user, request.data)
             dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
             like = models.Like.objects.get(dish=dish, user=user)
             like.did_like = did_like
