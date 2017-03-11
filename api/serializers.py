@@ -76,28 +76,36 @@ class DeliveryProvider(serializers.HyperlinkedModelSerializer):
 
 class Restaurant(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-detail')
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
     cuisines = Cuisine(many=True)
     highlights = Highlight(many=True)
     opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
     delivery_provider = DeliveryProvider()
 
+    def get_namespaced_id(self, obj):
+        return obj.id
+
     class Meta:
         model = models.Restaurant
-        fields = ('url', 'name', 'image_url', 'address', 'cuisines', 'information',
-                  'highlights', 'blogs', 'phone_number', 'suburb', 'instagram_user',
-                  'time_offset_minutes', 'time_offset_hours', 'tripadvisor_widget',
-                  'location', 'latitude', 'longitude', 'opening_times',
+        fields = ('url', 'pg_id', 'name', 'image_url', 'address', 'cuisines',
+                  'information', 'highlights', 'blogs', 'phone_number', 'suburb',
+                  'instagram_user', 'time_offset_minutes', 'time_offset_hours',
+                  'tripadvisor_widget', 'latitude', 'longitude', 'opening_times',
                   'delivery_provider', 'delivery_link', 'app_opening_times',
                   'firebase_id')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='dish-detail')
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
     restaurant = Restaurant(read_only=True)
     keywords = Keyword(many=True)
 
+    def get_namespaced_id(self, obj):
+        return obj.id
+
     class Meta:
         model = models.Dish
-        fields = ('url', 'restaurant', 'image_url', 'price', 'title',
+        fields = ('url', 'pg_id', 'restaurant', 'image_url', 'price', 'title',
                   'instagram_user', 'keywords', 'firebase_id')

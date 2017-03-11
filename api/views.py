@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User, Group
 from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
+from rest_framework.views import APIView
+from rest_framework.response import Response
 import api.serializers as serializers
 import main.models as models
 import api.filters as filters
@@ -59,3 +61,27 @@ class DishViewSet(viewsets.ModelViewSet):
 class DeliveryProviderViewSet(viewsets.ModelViewSet):
     queryset = models.DeliveryProvider.objects.all()
     serializer_class = serializers.DeliveryProvider
+
+
+class LikesList(APIView):
+    """
+    Post only, for saving likes
+
+    * Requires token authentication.
+    """
+    def post(self, request, format=None):
+        try:
+            user = request.user
+            did_like = request.data.get("did_like")
+            dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
+            like = models.Like.objects.get(dish=dish, user=user)
+            like.did_like = did_like
+            like.save()
+            return Response({"success": True, "created": False})
+        except models.Like.DoesNotExist:
+            like = models.Like(user=user, dish=dish, did_like=did_like)
+            like.save()
+            return Response({"success": True, "created": True})
+        except models.Dish.DoesNotExist:
+            return Response({"success": False, "created": False,
+                             "Error": "Dish not found"}, 400)
