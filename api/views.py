@@ -74,8 +74,8 @@ class LikesList(APIView):
             user = request.user
             did_like = request.data.get("did_like")
             for key, item in request.data.items():
-                print(key, item)
-            print(user, request.data, request.data.get("dish_id"), did_like, request.body)
+                print('key: %s' % key, 'item: %s' % item)
+            print(user, request.data, request.data.get("dish_id"), did_like)
             dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
             like = models.Like.objects.get(dish=dish, user=user)
             like.did_like = did_like
