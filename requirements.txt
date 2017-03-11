@@ -2,6 +2,7 @@ appdirs==1.4.0
 boto==2.45.0
 boto3==1.4.3
 botocore==1.4.93
+CacheControl==0.12.0
 Django==1.10.5
 django-cities==0.5.0.3
 django-crispy-forms==1.6.1
@@ -16,7 +17,9 @@ ecdsa==0.13
 future==0.16.0
 hypothesis==3.6.1
 jmespath==0.9.0
+lockfile==0.12.2
 Markdown==2.6.8
+msgpack-python==0.4.8
 packaging==16.8
 psycopg2==2.6.2
 pycrypto==2.6.1

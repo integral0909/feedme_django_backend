@@ -5,6 +5,8 @@ from django.conf import settings
 import jose.exceptions
 from jose import jwt
 import requests
+from cachecontrol import CacheControl
+from cachecontrol.caches.file_cache import FileCache
 
 
 class FirebaseJWTBackend(authentication.BaseAuthentication):
@@ -23,8 +25,10 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         return header_split[1]
 
     def validate_token(self, token):
-        res = requests.get(self.cert_url)
-        certs = res.json()  # This call to get the cert needs to be cached
+        sess = CacheControl(requests.Session(),
+                            cache=FileCache('%s.web_cache' % settings.TMP_PATH))
+        res = sess.get(self.cert_url)
+        certs = res.json()
         try:
             tokenClaims = jwt.decode(token, certs, algorithms='RS256',
                                      audience=self.target_audience)
