@@ -74,6 +74,19 @@ class DeliveryProvider(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'slug', 'title', 'description', 'logo_url')
 
 
+class DishLight(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    keywords = Keyword(many=True)
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.Dish
+        fields = ('pg_id', 'image_url', 'price', 'title', 'instagram_user',
+                  'keywords', 'firebase_id')
+
+
 class Restaurant(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-detail')
     pg_id = serializers.SerializerMethodField('get_namespaced_id')
@@ -82,6 +95,7 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
     opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
     delivery_provider = DeliveryProvider()
+    dishes = DishLight(many=True)
 
     def get_namespaced_id(self, obj):
         return obj.id
@@ -93,7 +107,7 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
                   'instagram_user', 'time_offset_minutes', 'time_offset_hours',
                   'tripadvisor_widget', 'latitude', 'longitude', 'opening_times',
                   'delivery_provider', 'delivery_link', 'app_opening_times',
-                  'firebase_id')
+                  'firebase_id', 'dishes')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):

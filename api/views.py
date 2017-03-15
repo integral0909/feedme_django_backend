@@ -58,6 +58,16 @@ class DishViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class RestaurantDishesViewSet(generics.ListAPIView):
+    queryset = models.Dish.objects.all()
+    serializer_class = serializers.DishLight
+    filter_class = filters.Dish
+
+    def get_queryset(self):
+        rest_pk = self.kwargs['restaurant_pk']
+        return self.queryset.filter(restaurant__pk=rest_pk)
+
+
 class DeliveryProviderViewSet(viewsets.ModelViewSet):
     queryset = models.DeliveryProvider.objects.all()
     serializer_class = serializers.DeliveryProvider
