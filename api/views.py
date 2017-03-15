@@ -60,7 +60,7 @@ class DishViewSet(viewsets.ModelViewSet):
 
 class RestaurantDishesViewSet(generics.ListAPIView):
     queryset = models.Dish.objects.all()
-    serializer_class = serializers.DishLight
+    serializer_class = serializers.Dish
     filter_class = filters.Dish
 
     def get_queryset(self):
