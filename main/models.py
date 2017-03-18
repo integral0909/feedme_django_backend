@@ -1,8 +1,12 @@
+import traceback
+import sys
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
 from main.lib import weekdays
@@ -103,6 +107,30 @@ class Cuisine(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Cuisine, self).save(*args, **kwargs)
+
+
+class DistanceQuerySet(models.QuerySet):
+    M_IN_DEGREE = 111111
+
+    def reduce_by_distance(self, location=None, meters=None):
+        try:
+            if len(location) * len(meters) > 0:
+                point = Point(float(location[0]), float(location[1]))
+                return self.filter(
+                    restaurant__location__dwithin=(
+                        point, self._meters_to_degrees(meters)
+                    )
+                )
+        except:
+            print("Could not reduce by distance")
+            exc_info = sys.exc_info()
+            traceback.print_exception(*exc_info)
+            print("Unexpected error:", exc_info[0])
+        return self
+
+    def _meters_to_degrees(self, meters=0):
+        # add property test
+        return float(meters) / self.M_IN_DEGREE
 
 
 class Restaurant(Creatable):
@@ -300,6 +328,8 @@ class Dish(Creatable):
     instagram_user = models.CharField(max_length=61, blank=True, default='')
     keywords = models.ManyToManyField(Keyword)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
+
+    objects = DistanceQuerySet.as_manager()
 
     def __str__(self):
         return self.title

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User, Group
 from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
@@ -15,22 +16,6 @@ class LargeResultsSetPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = serializers.User
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = serializers.Group
-
-
 class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = models.Restaurant.objects.all()
     serializer_class = serializers.Restaurant
@@ -44,10 +29,15 @@ class DishViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if self.request.query_params.get('saved') == 'true':
-            queryset = models.Dish.objects.filter(likes__user=self.request.user)
+            queryset = models.Dish.objects.filter(likes__user=self.request.user,
+                                                  likes__did_like=True)
         else:
-            queryset = custom_filters.reduce_by_distance(request, queryset)
-            queryset = self.filter_queryset(queryset)
+            queryset = self.filter_queryset(queryset.reduce_by_distance(
+                location=request.query_params.get('from_location', '').split(','),
+                meters=request.query_params.get('max_distance_meters', '')
+            ).exclude(
+                likes__did_like=False, updated__gte=(datetime.now() - timedelta(hours=9))
+            ))
 
         page = self.paginate_queryset(queryset)
         if page is not None:

@@ -3,20 +3,6 @@ import main.models as models
 from rest_framework import serializers
 
 
-class User(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="user-detail")
-
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email', 'groups')
-
-
-class Group(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('url', 'name')
-
-
 class Blog(serializers.ModelSerializer):
     class Meta:
         model = models.Blog
@@ -75,11 +61,8 @@ class DeliveryProvider(serializers.HyperlinkedModelSerializer):
 
 
 class DishLight(serializers.ModelSerializer):
-    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    pg_id = serializers.CharField(source='id')
     keywords = Keyword(many=True)
-
-    def get_namespaced_id(self, obj):
-        return obj.id
 
     class Meta:
         model = models.Dish
@@ -89,16 +72,13 @@ class DishLight(serializers.ModelSerializer):
 
 class Restaurant(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-detail')
-    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    pg_id = serializers.CharField(source='id')
     cuisines = Cuisine(many=True)
     highlights = Highlight(many=True)
     opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
     delivery_provider = DeliveryProvider()
     dishes = DishLight(many=True)
-
-    def get_namespaced_id(self, obj):
-        return obj.id
 
     class Meta:
         model = models.Restaurant
@@ -112,12 +92,9 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
 
 class Dish(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='dish-detail')
-    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    pg_id = serializers.CharField(source='id')
     restaurant = Restaurant(read_only=True)
     keywords = Keyword(many=True)
-
-    def get_namespaced_id(self, obj):
-        return obj.id
 
     class Meta:
         model = models.Dish
