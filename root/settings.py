@@ -48,6 +48,11 @@ else:
         'use.feedmeeapp.com',
     ]
 
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 300
+
 if os.environ['DEPLOYMENT'] == 'LOCAL':
     TMP_PATH = 'tmp/'
 else:
