@@ -27,12 +27,11 @@ class DishViewSet(viewsets.ModelViewSet):
     filter_class = filters.Dish
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
         if self.request.query_params.get('saved') == 'true':
-            queryset = models.Dish.objects.filter(likes__user=self.request.user)\
-                                          .filter(likes__did_like=True)
+            queryset = models.Dish.objects.filter(likes__user=self.request.user,
+                                                  likes__did_like=True).distinct('id')
         else:
-            queryset = self.filter_queryset(queryset.reduce_by_distance(
+            queryset = self.filter_queryset(self.get_queryset().reduce_by_distance(
                 location=request.query_params.get('from_location', '').split(','),
                 meters=request.query_params.get('max_distance_meters', '')
             ).exclude(likes__user=self.request.user,
