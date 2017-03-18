@@ -29,15 +29,15 @@ class DishViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if self.request.query_params.get('saved') == 'true':
-            queryset = models.Dish.objects.filter(likes__user=self.request.user,
-                                                  likes__did_like=True)
+            queryset = models.Dish.objects.filter(likes__user=self.request.user)\
+                                          .filter(likes__did_like=True)
         else:
             queryset = self.filter_queryset(queryset.reduce_by_distance(
                 location=request.query_params.get('from_location', '').split(','),
                 meters=request.query_params.get('max_distance_meters', '')
-            ).exclude(
-                likes__did_like=False, updated__gte=(datetime.now() - timedelta(hours=9))
-            ))
+            ).exclude(likes__user=self.request.user,
+                      likes__updated__gte=(datetime.now() - timedelta(hours=9)))
+             .exclude(likes__user=self.request.user, likes__did_like=True))
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -75,9 +75,9 @@ class LikesList(APIView):
     * Requires token authentication.
     """
     def post(self, request, format=None):
+        did_like = self._bool_converter(request.data.get("did_like"))
         try:
             user = request.user
-            did_like = request.data.get("did_like")
             dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
             like = models.Like.objects.get(dish=dish, user=user)
             like.did_like = did_like
@@ -90,3 +90,9 @@ class LikesList(APIView):
         except models.Dish.DoesNotExist:
             return Response({"success": False, "created": False,
                              "Error": "Dish not found"}, 400)
+
+    def _bool_converter(self, value):
+        if value.lower() == 'true':
+            return True
+        else:
+            return False
