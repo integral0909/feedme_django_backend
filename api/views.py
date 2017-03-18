@@ -74,7 +74,7 @@ class LikesList(APIView):
     * Requires token authentication.
     """
     def post(self, request, format=None):
-        did_like = self._bool_converter(request.data.get("did_like"))
+        did_like = request.data.get("did_like")
         try:
             user = request.user
             dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
@@ -89,9 +89,3 @@ class LikesList(APIView):
         except models.Dish.DoesNotExist:
             return Response({"success": False, "created": False,
                              "Error": "Dish not found"}, 400)
-
-    def _bool_converter(self, value):
-        if value.lower() == 'true':
-            return True
-        else:
-            return False
