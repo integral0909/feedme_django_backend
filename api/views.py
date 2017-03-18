@@ -59,6 +59,11 @@ class DishViewSet(viewsets.ModelViewSet):
 
 
 class RestaurantDishesViewSet(generics.ListAPIView):
+    """
+    Dishes from a particular restaurant
+
+    Reference: http://stackoverflow.com/questions/17337843/how-to-implement-a-hierarchy-of-resources-eg-parents-id-children-in-django
+    """
     queryset = models.Dish.objects.all()
     serializer_class = serializers.Dish
     filter_class = filters.Dish

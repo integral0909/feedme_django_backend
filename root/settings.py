@@ -34,20 +34,25 @@ LOGIN_REDIRECT_URL = '/admin/'
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     DEBUG = True
+    ALLOWED_HOSTS = [
+        'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
+        '.feedmeeapp.com',
+        'localhost',
+        'localhost:8000',
+        'use.feedmeeapp.com',
+    ]
+else:
+    ALLOWED_HOSTS = [
+        'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
+        '.feedmeeapp.com',
+        'use.feedmeeapp.com',
+    ]
 
 if os.environ['DEPLOYMENT'] == 'LOCAL':
     TMP_PATH = 'tmp/'
 else:
     TMP_PATH = '/tmp/'
 CITIES_DATA_DIR = TMP_PATH+'/cities/data'
-
-ALLOWED_HOSTS = [
-    'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
-    '.feedmeeapp.com',
-    'localhost',
-    'localhost:8000'
-]
-
 
 # Application definition
 
