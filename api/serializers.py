@@ -61,7 +61,7 @@ class DeliveryProvider(serializers.HyperlinkedModelSerializer):
 
 
 class DishLight(serializers.ModelSerializer):
-    pg_id = serializers.CharField(source='id')
+    pg_id = serializers.IntegerField(source='id')
     keywords = Keyword(many=True)
 
     class Meta:
@@ -72,7 +72,7 @@ class DishLight(serializers.ModelSerializer):
 
 class Restaurant(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-detail')
-    pg_id = serializers.CharField(source='id')
+    pg_id = serializers.IntegerField(source='id')
     cuisines = Cuisine(many=True)
     highlights = Highlight(many=True)
     opening_times = OpeningTime(many=True)
@@ -92,7 +92,7 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
 
 class Dish(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='dish-detail')
-    pg_id = serializers.CharField(source='id')
+    pg_id = serializers.IntegerField(source='id')
     restaurant = Restaurant(read_only=True)
     keywords = Keyword(many=True)
 
