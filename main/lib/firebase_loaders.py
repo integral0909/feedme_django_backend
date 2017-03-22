@@ -34,9 +34,6 @@ def save_restaurant(item, key):
         )
     except DeliveryProvider.DoesNotExist:
         delivery_provider = None
-        print("No delivery provider matching:", item.get('delivery_type',
-            item.get('delivery_provider')))
-        print(item)
     params = {'firebase_id': key}
     defaults = {
         'address': item['address'],
@@ -124,6 +121,8 @@ def save_like(item, key):
             print('Dish Does not exist:', dish_item['_dish'])
         except User.DoesNotExist:
             print('User Does not exist:', dish_item['_user'])
+        except Like.MultipleObjectsReturned:
+            print('Multiple Likes exist for this User/Dish.')
         except TypeError:
             print('Type error: {}\nKey: {}'.format(dish_item, junk_key))
             continue

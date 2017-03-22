@@ -60,12 +60,12 @@ class Keyword(serializers.ModelSerializer):
         fields = ('word', )
 
 
-class DeliveryProvider(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='deliveryprovider-detail')
+class DeliveryProvider(serializers.ModelSerializer):
+    # url = serializers.HyperlinkedIdentityField(view_name='deliveryprovider-detail')
 
     class Meta:
         model = models.DeliveryProvider
-        fields = ('url', 'name', 'slug', 'title', 'description', 'logo_url')
+        fields = ('name', 'slug', 'title', 'description', 'logo_url')
 
 
 class DishLight(serializers.ModelSerializer):
@@ -88,11 +88,17 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
     highlights = Highlight(many=True)
     opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
-    delivery_provider = DeliveryProvider()
+    # delivery_provider = DeliveryProvider()
+    delivery_type = serializers.SerializerMethodField()
     dishes = DishLight(many=True)
 
     def get_namespaced_id(self, obj):
         return obj.id
+
+    def get_delivery_type(self, obj):
+        if obj.delivery_provider is not None:
+            return obj.delivery_provider.slug
+        return None
 
     class Meta:
         model = models.Restaurant
@@ -100,8 +106,8 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
                   'information', 'highlights', 'blogs', 'phone_number', 'suburb',
                   'instagram_user', 'time_offset_minutes', 'time_offset_hours',
                   'tripadvisor_widget', 'latitude', 'longitude', 'opening_times',
-                  'delivery_provider', 'delivery_link', 'app_opening_times',
-                  'firebase_id', 'dishes')
+                  'delivery_type', 'delivery_link',
+                  'app_opening_times', 'firebase_id', 'dishes')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):
@@ -116,4 +122,4 @@ class Dish(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Dish
         fields = ('url', 'pg_id', 'restaurant', 'image_url', 'price', 'title',
-                  'instagram_user', 'keywords', 'firebase_id')
+                  'description', 'instagram_user', 'keywords', 'firebase_id')

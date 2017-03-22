@@ -314,6 +314,7 @@ class Dish(Creatable):
     image_url = models.URLField(blank=True, default='', max_length=600)
     price = models.IntegerField(default=0)
     title = models.CharField(max_length=600)
+    description = models.TextField(default='', blank=True)
     views_count = models.PositiveIntegerField(
         default=0,
         help_text='legacy calculated field from Firebase'
@@ -339,6 +340,27 @@ class Dish(Creatable):
             '\n', '{}<br>', ((keyword.word, ) for keyword in self.keywords.all())
         )
     keyword_list_html.short_description = 'keywords'
+
+    def save(self, *args, **kwargs):
+        title = self.title
+        description = ''
+        arr_dash = title.split('-', maxsplit=2)
+        arr_dot = title.split('. ', maxsplit=2)
+        arr_com = title.split(',', maxsplit=2)
+        print(len(arr_dash), len(arr_com), len(arr_dot))
+        print(len(arr_dash) == 2, len(arr_com) == 2, len(arr_dot) == 2)
+        if len(arr_dash) > 1:
+            description = arr_dash[1].strip()
+            title = arr_dash[0].strip()
+        elif len(arr_dot) > 1:
+            description = arr_dot[1].strip()
+            title = arr_dot[0].strip()
+        elif len(arr_com) > 1:
+            description = arr_com[1].strip()
+            title = arr_com[0].strip()
+        self.title = title
+        self.description = description
+        super(Dish, self).save(*args, **kwargs)
 
 
 class Like(Creatable):
