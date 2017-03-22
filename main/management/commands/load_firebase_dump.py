@@ -7,6 +7,10 @@ import os
 import simplejson as json
 
 
+def load_delivery_provider(key, item):
+    delprov = save_delivery_provider(item, key)
+
+
 def load_restaurants(key, item):
     restaurant = save_restaurant(item, key)
     save_manytomany(restaurant, item.get('cuisines', []), 'Cuisine', 'name')
@@ -76,12 +80,12 @@ def worker(chunk, func):
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('table', nargs='1', type=str)
-        parser.add_argument('filepath', nargs='1', type=str)
+        parser.add_argument('table', nargs='+', type=str)
+        parser.add_argument('filepath', nargs='+', type=str)
 
     def handle(self, *args, **options):
-        path = options['filepath']
+        path = options['filepath'][0]
         with open(path) as jdata:
             data = json.load(jdata, use_decimal=True)
-            func = globals()['load_{}'.format(options['table'])]
+            func = globals()['load_{}'.format(options['table'][0])]
             run_chunked_iter(list(data.items()), worker, args=(func, ))

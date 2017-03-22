@@ -1,4 +1,5 @@
-from main.models import Restaurant, Cuisine, Highlight, Dish, Keyword, Blog, Profile, Like
+from main.models import (Restaurant, Cuisine, Highlight, Dish, Keyword, Blog, Profile,
+                         Like, DeliveryProvider)
 import datetime
 from urllib.parse import urlparse
 from django.utils.text import slugify
@@ -12,18 +13,43 @@ def int_to_time(seconds):
     return datetime.time(hours, mins, sec)
 
 
+def save_delivery_provider(item, key):
+    params = {'slug': key}
+    defaults = {
+        'name': item.get('name'),
+        'logo_url': item.get('logo'),
+        'title': item.get('title'),
+        'description': item.get('description', '')
+    }
+    del_prov, created = DeliveryProvider.objects.update_or_create(defaults=defaults,
+                                                                  **params)
+    return del_prov
+
+
 def save_restaurant(item, key):
     point = 'POINT({} {})'.format(item['location'][1], item['location'][0])
-    params = {
-        'firebase_id': key, 'address': item['address'],
+    try:
+        delivery_provider = DeliveryProvider.objects.get(
+            slug=item.get('delivery_type', item.get('delivery_provider'))
+        )
+    except DeliveryProvider.DoesNotExist:
+        delivery_provider = None
+        print("No delivery provider matching:", item.get('delivery_type',
+            item.get('delivery_provider')))
+        print(item)
+    params = {'firebase_id': key}
+    defaults = {
+        'address': item['address'],
         'suburb': item['suburb'], 'name': item['name'],
         'image_url': item['imageURL'], 'information': item['information'],
         'tripadvisor_widget': item['tripAdvisorWidget'],
         'location': point, 'phone_number': item['phoneNumber'],
         'time_offset_minutes': item['timeOffsetFromUTC']*60,
-        'quandoo_id': item.get('quandoo_id', None)
+        'quandoo_id': item.get('quandoo_id', None),
+        'delivery_link': item.get('delivery_link'),
+        'delivery_provider': delivery_provider
     }
-    restaurant, created = Restaurant.objects.update_or_create(**params)
+    restaurant, created = Restaurant.objects.update_or_create(defaults=defaults, **params)
     return restaurant
 
 
@@ -35,22 +61,24 @@ def save_dish(item, key):
         instagram_user = insta_url.path.replace('/', '')
     if len(instagram_user) > 61:
         instagram_user = ''
-    params = {
-        'firebase_id': key, 'restaurant': restaurant, 'title': item['title'],
+    params = {'firebase_id': key}
+    defaults = {
+        'restaurant': restaurant, 'title': item['title'],
         'price': int(item['price']*100), 'image_url': item['imageURL'],
         'instagram_user': instagram_user
     }
-    dish, created = Dish.objects.update_or_create(**params)
+    dish, created = Dish.objects.update_or_create(defaults=defaults, **params)
     return dish
 
 
 def save_blog(item, key):
-    params = {
-        'firebase_id': key, 'author': item.get('author', ''),
+    params = {'firebase_id': key}
+    defaults = {
+        'author': item.get('author', ''),
         'image_url': item.get('imageURL', ''), 'title': item.get('title', ''),
         'url': item.get('url', '')
     }
-    blog, created = Blog.objects.update_or_create(**params)
+    blog, created = Blog.objects.update_or_create(defaults=defaults, **params)
     return blog
 
 
@@ -88,8 +116,10 @@ def save_like(item, key):
         try:
             dish = Dish.objects.get(firebase_id=dish_item['_dish'])
             user = User.objects.get(profile__firebase_id=dish_item['_user'])
-            like = Like(dish=dish, user=user, did_like=dish_item['didLike'])
-            like.save()
+            like, created = Like.objects.update_or_create(
+                dish=dish, user=user, defaults={'did_like': dish_item['didLike']}
+            )
+            return like
         except Dish.DoesNotExist:
             print('Dish Does not exist:', dish_item['_dish'])
         except User.DoesNotExist:

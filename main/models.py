@@ -160,11 +160,6 @@ class Restaurant(Creatable):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        self.latitude = self.location.y
-        self.longitude = self.location.x
-        super(Restaurant, self).save(*args, **kwargs)
-
     def time_offset_hours(self):
         return self.time_offset_minutes / 60
 
@@ -209,6 +204,8 @@ class Restaurant(Creatable):
         """
         Make slugs unique
         """
+        self.latitude = self.location.y
+        self.longitude = self.location.x
         if depth > 1000:
             print('Slug recursion error restaurant', self.name)
         if depth > 0:
@@ -316,7 +313,7 @@ class Dish(Creatable):
                                    related_name='dishes')
     image_url = models.URLField(blank=True, default='', max_length=600)
     price = models.IntegerField(default=0)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=600)
     views_count = models.PositiveIntegerField(
         default=0,
         help_text='legacy calculated field from Firebase'
