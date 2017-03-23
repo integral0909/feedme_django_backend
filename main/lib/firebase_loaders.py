@@ -62,7 +62,8 @@ def save_dish(item, key):
     defaults = {
         'restaurant': restaurant, 'title': item['title'],
         'price': int(item['price']*100), 'image_url': item['imageURL'],
-        'instagram_user': instagram_user
+        'instagram_user': instagram_user, 'likes_count': item.get('likesCount', 0),
+        'views_count': item.get('viewsCount', 0)
     }
     dish, created = Dish.objects.update_or_create(defaults=defaults, **params)
     return dish
