@@ -86,6 +86,7 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
     pg_id = serializers.SerializerMethodField('get_namespaced_id')
     cuisines = Cuisine(many=True)
     highlights = Highlight(many=True)
+    # opening_times = OpeningTime(many=True)
     blogs = Blog(many=True)
     # delivery_provider = DeliveryProvider()
     delivery_type = serializers.SerializerMethodField()
