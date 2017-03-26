@@ -59,6 +59,8 @@ else:
     TMP_PATH = '/tmp/'
 CITIES_DATA_DIR = TMP_PATH+'/cities/data'
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Application definition
 
 INSTALLED_APPS = [
