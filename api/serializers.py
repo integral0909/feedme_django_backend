@@ -121,4 +121,5 @@ class Dish(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Dish
         fields = ('url', 'pg_id', 'restaurant', 'image_url', 'price', 'title',
-                  'description', 'instagram_user', 'keywords', 'firebase_id')
+                  'description', 'instagram_user', 'keywords', 'likes_count',
+                  'views_count', 'firebase_id')

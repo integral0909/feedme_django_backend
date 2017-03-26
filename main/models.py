@@ -347,8 +347,6 @@ class Dish(Creatable):
         arr_dash = title.split('-', maxsplit=2)
         arr_dot = title.split('. ', maxsplit=2)
         arr_com = title.split(',', maxsplit=2)
-        print(len(arr_dash), len(arr_com), len(arr_dot))
-        print(len(arr_dash) == 2, len(arr_com) == 2, len(arr_dot) == 2)
         if len(arr_dash) > 1:
             description = arr_dash[1].strip()
             title = arr_dash[0].strip()
