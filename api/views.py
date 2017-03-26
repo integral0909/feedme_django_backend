@@ -134,12 +134,15 @@ class FulfilmentEventList(APIView):
             fulfilment.save()
             return Response({"success": True})
         except models.Dish.DoesNotExist:
+            print("Dish not found")
             return Response({"success": False, "created": False,
                              "Error": "Dish not found"}, 400)
         except models.DeliveryProvider.DoesNotExist:
+            print("Delivery Provider not found", delivery_type)
             return Response({"success": False, "created": False,
                              "Error": "Delivery Provider not found"}, 400)
         except models.BookingProvider.DoesNotExist:
+            print("Booking Provider not found", booking_type)
             return Response({"success": False, "created": False,
                              "Error": "Booking Provider not found"}, 400)
 
