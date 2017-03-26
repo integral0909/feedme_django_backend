@@ -396,12 +396,12 @@ class BookingProvider(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=50, unique=True)
     title = models.CharField(max_length=255, blank=True, default='')
-    description = models.TextField()
-    logo_url = models.URLField()
+    description = models.TextField(blank=True, default='')
+    logo_url = models.URLField(blank=True, default='')
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(DeliveryProvider, self).save(*args, **kwargs)
+        super(BookingProvider, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
