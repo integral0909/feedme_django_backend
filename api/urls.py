@@ -13,5 +13,8 @@ urlpatterns = [
     url(r'^likes/', views.LikesList.as_view()),
     url(r'^restaurants/(?P<restaurant_pk>.+)/dishes/$',
         views.RestaurantDishesViewSet.as_view()),
+    url(r'^views/', views.ViewsList.as_view()),
+    url(r'^fulfilment-events/', views.FulfilmentEventList.as_view()),
+    url(r'^donations/', views.DonationList.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

@@ -357,16 +357,65 @@ class Dish(Creatable):
             description = arr_com[1].strip()
             title = arr_com[0].strip()
         self.title = title
-        self.description = description
+        if len(description) > 0:
+            self.description = description
         super(Dish, self).save(*args, **kwargs)
+
+    def increment_views(self):
+        self.views_count += 1
+        self.save()
+
+    def increment_likes(self):
+        self.likes_count += 1
+        self.save()
+
+
+class View(Creatable):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='views')
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='views')
+
+    def save(self, *args, **kwargs):
+        super(View, self).save(*args, **kwargs)
+        self.dish.increment_views()
 
 
 class Like(Creatable):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='likes')
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE,
-                             related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='likes')
     did_like = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super(Like, self).save(*args, **kwargs)
+        self.dish.increment_likes()
+
+
+class BookingProvider(models.Model):
+    """
+    A provider of restaurant booking services
+    """
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=50, unique=True)
+    title = models.CharField(max_length=255, blank=True, default='')
+    description = models.TextField()
+    logo_url = models.URLField()
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(DeliveryProvider, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class FulfilmentEvent(Creatable):
+    delivery_provider = models.ForeignKey(
+        DeliveryProvider, on_delete=models.CASCADE, related_name='fulfilments',
+        null=True, blank=True)
+    booking_provider = models.ForeignKey(
+        BookingProvider, on_delete=models.CASCADE, related_name='fulfilments',
+        null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='fulfilments')
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='fulfilments')
 
 
 class Report(Creatable):

@@ -9,6 +9,8 @@ import main.models as models
 import api.filters as filters
 import api.lib.custom_filters as custom_filters
 
+INIT_DONATIONS = 1834
+
 
 class LargeResultsSetPagination(pagination.PageNumberPagination):
     page_size = 100
@@ -89,3 +91,62 @@ class LikesList(APIView):
         except models.Dish.DoesNotExist:
             return Response({"success": False, "created": False,
                              "Error": "Dish not found"}, 400)
+
+
+class ViewsList(APIView):
+    """
+    Post only, for saving views
+
+    * Requires token authentication.
+    """
+    def post(self, request, format=None):
+        try:
+            user = request.user
+            dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
+            view = models.View(dish=dish, user=user)
+            view.save()
+            return Response({"success": True})
+        except models.Dish.DoesNotExist:
+            return Response({"success": False, "created": False,
+                             "Error": "Dish not found"}, 400)
+
+
+class FulfilmentEventList(APIView):
+    """
+    Post only, for saving views
+
+    * Requires token authentication.
+    """
+    def post(self, request, format=None):
+        delivery_type = request.data.get("delivery_type")
+        booking_type = request.data.get("booking_type")
+        try:
+            user = request.user
+            dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
+            if delivery_type is not None:
+                delivery = models.DeliveryProvider.objects.get(slug=delivery_type)
+                fulfilment = models.FulfilmentEvent(
+                    dish=dish, user=user, delivery_provider=delivery)
+            if booking_type is not None:
+                booking = models.BookingProvider.objects.get(slug=booking_type)
+                fulfilment = models.FulfilmentEvent(
+                    dish=dish, user=user, booking_provider=booking)
+            fulfilment.save()
+            return Response({"success": True})
+        except models.Dish.DoesNotExist:
+            return Response({"success": False, "created": False,
+                             "Error": "Dish not found"}, 400)
+        except models.DeliveryProvider.DoesNotExist:
+            return Response({"success": False, "created": False,
+                             "Error": "Delivery Provider not found"}, 400)
+        except models.BookingProvider.DoesNotExist:
+            return Response({"success": False, "created": False,
+                             "Error": "Booking Provider not found"}, 400)
+
+
+class DonationList(APIView):
+    def get(self, request, format=None):
+        """
+        Return calculated donated meals from fulfilment events.
+        """
+        return Response({'count': models.FulfilmentEvent.objects.count()+INIT_DONATIONS})
