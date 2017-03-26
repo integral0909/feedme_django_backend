@@ -42,11 +42,31 @@ class DeliveryProviderAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
+@admin.register(BookingProvider)
+class BookingProviderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'title', 'logo_url', 'description')
+    list_editable = ('title', 'logo_url', 'description')
+    prepopulated_fields = {"slug": ("name",)}
+
+
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
-    list_display = ('dish', 'user', 'did_like')
+    list_display = ('dish', 'user', 'did_like', 'created')
     search_fields = ('dish__name', 'user__profile__first_name',
                      'user__profile__last_name')
+
+
+@admin.register(View)
+class ViewAdmin(admin.ModelAdmin):
+    list_display = ('dish', 'user', 'created')
+    search_fields = ('dish__name', 'user__profile__first_name',
+                     'user__profile__last_name')
+
+
+@admin.register(FulfilmentEvent)
+class FulfilmentEventAdmin(admin.ModelAdmin):
+    list_display = ('dish', 'delivery_provider', 'booking_provider', 'user', 'created')
+    list_filter = ('delivery_provider', 'booking_provider', 'dish')
 
 
 admin.site.register(Highlight, SlugNameAdmin)
