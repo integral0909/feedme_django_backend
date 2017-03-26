@@ -118,8 +118,8 @@ class FulfilmentEventList(APIView):
     * Requires token authentication.
     """
     def post(self, request, format=None):
-        delivery_type = request.data.get("delivery_type")
-        booking_type = request.data.get("booking_type")
+        delivery_type = request.data.get("delivery_type").lower()
+        booking_type = request.data.get("booking_type").lower()
         try:
             user = request.user
             dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
