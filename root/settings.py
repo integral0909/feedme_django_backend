@@ -35,7 +35,7 @@ LOGIN_REDIRECT_URL = '/admin/'
 if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     DEBUG = True
     ALLOWED_HOSTS = [
-        'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
+        '.us-west-2.elasticbeanstalk.com',
         '.feedmeeapp.com',
         'localhost',
         'localhost:8000',
