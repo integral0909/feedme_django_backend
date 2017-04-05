@@ -148,6 +148,9 @@ class FulfilmentEventList(APIView):
 
 
 class DonationList(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def get(self, request, format=None):
         """
         Return calculated donated meals from fulfilment events.
