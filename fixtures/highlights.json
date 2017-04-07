@@ -1,0 +1,634 @@
+[
+{
+    "model": "main.highlight",
+    "pk": 523,
+    "fields": {
+        "name": "Serves CocktailsVegetarian Friendly",
+        "slug": "serves-cocktailsvegetarian-friendly"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 522,
+    "fields": {
+        "name": "Late Night",
+        "slug": "late-night"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 521,
+    "fields": {
+        "name": "Dessert",
+        "slug": "dessert"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 520,
+    "fields": {
+        "name": "Coffee",
+        "slug": "coffee"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 519,
+    "fields": {
+        "name": "Food delivery",
+        "slug": "food-delivery"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 518,
+    "fields": {
+        "name": "Take away",
+        "slug": "take-away"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 517,
+    "fields": {
+        "name": "Food Truck",
+        "slug": "food-truck"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 516,
+    "fields": {
+        "name": "Seating Not Available",
+        "slug": "seating-not-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 515,
+    "fields": {
+        "name": "Takeaway Only",
+        "slug": "takeaway-only"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 514,
+    "fields": {
+        "name": "king prawn and seafood wrapped sea urchin tempura? Or soft-boiled abalone with sweet liver miso sauc",
+        "slug": "king-prawn-and-seafood-wrapped-sea-urchin-tempura-or-soft-boiled-abalone-with-sweet-liver-miso-sauc"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 513,
+    "fields": {
+        "name": "this Dundee Street star (beside Melville Glades golf course) is a place you can delve a bit further ",
+        "slug": "this-dundee-street-star-beside-melville-glades-golf-course-is-a-place-you-can-delve-a-bit-further"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 512,
+    "fields": {
+        "name": "and you will not regret reaching for one. Still",
+        "slug": "and-you-will-not-regret-reaching-for-one-still"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 511,
+    "fields": {
+        "name": "Ichirin\u2019s bento boxes are the stuff of legend around Leeming",
+        "slug": "ichirins-bento-boxes-are-the-stuff-of-legend-around-leeming"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 510,
+    "fields": {
+        "name": "quality and affordability managed here.",
+        "slug": "quality-and-affordability-managed-here"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 509,
+    "fields": {
+        "name": "very few modern Japanese restaurants in Perth can match the level of freshness",
+        "slug": "very-few-modern-japanese-restaurants-in-perth-can-match-the-level-of-freshness"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 508,
+    "fields": {
+        "name": "and very",
+        "slug": "and-very"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 507,
+    "fields": {
+        "name": "there\u2019s certainly no shortage of complex culinary skill on show at Ichirin",
+        "slug": "theres-certainly-no-shortage-of-complex-culinary-skill-on-show-at-ichirin"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 506,
+    "fields": {
+        "name": "meaning guests at this suave but cosy Japanese restaurant on Dundee Street get to enjoy the natural ",
+        "slug": "meaning-guests-at-this-suave-but-cosy-japanese-restaurant-on-dundee-street-get-to-enjoy-the-natural"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 505,
+    "fields": {
+        "name": "incredibly fresh products (seafood above all) at the forefront of what they offer. The preparation i",
+        "slug": "incredibly-fresh-products-seafood-above-all-at-the-forefront-of-what-they-offer-the-preparation-i"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 504,
+    "fields": {
+        "name": "Ichirin put high quality",
+        "slug": "ichirin-put-high-quality"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 503,
+    "fields": {
+        "name": "n/a",
+        "slug": "na"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 502,
+    "fields": {
+        "name": "Luxury Dining",
+        "slug": "luxury-dining"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 501,
+    "fields": {
+        "name": "High Tea",
+        "slug": "high-tea"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 500,
+    "fields": {
+        "name": "Parking Available",
+        "slug": "parking-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 499,
+    "fields": {
+        "name": "Highchairs Available",
+        "slug": "highchairs-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 498,
+    "fields": {
+        "name": "Television ",
+        "slug": "television"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 497,
+    "fields": {
+        "name": "Free Off-Street Parking",
+        "slug": "free-off-street-parking"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 496,
+    "fields": {
+        "name": "Buffet",
+        "slug": "buffet"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 495,
+    "fields": {
+        "name": "Sports Bar",
+        "slug": "sports-bar"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 494,
+    "fields": {
+        "name": "Live Sports Screening",
+        "slug": "live-sports-screening"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 493,
+    "fields": {
+        "name": "No Parking Available",
+        "slug": "no-parking-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 492,
+    "fields": {
+        "name": "Serves Cocktails",
+        "slug": "serves-cocktails"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 491,
+    "fields": {
+        "name": "Waterfront",
+        "slug": "waterfront"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 490,
+    "fields": {
+        "name": "Table booking not available",
+        "slug": "table-booking-not-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 489,
+    "fields": {
+        "name": "Seating",
+        "slug": "seating"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 488,
+    "fields": {
+        "name": "Reservations",
+        "slug": "reservations"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 487,
+    "fields": {
+        "name": "Full Bar",
+        "slug": "full-bar"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 486,
+    "fields": {
+        "name": "Waitstaff",
+        "slug": "waitstaff"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 485,
+    "fields": {
+        "name": "Beer",
+        "slug": "beer"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 484,
+    "fields": {
+        "name": "Lunch Menu",
+        "slug": "lunch-menu"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 483,
+    "fields": {
+        "name": "All Day Breakfast",
+        "slug": "all-day-breakfast"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 482,
+    "fields": {
+        "name": "Degustation",
+        "slug": "degustation"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 481,
+    "fields": {
+        "name": "Cocktail",
+        "slug": "cocktail"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 480,
+    "fields": {
+        "name": "Raw Food",
+        "slug": "raw-food"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 479,
+    "fields": {
+        "name": "Garden",
+        "slug": "garden"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 478,
+    "fields": {
+        "name": "Take Away Available",
+        "slug": "take-away-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 477,
+    "fields": {
+        "name": "Farm-to-Table",
+        "slug": "farm-to-table"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 476,
+    "fields": {
+        "name": "Desserts and Bakes",
+        "slug": "desserts-and-bakes"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 475,
+    "fields": {
+        "name": "Pet Friendly",
+        "slug": "pet-friendly"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 474,
+    "fields": {
+        "name": "Wheelchair Accessible",
+        "slug": "wheelchair-accessible"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 473,
+    "fields": {
+        "name": "Free Parking",
+        "slug": "free-parking"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 472,
+    "fields": {
+        "name": "Wine",
+        "slug": "wine"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 471,
+    "fields": {
+        "name": "Private Parking",
+        "slug": "private-parking"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 470,
+    "fields": {
+        "name": "Paid Parking",
+        "slug": "paid-parking"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 469,
+    "fields": {
+        "name": "Corkage Fee Charged",
+        "slug": "corkage-fee-charged"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 468,
+    "fields": {
+        "name": "Available for Functions",
+        "slug": "available-for-functions"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 467,
+    "fields": {
+        "name": "BYO",
+        "slug": "byo"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 466,
+    "fields": {
+        "name": "Home Delivery",
+        "slug": "home-delivery"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 465,
+    "fields": {
+        "name": "Wine and Beer",
+        "slug": "wine-and-beer"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 464,
+    "fields": {
+        "name": "Shared Plates",
+        "slug": "shared-plates"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 463,
+    "fields": {
+        "name": "Dairy Free",
+        "slug": "dairy-free"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 462,
+    "fields": {
+        "name": "Craft Beer",
+        "slug": "craft-beer"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 461,
+    "fields": {
+        "name": "Smoking Area",
+        "slug": "smoking-area"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 460,
+    "fields": {
+        "name": "BYOW",
+        "slug": "byow"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 459,
+    "fields": {
+        "name": "Nightlife",
+        "slug": "nightlife"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 458,
+    "fields": {
+        "name": "Wifi",
+        "slug": "wifi"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 457,
+    "fields": {
+        "name": "Live Music",
+        "slug": "live-music"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 456,
+    "fields": {
+        "name": "Serves Alcohol",
+        "slug": "serves-alcohol"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 455,
+    "fields": {
+        "name": "Vegan Options",
+        "slug": "vegan-options"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 454,
+    "fields": {
+        "name": "Explore",
+        "slug": "explore"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 453,
+    "fields": {
+        "name": " \t\t",
+        "slug": ""
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 452,
+    "fields": {
+        "name": "Sheet1",
+        "slug": "sheet1"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 451,
+    "fields": {
+        "name": "Vegetarian Friendly",
+        "slug": "vegetarian-friendly"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 450,
+    "fields": {
+        "name": "Full Bar Available",
+        "slug": "full-bar-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 449,
+    "fields": {
+        "name": "Gluten Free Options",
+        "slug": "gluten-free-options"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 448,
+    "fields": {
+        "name": "Kid Friendly",
+        "slug": "kid-friendly"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 447,
+    "fields": {
+        "name": "Outdoor Seating",
+        "slug": "outdoor-seating"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 446,
+    "fields": {
+        "name": "Takeaway Available",
+        "slug": "takeaway-available"
+    }
+},
+{
+    "model": "main.highlight",
+    "pk": 445,
+    "fields": {
+        "name": "Breakfast",
+        "slug": "breakfast"
+    }
+}
+]

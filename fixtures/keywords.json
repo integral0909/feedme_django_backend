@@ -1,0 +1,90 @@
+[
+{
+    "model": "main.keyword",
+    "pk": 43,
+    "fields": {
+        "word": "discounts",
+        "slug": "discounts"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 42,
+    "fields": {
+        "word": "healthy",
+        "slug": "healthy"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 41,
+    "fields": {
+        "word": "manFood",
+        "slug": "manfood"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 40,
+    "fields": {
+        "word": "cheapEats",
+        "slug": "cheapeats"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 39,
+    "fields": {
+        "word": "vegetarian",
+        "slug": "vegetarian"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 38,
+    "fields": {
+        "word": "breakfast",
+        "slug": "breakfast"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 37,
+    "fields": {
+        "word": "vegan",
+        "slug": "vegan"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 36,
+    "fields": {
+        "word": "glutenFree",
+        "slug": "glutenfree"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 35,
+    "fields": {
+        "word": "sweetTooth",
+        "slug": "sweettooth"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 34,
+    "fields": {
+        "word": "lunch",
+        "slug": "lunch"
+    }
+},
+{
+    "model": "main.keyword",
+    "pk": 33,
+    "fields": {
+        "word": "dinner",
+        "slug": "dinner"
+    }
+}
+]

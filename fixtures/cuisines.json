@@ -1,0 +1,666 @@
+[
+{
+    "model": "main.cuisine",
+    "pk": 590,
+    "fields": {
+        "name": "Turkish",
+        "slug": "turkish"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 589,
+    "fields": {
+        "name": "Street Food",
+        "slug": "street-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 588,
+    "fields": {
+        "name": "Halal",
+        "slug": "halal"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 587,
+    "fields": {
+        "name": "Vegan Options",
+        "slug": "vegan-options"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 586,
+    "fields": {
+        "name": "Vegetarian Friendly",
+        "slug": "vegetarian-friendly"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 585,
+    "fields": {
+        "name": "Nepali",
+        "slug": "nepali"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 584,
+    "fields": {
+        "name": "Thai food",
+        "slug": "thai-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 583,
+    "fields": {
+        "name": "Indonesia",
+        "slug": "indonesia"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 582,
+    "fields": {
+        "name": "pasta",
+        "slug": "pasta"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 581,
+    "fields": {
+        "name": "Fish and Chips",
+        "slug": "fish-and-chips"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 580,
+    "fields": {
+        "name": "German",
+        "slug": "german"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 579,
+    "fields": {
+        "name": "Barbecue",
+        "slug": "barbecue"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 578,
+    "fields": {
+        "name": "Fresh Middle Eastern inspired",
+        "slug": "fresh-middle-eastern-inspired"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 577,
+    "fields": {
+        "name": "Ice Cream",
+        "slug": "ice-cream"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 576,
+    "fields": {
+        "name": "Caribbean",
+        "slug": "caribbean"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 575,
+    "fields": {
+        "name": "Nepalese",
+        "slug": "nepalese"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 574,
+    "fields": {
+        "name": "Teppanyaki",
+        "slug": "teppanyaki"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 573,
+    "fields": {
+        "name": "French",
+        "slug": "french"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 572,
+    "fields": {
+        "name": "American style BBQ",
+        "slug": "american-style-bbq"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 571,
+    "fields": {
+        "name": "coffee",
+        "slug": "coffee"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 570,
+    "fields": {
+        "name": "Bakery",
+        "slug": "bakery"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 569,
+    "fields": {
+        "name": "Dumplings",
+        "slug": "dumplings"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 568,
+    "fields": {
+        "name": "Steak",
+        "slug": "steak"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 567,
+    "fields": {
+        "name": "Pakistani",
+        "slug": "pakistani"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 566,
+    "fields": {
+        "name": "Yum Cha",
+        "slug": "yum-cha"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 565,
+    "fields": {
+        "name": "Singaporean",
+        "slug": "singaporean"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 564,
+    "fields": {
+        "name": "Filipino",
+        "slug": "filipino"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 563,
+    "fields": {
+        "name": "Indian",
+        "slug": "indian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 562,
+    "fields": {
+        "name": "Modern",
+        "slug": "modern"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 561,
+    "fields": {
+        "name": "Pan-Asian tapas",
+        "slug": "pan-asian-tapas"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 560,
+    "fields": {
+        "name": "Swiss",
+        "slug": "swiss"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 559,
+    "fields": {
+        "name": "Breakfast",
+        "slug": "breakfast"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 558,
+    "fields": {
+        "name": "International",
+        "slug": "international"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 557,
+    "fields": {
+        "name": "Moroccan",
+        "slug": "moroccan"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 556,
+    "fields": {
+        "name": "African",
+        "slug": "african"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 555,
+    "fields": {
+        "name": "Soul Food",
+        "slug": "soul-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 554,
+    "fields": {
+        "name": "Pub Food",
+        "slug": "pub-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 553,
+    "fields": {
+        "name": "Mediterranean",
+        "slug": "mediterranean"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 552,
+    "fields": {
+        "name": "Greek",
+        "slug": "greek"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 551,
+    "fields": {
+        "name": "Fast Food",
+        "slug": "fast-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 550,
+    "fields": {
+        "name": "Indonesian",
+        "slug": "indonesian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 549,
+    "fields": {
+        "name": "Middle Eastern",
+        "slug": "middle-eastern"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 548,
+    "fields": {
+        "name": "Seafood",
+        "slug": "seafood"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 547,
+    "fields": {
+        "name": "Gluten Free Options",
+        "slug": "gluten-free-options"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 546,
+    "fields": {
+        "name": "Contemporary",
+        "slug": "contemporary"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 545,
+    "fields": {
+        "name": "BBQ",
+        "slug": "bbq"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 544,
+    "fields": {
+        "name": "Taiwanese",
+        "slug": "taiwanese"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 543,
+    "fields": {
+        "name": "08 9361 5946",
+        "slug": "08-9361-5946"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 542,
+    "fields": {
+        "name": "Pizza",
+        "slug": "pizza"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 541,
+    "fields": {
+        "name": "Vietnamese",
+        "slug": "vietnamese"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 540,
+    "fields": {
+        "name": "Fusion",
+        "slug": "fusion"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 539,
+    "fields": {
+        "name": "Malaysian",
+        "slug": "malaysian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 538,
+    "fields": {
+        "name": "American",
+        "slug": "american"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 537,
+    "fields": {
+        "name": "Beverages",
+        "slug": "beverages"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 536,
+    "fields": {
+        "name": "Middle Eastern food with a modern twist",
+        "slug": "middle-eastern-food-with-a-modern-twist"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 535,
+    "fields": {
+        "name": "Desserts",
+        "slug": "desserts"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 534,
+    "fields": {
+        "name": "Grill",
+        "slug": "grill"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 533,
+    "fields": {
+        "name": "Sushi",
+        "slug": "sushi"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 532,
+    "fields": {
+        "name": "Korean",
+        "slug": "korean"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 531,
+    "fields": {
+        "name": "Chinese",
+        "slug": "chinese"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 530,
+    "fields": {
+        "name": "Asian",
+        "slug": "asian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 529,
+    "fields": {
+        "name": "Australian",
+        "slug": "australian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 528,
+    "fields": {
+        "name": "European",
+        "slug": "european"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 527,
+    "fields": {
+        "name": "Sandwich",
+        "slug": "sandwich"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 526,
+    "fields": {
+        "name": "Juices",
+        "slug": "juices"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 525,
+    "fields": {
+        "name": "Ramen",
+        "slug": "ramen"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 524,
+    "fields": {
+        "name": "Japanese",
+        "slug": "japanese"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 523,
+    "fields": {
+        "name": "Modern European",
+        "slug": "modern-european"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 522,
+    "fields": {
+        "name": "Healthy Food",
+        "slug": "healthy-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 521,
+    "fields": {
+        "name": "Vegetarian",
+        "slug": "vegetarian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 520,
+    "fields": {
+        "name": "Thai",
+        "slug": "thai"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 519,
+    "fields": {
+        "name": "Mexican",
+        "slug": "mexican"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 518,
+    "fields": {
+        "name": "Latin American",
+        "slug": "latin-american"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 517,
+    "fields": {
+        "name": "Italian",
+        "slug": "italian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 516,
+    "fields": {
+        "name": "Deli",
+        "slug": "deli"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 515,
+    "fields": {
+        "name": "Argentine",
+        "slug": "argentine"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 514,
+    "fields": {
+        "name": "Burger",
+        "slug": "burger"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 513,
+    "fields": {
+        "name": "Bar Food",
+        "slug": "bar-food"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 512,
+    "fields": {
+        "name": "Tapas",
+        "slug": "tapas"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 511,
+    "fields": {
+        "name": "Spanish",
+        "slug": "spanish"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 510,
+    "fields": {
+        "name": "Modern Australian",
+        "slug": "modern-australian"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 509,
+    "fields": {
+        "name": "Coffee and Tea",
+        "slug": "coffee-and-tea"
+    }
+},
+{
+    "model": "main.cuisine",
+    "pk": 508,
+    "fields": {
+        "name": "Cafe",
+        "slug": "cafe"
+    }
+}
+]

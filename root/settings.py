@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'main',
     'api',
     'cities',
+    'fixture_magic',
     'dbbackup',
     'storages',
     'rest_framework',
