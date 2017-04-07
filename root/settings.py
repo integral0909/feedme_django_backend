@@ -35,7 +35,7 @@ LOGIN_REDIRECT_URL = '/admin/'
 if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     DEBUG = True
     ALLOWED_HOSTS = [
-        'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
+        '.us-west-2.elasticbeanstalk.com',
         '.feedmeeapp.com',
         'localhost',
         'localhost:8000',
@@ -183,8 +183,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-
-AWS_STORAGE_BUCKET_NAME = 'fdme-static'
+if os.environ['DEPLOYMENT'] == 'PRODUCTION':
+    AWS_STORAGE_BUCKET_NAME = 'fdme-static'
+else:
+    AWS_STORAGE_BUCKET_NAME = 'fdme-static-dev'
 AWS_ACCESS_KEY_ID = os.environ['AWS_S3_STATIC_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_S3_STATIC_KEY']
 

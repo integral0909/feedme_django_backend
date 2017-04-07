@@ -156,3 +156,20 @@ class DonationList(APIView):
         Return calculated donated meals from fulfilment events.
         """
         return Response({'count': models.FulfilmentEvent.objects.count()+INIT_DONATIONS})
+
+
+class SearchTermList(APIView):
+    def get(self, request, format=None):
+        """
+        List all possible search terms
+        """
+        cuisines = models.Cuisine.objects.all()
+        keywords = models.Keyword.objects.all()
+        highlights = models.Highlight.objects.all()
+        res = {
+            "keywords": [keyword.word for keyword in keywords],
+            "cuisines": [cuisine.name for cuisine in cuisines],
+            'highlights': [highlight.name for highlight in highlights]
+        }
+        count = len(res['keywords']) + len(res['cuisines']) + len(res['highlights'])
+        return Response({'count': count, 'results': res})

@@ -30,5 +30,6 @@ admin.site.site_header = '%s Admin' % settings.PROJECT_TITLE_ABBR
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
+    url(r'^cron/', include('cron.urls')),
     url(r'^', include('main.urls'))
 ]
