@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^fulfilment-events/', views.FulfilmentEventList.as_view()),
     url(r'^donations/', views.DonationList.as_view()),
     url(r'^search-terms/', views.SearchTermList.as_view()),
+    url(r'^suburbs/', views.SuburbList.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

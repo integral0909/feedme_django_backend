@@ -173,3 +173,13 @@ class SearchTermList(APIView):
         }
         count = len(res['keywords']) + len(res['cuisines']) + len(res['highlights'])
         return Response({'count': count, 'results': res})
+
+
+class SuburbList(APIView):
+    def get(self, request, format=None):
+        """
+        List all suburbs with restaurants
+        """
+        rests = models.Restaurant.objects.all().distinct('suburb')
+        rests = [rest.suburb for rest in rests]
+        return Response({'count': len(rests), 'results': rests})
