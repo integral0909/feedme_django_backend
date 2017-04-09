@@ -1,4 +1,6 @@
 # fm-django
+[![CircleCI](https://circleci.com/gh/Feedmee-app/django-backend.svg?style=svg&circle-token=9ae88e40ca14ba4d2b5a0e3bf8f617d0883d86d4)](https://circleci.com/gh/Feedmee-app/django-backend) [![codecov](https://codecov.io/gh/Feedmee-app/django-backend/branch/master/graph/badge.svg?token=gRDSf4EZRW)](https://codecov.io/gh/Feedmee-app/django-backend)
+
 Feedmee's django based admin backend, api, and any further webapps such as advertising management pages.
 
 ## Project Structure
@@ -50,7 +52,7 @@ $ brew install libgeoip
 Install [virtualenv](https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/) to create an isolated python environment for the project.
 
 ```bash
-$ cd ~/fm-django
+$ cd ~/django-backend
 $ pip install virtualenv
 $ virtualenv env -p python34
 $ source env/bin/activate
@@ -94,7 +96,7 @@ _After_ it add this:
 ```bash
 export RDS_DB_NAME="postgres"
 export RDS_USERNAME="postgres"
-export RDS_PASSWORD=""
+export RDS_PASSWORD="mysecretpassword"
 export RDS_HOSTNAME="localhost"
 export RDS_PORT="5436"
 export DEPLOYMENT="LOCAL"
