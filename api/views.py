@@ -39,7 +39,8 @@ class DishViewSet(viewsets.ModelViewSet):
                 meters=request.query_params.get('max_distance_meters', '')
             ).exclude(likes__user=self.request.user,
                       likes__updated__gte=exclude_time)
-             .exclude(likes__user=self.request.user, likes__did_like=True))
+             .exclude(likes__user=self.request.user, likes__did_like=True)
+             .order_by('random', 'id').distinct('random', 'id'))
 
         page = self.paginate_queryset(queryset)
         if page is not None:

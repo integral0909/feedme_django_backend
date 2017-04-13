@@ -1,5 +1,6 @@
 import traceback
 import sys
+import random
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -10,6 +11,10 @@ from django.contrib.gis.measure import D
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
 from main.lib import weekdays
+
+
+def random_number():
+    return random.randint(1, 1000000000)
 
 
 class Creatable(models.Model):
@@ -268,6 +273,10 @@ class OpeningTime(models.Model):
     valid_from = models.DateField(null=True, blank=True)
     valid_through = models.DateField(null=True, blank=True)
 
+    class Meta:
+        unique_together = (('restaurant', 'opens', 'closes', 'day_of_week',
+                            'valid_from', 'valid_through'), )
+
     def __str__(self):
         return "{} Open: {}, Close: {}, {}".format(self.restaurant,
                                                    self.opens.isoformat(),
@@ -326,6 +335,7 @@ class Dish(Creatable):
     instagram_user = models.CharField(max_length=61, blank=True, default='')
     keywords = models.ManyToManyField(Keyword)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
+    random = models.BigIntegerField(default=random_number)
 
     objects = DistanceQuerySet.as_manager()
 
