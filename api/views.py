@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User, Group
 from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
@@ -33,11 +33,12 @@ class DishViewSet(viewsets.ModelViewSet):
             queryset = models.Dish.objects.filter(likes__user=self.request.user,
                                                   likes__did_like=True).distinct('id')
         else:
+            exclude_time = (datetime.now(timezone.utc) - timedelta(hours=9))
             queryset = self.filter_queryset(self.get_queryset().reduce_by_distance(
                 location=request.query_params.get('from_location', '').split(','),
                 meters=request.query_params.get('max_distance_meters', '')
             ).exclude(likes__user=self.request.user,
-                      likes__updated__gte=(datetime.now() - timedelta(hours=9)))
+                      likes__updated__gte=exclude_time)
              .exclude(likes__user=self.request.user, likes__did_like=True))
 
         page = self.paginate_queryset(queryset)
