@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 import main.models as models
 from rest_framework import serializers
+from api.fields import NullCharField
 
 
 class User(serializers.HyperlinkedModelSerializer):
@@ -90,6 +91,7 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
     blogs = Blog(many=True)
     # delivery_provider = DeliveryProvider()
     delivery_type = serializers.SerializerMethodField()
+    delivery_link = NullCharField()
 
     def get_namespaced_id(self, obj):
         return obj.id
