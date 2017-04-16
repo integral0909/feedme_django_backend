@@ -69,9 +69,13 @@ class FulfilmentEventAdmin(admin.ModelAdmin):
     list_filter = ('delivery_provider', 'booking_provider', 'dish')
 
 
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    search_fields = ('user__username',)
+
+
 admin.site.register(Highlight, SlugNameAdmin)
 admin.site.register(Cuisine, SlugNameAdmin)
 admin.site.register(Keyword, SlugNameAdmin)
 admin.site.register(Blog)
 admin.site.register(OpeningTime)
-admin.site.register(Profile)

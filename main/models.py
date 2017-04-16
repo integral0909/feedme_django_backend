@@ -222,6 +222,8 @@ class Restaurant(Creatable):
             Restaurant.objects.get(slug=self.slug)
         except Restaurant.DoesNotExist:
             return super(Restaurant, self).save(*args, **kwargs)
+        except Restaurant.MultipleObjectsReturned:
+            print("DANGER: Multiple restaurants for slug", self.slug)
         self.save(depth=depth+1, *args, **kwargs)
 
 

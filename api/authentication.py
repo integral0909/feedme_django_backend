@@ -7,6 +7,7 @@ from jose import jwt
 import requests
 from cachecontrol import CacheControl
 from cachecontrol.caches.file_cache import FileCache
+from main.models import Profile
 
 
 class FirebaseJWTBackend(authentication.BaseAuthentication):
@@ -51,7 +52,7 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             firebase = tokenClaims.get('firebase', {})
             email = tokenClaims.get('email', '')[:254]
             username = firebase['identities'].get('uid', email)[:150]
-            if isinstance(username, list, tuple, set):
+            if isinstance(username, (list, tuple, set)):
                 username = username[0][:150]
             params = {
                 'email': email, 'username': username,
