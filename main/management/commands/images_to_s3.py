@@ -7,6 +7,7 @@ import pyrebase
 import urllib
 import wget
 import boto3
+import time
 
 base = 'https://firebasestorage.googleapis.com/v0/b/feedmee-appsppl-dev.appspot.com/o/'
 s3_client = boto3.client('s3')
@@ -25,17 +26,23 @@ def _download_imgs(rests):
         dl_url = urllib.parse.unquote(rest.image_url).replace(base, '').split('?')[0]
         filename = dl_url.split('/')[-1]
         try:
-            if dl_url[:6] == 'images':
+            if dl_url[:6] in ['images', 'websit']:
                 storage.child(dl_url).download(settings.TMP_PATH + filename)
-            else:
-                    wget.download(dl_url, settings.TMP_PATH + filename)
+            elif dl_url[:4] == 'http':
+                wget.download(dl_url, settings.TMP_PATH + filename)
         except ValueError:
             print('URL invalid', dl_url)
         except:
             print('Unknown error')
         else:
-            s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
-                                  filename)
+            time.sleep(0.1)
+            try:
+                s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
+                                      filename)
+            except FileNotFoundError:
+                time.sleep(1)
+                s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
+                                      filename)
 
 
 class Command(BaseCommand):
