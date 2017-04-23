@@ -58,7 +58,7 @@ def chunkify(lst, n):
 
 def run_chunked_iter(iterable_item, worker_func, args=None, num_threads=8):
     """
-    Split the provideed iterable into chunks, process each chunk in a separate thread
+    Split the provided iterable into chunks, process each chunk in a separate thread
     """
     threads = []
     chunked_iterables = chunkify(iterable_item, num_threads)

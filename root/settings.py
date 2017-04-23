@@ -105,6 +105,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'common.middleware.useragent.CustomUserAgentMiddleware',
+    'common.middleware.deeplink.DeeplinkMiddleware',
 ]
 
 # CORS for select endpoints.
