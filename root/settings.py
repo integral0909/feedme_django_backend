@@ -18,9 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_TITLE = 'Feedmee'
 PROJECT_TITLE_ABBR = 'FM'
 
-UBER = {
-    'clientid': 'eKsp3zbX6lPB_S1_aU4KDwWryKmMGWvt'
-}
+UBER = {'clientid': 'eKsp3zbX6lPB_S1_aU4KDwWryKmMGWvt'}
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,10 +34,8 @@ if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     DEBUG = True
     ALLOWED_HOSTS = [
         '.us-west-2.elasticbeanstalk.com',
-        '.feedmeeapp.com',
         'localhost',
         'localhost:8000',
-        'use.feedmeeapp.com',
     ]
 else:
     ALLOWED_HOSTS = [
@@ -53,10 +49,8 @@ else:
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 300
 
-if os.environ['DEPLOYMENT'] == 'LOCAL':
-    TMP_PATH = 'tmp/'
-else:
-    TMP_PATH = '/tmp/'
+TMP_PATH = 'tmp/' if os.environ['DEPLOYMENT'] == 'LOCAL' else '/tmp/'
+
 CITIES_DATA_DIR = TMP_PATH+'/cities/data'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -109,6 +103,16 @@ MIDDLEWARE = [
     'common.middleware.deeplink.DeeplinkMiddleware',
 ]
 
+DEEPLINKER = {
+    'USER_AGENTS': {
+        'device': {
+            'family': ['iPhone', 'iOS-Device']
+        }
+    },
+    'URL_MODULE': 'webapp.deeplinks',
+    'PROTOCOL': 'feedmee://',
+}
+
 # CORS for select endpoints.
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/donations/$'
@@ -127,6 +131,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'root.context_processors.project_config',
+                'common.middleware.deeplink.context_processor',
             ],
         },
     },

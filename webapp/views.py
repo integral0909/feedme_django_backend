@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from main.models import Restaurant
+from main.models import Restaurant, Dish
 from django.conf import settings
 
 
@@ -11,3 +11,15 @@ def restaurant_detail(request, restaurant_slug):
         'opening_times': restaurant.get_displayable_opening_times()
     }
     return render(request, 'restaurant.html', context)
+
+
+def deeplink_dish(request, dish_id):
+    dish = Dish.objects.get(pk=dish_id)
+    return render(request, 'deeplink_dish.html', {'dish': dish})
+
+
+def dish_detail(request, dish_id):
+    pass
+
+
+dish_detail.deeplink_only = True
