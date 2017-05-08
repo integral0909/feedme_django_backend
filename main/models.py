@@ -140,7 +140,7 @@ class DistanceQuerySet(models.QuerySet):
 
 class Restaurant(Creatable):
     name = models.CharField(max_length=255)
-    slug = models.SlugField(default='')
+    slug = models.SlugField(default='', unique=True)
     image_url = models.URLField(max_length=600)
     address = models.TextField(blank=True, default='')
     cuisines = models.ManyToManyField(Cuisine)
@@ -379,6 +379,10 @@ class Dish(Creatable):
 
     def increment_likes(self):
         self.likes_count += 1
+        self.save()
+
+    def randomise(self):
+        self.random = random_number()
         self.save()
 
 

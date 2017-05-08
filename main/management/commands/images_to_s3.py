@@ -8,6 +8,9 @@ import urllib
 import wget
 import boto3
 import time
+from common.utils.s3 import parse
+from common.utils import handle_generic_exception
+
 
 base = 'https://firebasestorage.googleapis.com/v0/b/feedmee-appsppl-dev.appspot.com/o/'
 s3_client = boto3.client('s3')
@@ -32,17 +35,31 @@ def _download_imgs(rests):
                 wget.download(dl_url, settings.TMP_PATH + filename)
         except ValueError:
             print('URL invalid', dl_url)
-        except:
-            print('Unknown error')
-        else:
-            time.sleep(0.1)
+        except urllib.error.HTTPError:
+            print(rest.image_url)
             try:
-                s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
-                                      filename)
-            except FileNotFoundError:
-                time.sleep(1)
-                s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
-                                      filename)
+                wget.download(rest.image_url, settings.TMP_PATH + filename)
+            except:
+                handle_generic_exception()
+            else:
+                _upload(filename)
+        except:
+            print(rest.image_url)
+            handle_generic_exception()
+
+        else:
+            _upload(filename)
+
+
+def _upload(filename):
+    time.sleep(0.1)
+    try:
+        s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
+                              parse(filename))
+    except FileNotFoundError:
+        time.sleep(1)
+        s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
+                              parse(filename))
 
 
 class Command(BaseCommand):
