@@ -1,4 +1,35 @@
-Deeplink All Conditions Met: {{deeplink.all_conditions_met}}<br>
-Deeplink Available: {{deeplink.has_deeplink}}<br>
-Path: {{deeplink.path}}<br>
-Useragent is target: {{deeplink.useragent_is_target}}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{dish.title}} at {{dish.restaurant.name}} | Feedmee</title>
+    <meta property="description"        content="{{dish.description}}" />
+    <meta property="fb:app_id"          content="" />
+    <meta property="og:title"           content="{{dish.title}} at {{dish.restaurant.name}}" />
+    <meta property="og:description"     content="{{dish.description}}" />
+    <meta property="og:type"            content="restaurant.menu_item" />
+    <meta property="og:image"           content="{{dish.image_url}}" />
+    <meta property="og:image:url"       content="{{dish.image_url}}" />
+    <meta property="og:image:secure_url"content="{{dish.image_url}}" />
+    <meta property="og:image:type"      content="image/jpg" />
+    <meta property="og:image:alt"       content="{{dish.title}} - {{dish.description}}" />
+    <meta property="restaurant:section" content="All" />
+    <meta property="og:url"             content="https://use.feedmeeapp.com/dish/{{dish.id}}" />
+    <meta property="al:ios:url"         content="feedmee://dish/{{dish.id}}" />
+    <meta property="al:ios:app_store_id"content="1120549992" />
+    <meta property="al:ios:app_name"    content="Feedmee" />
+    {% if deeplink.useragent_is_target %}
+      <script>
+        window.location = 'feedmee://dish/{{dish.id}}';
+        setTimeout(function () {
+          window.location = 'https://itunes.apple.com/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992';
+        }, 1000);
+      </script>
+    {% endif %}
+  </head>
+  <body>
+    Deeplink All Conditions Met: {{deeplink.all_conditions_met}}<br>
+    Deeplink Available: {{deeplink.has_deeplink}}<br>
+    Path: {{deeplink.path}}<br>
+    Useragent is target: {{deeplink.useragent_is_target}}
+  </body>
+</html>
