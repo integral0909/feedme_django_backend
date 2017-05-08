@@ -74,6 +74,25 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__username',)
 
 
+class RecipeStepInline(admin.TabularInline):
+    model = RecipeStep
+
+
+class RecipeIngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    inlines = (RecipeStepInline, RecipeIngredientInline)
+    list_display = ('__str__', 'description', 'ingredient_text', 'created')
+
+
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'description')
+
+
 admin.site.register(Highlight, SlugNameAdmin)
 admin.site.register(Cuisine, SlugNameAdmin)
 admin.site.register(Keyword, SlugNameAdmin)

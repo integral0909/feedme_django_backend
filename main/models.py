@@ -326,6 +326,8 @@ class Dish(Creatable):
     price = models.IntegerField(default=0)
     title = models.CharField(max_length=600)
     description = models.TextField(default='', blank=True)
+    recipe = models.ForeignKey('Recipe', on_delete=models.SET_NULL, null=True,
+                               related_name='dishes')
     views_count = models.PositiveIntegerField(
         default=0,
         help_text='legacy calculated field from Firebase'
@@ -384,6 +386,65 @@ class Dish(Creatable):
     def randomise(self):
         self.random = random_number()
         self.save()
+
+
+class Recipe(Creatable):
+    name = models.CharField(max_length=255, default='')
+    description = models.TextField(default='', blank=True)
+    views_count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    def ingredient_text(self):
+        txt = ''
+        for ingr in self.ingredients.all():
+            if ingr.unit_type:
+                txt += '%sx %s of %s, ' % (int(ingr.quantity), ingr.unit_type,
+                                           ingr.name)
+            else:
+                txt += '%sx %s, ' % (int(ingr.quantity), ingr.name)
+        return txt.rstrip(', ')
+    ingredient_text.short_description = 'Ingredients'
+
+
+class RecipeStep(Creatable):
+    recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE, related_name='steps')
+    position = models.PositiveIntegerField(null=False, blank=False)
+    text = models.TextField(default='')
+
+    def __str__(self):
+        return self.text
+
+
+class Ingredient(Creatable):
+    name = models.CharField(max_length=255, default='')
+    description = models.TextField(default='', blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class RecipeIngredient(Creatable):
+    recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE,
+                               related_name='ingredients')
+    ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE,
+                                   related_name='recipes')
+    quantity = models.DecimalField(max_digits=9, decimal_places=1, default=1.0)
+    unit_type = models.CharField(max_length=127, default='', blank=True, null=False)
+
+    @property
+    def name(self):
+        """Get ingredient name"""
+        return self.ingredient.name
+
+    @property
+    def description(self):
+        """Get ingredient description"""
+        return self.ingredient.description
+
+    class Meta:
+        unique_together = (('recipe', 'ingredient'), )
 
 
 class View(Creatable):
