@@ -33,7 +33,7 @@ class DishViewSet(viewsets.ModelViewSet):
             queryset = models.Dish.objects.filter(likes__user=self.request.user,
                                                   likes__did_like=True).distinct('id')
         else:
-            exclude_time = (datetime.now(timezone.utc) - timedelta(hours=9))
+            exclude_time = (datetime.now(timezone.utc) - timedelta(hours=2))
             queryset = self.filter_queryset(self.get_queryset().reduce_by_distance(
                 location=request.query_params.get('from_location', '').split(','),
                 meters=request.query_params.get('max_distance_meters', '')

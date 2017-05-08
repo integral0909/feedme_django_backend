@@ -39,7 +39,7 @@ if os.environ['DEPLOYMENT'] != 'PRODUCTION':
     ]
 else:
     ALLOWED_HOSTS = [
-        'fm-webserver-prod.us-west-2.elasticbeanstalk.com',
+        '.us-west-2.elasticbeanstalk.com',
         '.feedmeeapp.com',
         'use.feedmeeapp.com',
     ]

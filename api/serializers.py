@@ -111,9 +111,38 @@ class Restaurant(serializers.HyperlinkedModelSerializer):
                   'app_opening_times', 'firebase_id')
 
 
+class RecipeStep(serializers.ModelSerializer):
+    class Meta:
+        model = models.RecipeStep
+        fields = ('position', 'text')
+
+
+class RecipeIngredient(serializers.ModelSerializer):
+    description = NullCharField()
+    unit_type = NullCharField()
+
+    class Meta:
+        model = models.RecipeIngredient
+        fields = ('name', 'description', 'quantity', 'unit_type')
+
+
+class Recipe(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    ingredients = RecipeIngredient(many=True)
+    steps = RecipeStep(many=True)
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.Recipe
+        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps')
+
+
 class Dish(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='dish-detail')
     pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    recipe = Recipe(read_only=True)
     restaurant = Restaurant(read_only=True)
     keywords = Keyword(many=True)
 
@@ -122,6 +151,6 @@ class Dish(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Dish
-        fields = ('url', 'pg_id', 'restaurant', 'image_url', 'price', 'title',
+        fields = ('url', 'pg_id', 'recipe', 'restaurant', 'image_url', 'price', 'title',
                   'description', 'instagram_user', 'keywords', 'likes_count',
                   'views_count', 'firebase_id')
