@@ -381,6 +381,10 @@ class Dish(Creatable):
         self.likes_count += 1
         self.save()
 
+    def randomise(self):
+        self.random = random_number()
+        self.save()
+
 
 class View(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='views')
