@@ -43,11 +43,13 @@ else:
         '.feedmeeapp.com',
         'use.feedmeeapp.com',
     ]
-
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 300
+    if os.environ.get('ROLE') == 'WORKER':
+        ALLOWED_HOSTS += ['127.0.0.1', 'localhost', '.elasticbeanstalk.com']
+    else:
+        SECURE_SSL_REDIRECT = True
+        SESSION_COOKIE_SECURE = True
+        CSRF_COOKIE_SECURE = True
+        SECURE_HSTS_SECONDS = 300
 
 TMP_PATH = 'tmp/' if os.environ['DEPLOYMENT'] == 'LOCAL' else '/tmp/'
 
