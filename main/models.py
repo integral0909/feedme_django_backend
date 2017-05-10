@@ -355,7 +355,7 @@ class Dish(Creatable):
         )
     keyword_list_html.short_description = 'keywords'
 
-    def save(self, *args, **kwargs):
+    def save_from_migration(self, *args, **kwargs):
         title = self.title
         description = ''
         arr_dash = title.split('-', maxsplit=2)
@@ -384,7 +384,7 @@ class Dish(Creatable):
         self.save()
 
     def randomise(self):
-        self.random = random_number()
+        self.random = random.randint(1, 1000000000)
         self.save()
 
 
