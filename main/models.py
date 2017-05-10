@@ -373,7 +373,7 @@ class Dish(Creatable):
         self.title = title
         if len(description) > 0:
             self.description = description
-        super(Dish, self).save(*args, **kwargs)
+        self.save(*args, **kwargs)
 
     def increment_views(self):
         self.views_count += 1
