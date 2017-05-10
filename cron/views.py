@@ -4,6 +4,7 @@ from django.core.management import call_command
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
 from main.models import Dish
+from common.utils.async import run_chunked_iter
 
 
 def worker(func):
@@ -12,6 +13,11 @@ def worker(func):
             return func(request)
         return HttpResponseBadRequest('BAD REQUEST')
     return wrapper
+
+
+def func(dishes):
+    for dish in dishes:
+        dish.randomise()
 
 
 @csrf_exempt
@@ -24,6 +30,6 @@ def backup_db(request):
 @csrf_exempt
 @worker
 def randomise_dishes(request):
-    for dish in Dish.objects.all():
-        dish.randomise()
+    dishes = Dish.objects.all()
+    run_chunked_iter(dishes, func, num_threads=24)
     return HttpResponse('OK')
