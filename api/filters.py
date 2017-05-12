@@ -23,7 +23,11 @@ class Dish(django_filters.rest_framework.FilterSet):
         name='restaurant__delivery_provider', lookup_expr='isnull', exclude=True)
     has_booking = django_filters.BooleanFilter(
         name='restaurant__quandoo_id', lookup_expr='isnull', exclude=True)
-    suburb = django_filters.CharFilter(name='restaurant__suburb')
+    suburb = django_filters.ModelMultipleChoiceFilter(
+        name='restaurant__suburb',
+        to_field_name='suburb',
+        queryset=models.Restaurant.objects.all().distinct('suburb')
+    )
     order = django_filters.OrderingFilter(fields=(
         ('price', 'price'),
         ('distance', 'distance'),
