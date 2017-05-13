@@ -1,3 +1,145 @@
+import os
 from django.test import TestCase
+from django.core import management
+from django.contrib.auth.models import User
+from datetime import datetime, timedelta
+from main.models import *
+from django.utils import timezone
 
-# Create your tests here.
+
+def create_fixture(app_name, filename):
+    print('Creating fixture..')
+    with open(filename, 'w') as f:
+        management.call_command('dumpdata', app_name, stdout=f)
+
+
+def turn_off_auto_now(ModelClass, field_name):
+    """ref: http://stackoverflow.com/questions/7499767/temporarily-disable-auto-now-auto-now-add"""
+    def auto_now_off(field):
+        field.auto_now = False
+    do_to_model(ModelClass, field_name, auto_now_off)
+
+def turn_off_auto_now_add(ModelClass, field_name):
+    def auto_now_add_off(field):
+        field.auto_now_add = False
+    do_to_model(ModelClass, field_name, auto_now_add_off)
+
+def do_to_model(ModelClass, field_name, func):
+    field = ModelClass._meta.get_field(field_name)
+    func(field)
+
+
+class TestDishViewSet(TestCase):
+    fixtures = []
+    fixture_created = False
+
+    def setUp(self):
+        self.create_fixture()
+    
+    def create_fixture(self):
+        res = Restaurant.objects.create(name='testRes', slug='testres',
+                         image_url='https://example.com/')
+        self.dishes = {
+            'disliked_1hr': Dish.objects.create(restaurant=res, title='disliked_1hr', firebase_id='a'),
+            'liked': Dish.objects.create(restaurant=res, title='liked', firebase_id='b'),
+            'unseen': Dish.objects.create(restaurant=res, title='unseen', firebase_id='c'),
+            'disliked_1dy': Dish.objects.create(restaurant=res, title='disliked_1dy', firebase_id='d'),
+            'u1_liked': Dish.objects.create(restaurant=res, title='u1_liked', firebase_id='e')
+        }
+        users = [
+            User.objects.create(email='test@test.test', username='test', first_name='tob'),
+            User.objects.create(email='tes1t@test.test', username='test1', first_name='gob'),
+            User.objects.create(email='tes2t@test.test', username='test2', first_name='nob'),
+        ]
+        profiles = [
+            Profile.objects.create(user=users[0]),
+            Profile.objects.create(user=users[1]),
+            Profile.objects.create(user=users[2]),
+        ]
+        one_hr = timezone.now() - timedelta(hours=1)
+        three_hr = timezone.now() - timedelta(hours=3)
+        day = timezone.now() - timedelta(hours=24)
+        
+        turn_off_auto_now(Like, 'updated')
+        turn_off_auto_now_add(Like, 'created')
+        self.likes = {
+            'disliked_1hr': Like.objects.create(user=users[0], dish=self.dishes['disliked_1hr'],
+                                                created=one_hr, updated=one_hr),
+            'liked': Like.objects.create(user=users[0], dish=self.dishes['liked'],
+                                         created=three_hr, updated=three_hr, did_like=True),
+            'disliked_1dy': Like.objects.create(user=users[0], dish=self.dishes['disliked_1dy'],
+                                                created=day, updated=day),
+            'u1_liked': Like.objects.create(user=users[1], dish=self.dishes['u1_liked'],
+                                            created=day, updated=three_hr, did_like=True)
+        }
+        self.users = users
+
+    def get_titles_arrs(self):
+        dishes = Dish.objects.all()
+        dishes_excl = dishes.not_liked(self.users[0]).fresh(self.users[0])
+        titles = [(dish.title, ) for dish in dishes]
+        excl_titles = [(dish.title, ) for dish in dishes_excl]
+        return titles, excl_titles
+
+    def test_exclude_disliked_1hr(self):
+        """Should exclude a dish the user disliked 1 hr ago."""
+        titles, excl_titles = self.get_titles_arrs()
+        #  print('Only disliked_1hr and unseen:', excl_titles)
+        self.assertNotIn('disliked_1hr', [t[0] for t in excl_titles])
+
+    def test_exclude_liked_3hrs(self):
+        """Should exclude a dish the user liked 3 hrs ago."""
+        titles, excl_titles = self.get_titles_arrs()
+        self.assertNotIn('liked', [t[0] for t in excl_titles])
+
+    def test_return_never_seen(self):
+        """Should return a dish the user has never seen."""
+        titles, excl_titles = self.get_titles_arrs()
+        self.assertIn('unseen', [t[0] for t in titles])
+
+    def test_return_disliked_1dy(self):
+        """Should return a dish the user disliked yesterday."""
+        titles, excl_titles = self.get_titles_arrs()
+        self.assertIn('disliked_1dy', [t[0] for t in titles])
+
+    def test_u1_return_liked_by_u0(self):
+        """u1 query should return all dishes interacted with by u0."""
+        res = Dish.objects.not_liked(self.users[1]).fresh(self.users[1])
+        arr = [d.title for d in res]
+        #  print('All dishes except u1_liked:', arr)
+        self.assertIn('disliked_1hr', arr)
+        self.assertIn('disliked_1dy', arr)
+        self.assertIn('unseen', arr)
+        self.assertIn('liked', arr)
+        self.assertNotIn('u1_liked', arr)
+
+    def test_u2_return_all(self):
+        """u2 query should return all dishes despite no likes."""
+        res = Dish.objects.not_liked(self.users[2]).fresh(self.users[2])
+        arr = [d.title for d in res]
+        for k, d in self.dishes.items():
+            self.assertIn(k, arr)
+
+    def test_not_liked(self):
+        """Should remove liked dishes from query."""
+        r1 = Dish.objects.not_liked(self.users[0])
+        self.prepare_and_assert_dishes(r1, 'liked')
+        r2 = Dish.objects.not_liked(self.users[1])
+        self.prepare_and_assert_dishes(r2, 'u1_liked')
+        r3 = Dish.objects.not_liked(self.users[2])
+        for k, v in self.dishes.items():
+            self.assertIn(k, [d.title for d in r3])
+
+    def test_fresh(self):
+        """Should remove dishes recently disliked."""
+        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[0]), 'disliked_1hr') 
+        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[1]), '') 
+        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[2]), '') 
+
+    def prepare_and_assert_dishes(self, qs, exclude_target):
+        arr1 = [d.title for d in qs]
+        for k, v in self.dishes.items():
+            if k == exclude_target:
+                self.assertNotIn(k, arr1)
+            else:
+                self.assertIn(k, arr1)
