@@ -1,6 +1,7 @@
 import traceback
 import sys
 import random
+from datetime import datetime, timedelta, timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -112,30 +113,6 @@ class Cuisine(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Cuisine, self).save(*args, **kwargs)
-
-
-class DistanceQuerySet(models.QuerySet):
-    M_IN_DEGREE = 111111
-
-    def reduce_by_distance(self, location=None, meters=None):
-        try:
-            if len(location) * len(meters) > 0:
-                point = Point(float(location[0]), float(location[1]))
-                return self.filter(
-                    restaurant__location__dwithin=(
-                        point, self._meters_to_degrees(meters)
-                    )
-                )
-        except:
-            print("Could not reduce by distance")
-            exc_info = sys.exc_info()
-            traceback.print_exception(*exc_info)
-            print("Unexpected error:", exc_info[0])
-        return self
-
-    def _meters_to_degrees(self, meters=0):
-        # add property test
-        return float(meters) / self.M_IN_DEGREE
 
 
 class Restaurant(Creatable):
@@ -319,6 +296,41 @@ class Keyword(models.Model):
         super(Keyword, self).save(*args, **kwargs)
 
 
+class DishesByUserQuerySet(models.QuerySet):
+    M_IN_DEGREE = 111111
+
+    def reduce_by_distance(self, location=None, meters=None):
+        try:
+            if len(location) * len(meters) > 0:
+                point = Point(float(location[0]), float(location[1]))
+                return self.filter(
+                    restaurant__location__dwithin=(
+                        point, self._meters_to_degrees(meters)
+                    )
+                )
+        except:
+            print("Could not reduce by distance")
+            exc_info = sys.exc_info()
+            traceback.print_exception(*exc_info)
+            print("Unexpected error:", exc_info[0])
+        return self
+
+    def _meters_to_degrees(self, meters=0):
+        # add property test
+        return float(meters) / self.M_IN_DEGREE
+
+    def not_liked(self, user):
+        return self.exclude(likes__user=user, likes__did_like=True)
+
+    def fresh(self, user):
+        exclude_time = datetime.now(timezone.utc) - timedelta(hours=2)
+        return self.exclude(likes__user=user,
+                            likes__updated__gte=exclude_time)
+
+    def saved(self, user):
+        return self.filter(likes__user=user, likes__did_like=True)
+
+
 class Dish(Creatable):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,
                                    related_name='dishes')
@@ -341,7 +353,7 @@ class Dish(Creatable):
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
     random = models.BigIntegerField(default=random_number)
 
-    objects = DistanceQuerySet.as_manager()
+    objects = DishesByUserQuerySet.as_manager()
 
     def __str__(self):
         return self.title

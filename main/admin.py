@@ -51,7 +51,7 @@ class BookingProviderAdmin(admin.ModelAdmin):
 
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
-    list_display = ('dish', 'user', 'did_like', 'created')
+    list_display = ('dish', 'user', 'did_like', 'created', 'updated')
     search_fields = ('dish__name', 'user__profile__first_name',
                      'user__profile__last_name')
 
