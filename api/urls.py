@@ -15,7 +15,9 @@ urlpatterns = [
         views.RestaurantDishesViewSet.as_view()),
     url(r'^views/', views.ViewsList.as_view()),
     url(r'^fulfilment-events/', views.FulfilmentEventList.as_view()),
+    url(r'^recipe-requests/', views.RecipeRequestList.as_view()),
     url(r'^donations/', views.DonationList.as_view()),
+    url(r'^dishes/(?P<dish_pk>.+)/recipe/$', views.DishRecipesViewSet.as_view()),
     url(r'^search-terms/', views.SearchTermList.as_view()),
     url(r'^suburbs/', views.SuburbList.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

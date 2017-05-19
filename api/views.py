@@ -4,6 +4,7 @@ from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 import api.serializers as serializers
 import main.models as models
 import api.filters as filters
@@ -60,6 +61,19 @@ class RestaurantDishesViewSet(generics.ListAPIView):
     def get_queryset(self):
         rest_pk = self.kwargs['restaurant_pk']
         return self.queryset.filter(restaurant__pk=rest_pk)
+
+
+class DishRecipesViewSet(APIView):
+    """Recipe for a particular dish."""
+    def get(self, request, format=None, dish_pk=None):
+        try:
+            dish = models.Dish.objects.get(pk=dish_pk)
+        except models.Dish.DoesNotExist:
+            print('DishRecipe: Dish does not exist')
+            return Response({'Error': 'Dish not found'}, 400)
+        else:
+            serializer = serializers.Recipe(dish.recipe)
+            return Response({'recipe': serializer.data})
 
 
 class DeliveryProviderViewSet(viewsets.ModelViewSet):
@@ -143,6 +157,27 @@ class FulfilmentEventList(APIView):
             print("Booking Provider not found", booking_type)
             return Response({"success": False, "created": False,
                              "Error": "Booking Provider not found"}, 400)
+
+
+class RecipeRequestList(APIView):
+    """
+    Post only, saves a user's request of a recipe
+
+    * Requires token auth
+    """
+
+    def post(self, request, format=None):
+        dish_id = request.data.get('dish_id')
+        user = request.user
+        try:
+            dish = models.Dish.objects.get(pk=dish_id)
+        except models.Dish.DoesNotExist:
+            print("RecipeRequest: Dish not found")
+            return Response({'success': False, 'created': False,
+                             'error': 'Dish not found'}, 400)
+        else:
+            models.RecipeRequest.objects.create(dish=dish, user=user)
+            return Response({'success': True, 'created': True}, 200)
 
 
 class DonationList(APIView):

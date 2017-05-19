@@ -120,23 +120,36 @@ class RecipeStep(serializers.ModelSerializer):
 class RecipeIngredient(serializers.ModelSerializer):
     description = NullCharField()
     unit_type = NullCharField()
+    ingredient_type = serializers.SerializerMethodField('get_type_display')
+
+    def get_type_display(self, obj):
+        return obj.get_ingredient_type_display()
 
     class Meta:
         model = models.RecipeIngredient
-        fields = ('name', 'description', 'quantity', 'unit_type')
+        fields = ('name', 'description', 'quantity', 'unit_type',
+                  'ingredient_type')
 
 
 class Recipe(serializers.ModelSerializer):
     pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    description = NullCharField()
     ingredients = RecipeIngredient(many=True)
     steps = RecipeStep(many=True)
+    difficulty = serializers.SerializerMethodField('get_difficulty_display')
+    notes = NullCharField()
+
+    def get_difficulty_display(self, obj):
+        return obj.get_difficulty_display()
 
     def get_namespaced_id(self, obj):
         return obj.id
 
     class Meta:
         model = models.Recipe
-        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps')
+        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps',
+                  'prep_time_seconds', 'cook_time_seconds', 'servings',
+                  'difficulty', 'notes')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):

@@ -339,7 +339,7 @@ class Dish(Creatable):
     title = models.CharField(max_length=600)
     description = models.TextField(default='', blank=True)
     recipe = models.ForeignKey('Recipe', on_delete=models.SET_NULL, null=True,
-                               related_name='dishes')
+                               related_name='dishes', blank=True)
     views_count = models.PositiveIntegerField(
         default=0,
         help_text='legacy calculated field from Firebase'
@@ -401,8 +401,21 @@ class Dish(Creatable):
 
 
 class Recipe(Creatable):
+    EASY = 'es'
+    MODERATE = 'md'
+    DIFFICULT = 'dt'
+    DIFFICULTY_CHOICES = (
+        (EASY, 'Easy'),
+        (MODERATE, 'Moderate'),
+        (DIFFICULT, 'Difficult'),
+    )
     name = models.CharField(max_length=255, default='')
     description = models.TextField(default='', blank=True)
+    prep_time_seconds = models.PositiveIntegerField(default=0, blank=True)
+    cook_time_seconds = models.PositiveIntegerField(default=0, blank=True)
+    servings = models.PositiveIntegerField(default=0, blank=True)
+    difficulty = models.CharField(default=EASY, choices=DIFFICULTY_CHOICES, max_length=3)
+    notes = models.TextField(default='', blank=True)
     views_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -438,12 +451,24 @@ class Ingredient(Creatable):
 
 
 class RecipeIngredient(Creatable):
+    MAIN = 'mn'
+    SAUCE = 'sc'
+    GARNISH = 'gn'
+    SIDE = 'sd'
+    TYPE_CHOICES = (
+        (MAIN, 'Main'),
+        (SAUCE, 'Sauce'),
+        (GARNISH, 'Garnish'),
+        (SIDE, 'Side')
+    )
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE,
                                related_name='ingredients')
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE,
                                    related_name='recipes')
     quantity = models.DecimalField(max_digits=9, decimal_places=1, default=1.0)
-    unit_type = models.CharField(max_length=127, default='', blank=True, null=False)
+    unit_type = models.CharField(max_length=127, default='', blank=True)
+    ingredient_type = models.CharField(max_length=2, default=MAIN,
+                                       blank=True, choices=TYPE_CHOICES)
 
     @property
     def name(self):
@@ -456,7 +481,14 @@ class RecipeIngredient(Creatable):
         return self.ingredient.description
 
     class Meta:
-        unique_together = (('recipe', 'ingredient'), )
+        unique_together = (('recipe', 'ingredient', 'ingredient_type'), )
+
+
+class RecipeRequest(Creatable):
+    dish = models.ForeignKey('Dish', on_delete=models.CASCADE,
+                             related_name='recipe_requests')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='recipe_request')
 
 
 class View(Creatable):
