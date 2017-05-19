@@ -38,4 +38,20 @@ def traverse_and_compare(tree, comparison, obj, leaf_type):
             return traverse_and_compare(
                 tree=value, comparison=comparison, obj=getattr(obj, key),
                 leaf_type=leaf_type)
-    return False
+    return Fals
+
+
+def numbers_only(string):
+    new_string = ''
+    passable_chars = '0123456789'
+    for ch in filter_unmatched_gen(string, passable_chars):
+        new_string += ch
+    return new_string
+
+
+def filter_unmatched_gen(a_collection, passable_items):
+    for item in a_collection:
+        if item in passable_items:
+            yield item
+
+

@@ -33,6 +33,7 @@ class SlugNameAdmin(admin.ModelAdmin):
 class DishAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'restaurant', 'price_format', 'keyword_list_html')
     list_filter = ('keywords', )
+    search_fields = ('title', )
 
 
 @admin.register(DeliveryProvider)

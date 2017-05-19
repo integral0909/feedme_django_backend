@@ -9,7 +9,7 @@ import wget
 import boto3
 import time
 from common.utils.s3 import parse
-from common.utils import handle_generic_exception
+from common.utils import handle_generic_exception, numbers_only
 
 
 base = 'https://firebasestorage.googleapis.com/v0/b/feedmee-appsppl-dev.appspot.com/o/'
@@ -53,13 +53,13 @@ def _download_imgs(rests):
 
 def _upload(filename):
     time.sleep(0.1)
+    local_filename = settings.TMP_PATH + filename
+    upload_filename = '%s.jpg' % numbers_only(filename.split('%')[0])
     try:
-        s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
-                              parse(filename))
+        s3_client.upload_file(local_filename, 'fdme-raw-img', upload_filename)
     except FileNotFoundError:
         time.sleep(1)
-        s3_client.upload_file(settings.TMP_PATH + filename, 'fdme-raw-img',
-                              parse(filename))
+        s3_client.upload_file(local_filename, 'fdme-raw-img', upload_filename)
 
 
 class Command(BaseCommand):

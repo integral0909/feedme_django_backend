@@ -59,7 +59,10 @@ class DeeplinkMiddleware(object):
                     "No matching deeplink url found for deeplink_only view: "
                     + view_func.__name__)
         except AttributeError as e:
-            print(e)
+            if 'deeplink_only' in str(e):
+                pass
+            else:
+                print(e)
 
     def set_deeplink_attrs(self, request):
         """Set deeplink attributes on request object, such as flag and deeplink path."""

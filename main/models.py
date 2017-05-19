@@ -339,7 +339,7 @@ class Dish(Creatable):
     title = models.CharField(max_length=600)
     description = models.TextField(default='', blank=True)
     recipe = models.ForeignKey('Recipe', on_delete=models.SET_NULL, null=True,
-                               related_name='dishes')
+                               related_name='dishes', blank=True)
     views_count = models.PositiveIntegerField(
         default=0,
         help_text='legacy calculated field from Firebase'
