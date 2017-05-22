@@ -1,3 +1,4 @@
+from raven.contrib.django.raven_compat.models import client
 from django.contrib.auth.models import User
 from rest_framework import authentication
 from rest_framework import exceptions
@@ -8,6 +9,14 @@ import requests
 from cachecontrol import CacheControl
 from cachecontrol.caches.file_cache import FileCache
 from main.models import Profile
+
+
+class FirebaseAuthException(exceptions.AuthenticationFailed):
+    pass
+
+
+class FirebaseAuthTokenMissing(FirebaseAuthException):
+    pass
 
 
 class FirebaseJWTBackend(authentication.BaseAuthentication):
@@ -39,9 +48,11 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed('Invalid token')
 
     def authenticate(self, request):
+        client.context.merge({'request': request})
         token = self._get_auth_token(request)
         if token is None:
             return None
+            # raise FirebaseAuthTokenMissing('JWT token not supplied')
         #  Need to save tokens and look them up from Database before re-decoding
         tokenClaims = self.validate_token(token)
         auth = {'claims': tokenClaims}

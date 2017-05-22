@@ -40,7 +40,8 @@ class DeeplinkMiddleware(object):
         try:
             self.set_deeplink_attrs(request)
         except DeeplinkNotFound as e:
-            print(e)
+            if settings.DEBUG:
+                print(e)
         finally:
             response = self.get_response(request)
         # After the view is called.
