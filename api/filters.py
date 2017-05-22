@@ -19,6 +19,10 @@ class Dish(django_filters.rest_framework.FilterSet):
         name='restaurant__highlights__name',
         to_field_name='name',
         queryset=models.Highlight.objects.all())
+    tags = django_filters.ModelMultipleChoiceFilter(
+        name='tags__name',
+        to_field_name='name',
+        queryset=models.Tag.objects.all())
     has_delivery = django_filters.BooleanFilter(
         name='restaurant__delivery_provider', lookup_expr='isnull', exclude=True)
     has_booking = django_filters.BooleanFilter(
