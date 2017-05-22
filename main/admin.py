@@ -72,7 +72,7 @@ class FulfilmentEventAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    search_fields = ('user__username', 'firebase_id')
+    search_fields = ('user__username', 'firebase_id', 'fb_id')
     list_filter = ('provider', 'country', 'state', 'city')
     list_display = ('__str__', 'user')
 
