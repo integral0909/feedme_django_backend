@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import raven
+import zipfile
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -107,11 +108,19 @@ MIDDLEWARE = [
     'common.middleware.deeplink.DeeplinkMiddleware',
 ]
 
+def get_git_sha_from_sourcebundle():
+    if os.environ['DEPLOYMENT'] == 'LOCAL':
+        return raven.fetch_git_sha(os.path.dirname(os.pardir))
+    else:
+        path = '/opt/elasticbeanstalk/deploy/appsource/source_bundle'
+        with zipfile.ZipFile(path) as z:
+            return z.comment
+
 RAVEN_CONFIG = {
     'dsn': 'https://344e9f25ef874f9289508c808589fa29:b114a3d14ebc4e2b92eb1bafe0b0c76d@sentry.io/170522',
     # If you are using git, you can also automatically configure the
     # release based on the git info.
-    'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+    'release': get_git_sha_from_sourcebundle(),
     'environment': os.environ['DEPLOYMENT'],
     'ignore_exceptions': ['django.exceptions.http.Http404']
 }
