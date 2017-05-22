@@ -60,22 +60,28 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             user = User.objects.get(profile__firebase_id=tokenClaims['sub'])
             return (user, auth)
         except User.DoesNotExist:
-            firebase = tokenClaims.get('firebase', {})
-            email = tokenClaims.get('email', '')[:254]
-            username = firebase['identities'].get('uid', email)[:150]
-            if isinstance(username, (list, tuple, set)):
-                username = username[0][:150]
-            params = {
-                'email': email, 'username': username,
-                'first_name': firebase['identities'].get('firstname', '')[:30],
-                'last_name': firebase['identities'].get('lastname', '')[:30],
-            }
-            user = User(**params)
-            user.save()
-            profile = Profile(provider=firebase['sign_in_provider'],
-                              firebase_id=tokenClaims['sub'], user=user)
-            if firebase['sign_in_provider'] == 'facebook.com':
-                profile.fb_id = username
-                profile.photo_url = firebase['identities'].get('photoURL', '')
-            profile.save()
+            user, profile = self._create_user(tokenClaims)   
             return (user, auth)
+
+    def _create_user(self, tokenClaims):
+        firebase = tokenClaims.get('firebase', {})
+        email = tokenClaims.get('email', '')[:254]
+        username = tokenClaims['sub']  # Data integrity 
+        params = {
+            'email': email, 'username': username,
+            'first_name': firebase['identities'].get('firstname', '')[:30],
+            'last_name': firebase['identities'].get('lastname', '')[:30],
+        }
+        user = User(**params)
+        user.save()
+        profile = self._create_profile(firebase, user, tokenClaims)
+        return user, profile
+
+    def _create_pofile(self, firebase, user, tokenClaims):
+        profile = Profile(provider=firebase['sign_in_provider'],
+                          firebase_id=tokenClaims['sub'], user=user)
+        if firebase['sign_in_provider'] == 'facebook.com':
+            profile.fb_id = firebase['identities'].get('uid')[:150]
+            profile.photo_url = firebase['identities'].get('photoURL', '')
+        profile.save()
+        return profile
