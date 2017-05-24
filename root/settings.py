@@ -30,6 +30,8 @@ UBER = {'clientid': 'eKsp3zbX6lPB_S1_aU4KDwWryKmMGWvt'}
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 LOGIN_REDIRECT_URL = '/admin/'
+HIJACK_LOGIN_REDIRECT_URL = '/api/dishes/'
+HIJACK_ALLOW_GET_REQUESTS = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ['DEPLOYMENT'] != 'PRODUCTION':
@@ -66,6 +68,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'main',
     'api',
+    'hijack',
+    'hijack_admin',
+    'compat',
     'cities',
     'fixture_magic',
     'dbbackup',
