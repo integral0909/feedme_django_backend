@@ -1,7 +1,7 @@
 from django.contrib import admin
 from main.models import *
-
-# Register your models here.
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 
 class OpeningTimeInline(admin.TabularInline):
@@ -11,6 +11,35 @@ class OpeningTimeInline(admin.TabularInline):
 class DishInline(admin.TabularInline):
     model = Dish
     fields = ('title', 'price', 'instagram_user', 'keywords', 'image_url')
+
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    fk_name = 'user'
+
+
+class CustomUserAdmin(UserAdmin):
+    inlines = (ProfileInline, )
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
+                    'get_provider', 'get_likes')
+    list_select_related = ('profile', )
+    list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
+
+    def get_likes(self, inst):
+        return inst.likes.count()
+    get_likes.short_description = 'Likes'
+
+    def get_provider(self, inst):
+        return inst.profile.provider
+    get_provider.short_description = 'Provider'
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
 
 
 @admin.register(Restaurant)
@@ -95,7 +124,8 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description')
 
-
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Highlight, SlugNameAdmin)
 admin.site.register(Cuisine, SlugNameAdmin)
 admin.site.register(Keyword, SlugNameAdmin)
