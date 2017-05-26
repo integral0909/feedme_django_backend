@@ -19,10 +19,12 @@ def turn_off_auto_now(ModelClass, field_name):
         field.auto_now = False
     do_to_model(ModelClass, field_name, auto_now_off)
 
+
 def turn_off_auto_now_add(ModelClass, field_name):
     def auto_now_add_off(field):
         field.auto_now_add = False
     do_to_model(ModelClass, field_name, auto_now_add_off)
+
 
 def do_to_model(ModelClass, field_name, func):
     field = ModelClass._meta.get_field(field_name)
@@ -35,21 +37,28 @@ class TestDishViewSet(TestCase):
 
     def setUp(self):
         self.create_fixture()
-    
+
     def create_fixture(self):
         res = Restaurant.objects.create(name='testRes', slug='testres',
-                         image_url='https://example.com/')
+                                        image_url='https://example.com/')
         self.dishes = {
-            'disliked_1hr': Dish.objects.create(restaurant=res, title='disliked_1hr', firebase_id='a'),
+            'disliked_1hr': Dish.objects.create(restaurant=res, title='disliked_1hr',
+                                                firebase_id='a'),
             'liked': Dish.objects.create(restaurant=res, title='liked', firebase_id='b'),
-            'unseen': Dish.objects.create(restaurant=res, title='unseen', firebase_id='c'),
-            'disliked_1dy': Dish.objects.create(restaurant=res, title='disliked_1dy', firebase_id='d'),
-            'u1_liked': Dish.objects.create(restaurant=res, title='u1_liked', firebase_id='e')
+            'unseen': Dish.objects.create(restaurant=res, title='unseen',
+                                          firebase_id='c'),
+            'disliked_1dy': Dish.objects.create(restaurant=res, title='disliked_1dy',
+                                                firebase_id='d'),
+            'u1_liked': Dish.objects.create(restaurant=res, title='u1_liked',
+                                            firebase_id='e')
         }
         users = [
-            User.objects.create(email='test@test.test', username='test', first_name='tob'),
-            User.objects.create(email='tes1t@test.test', username='test1', first_name='gob'),
-            User.objects.create(email='tes2t@test.test', username='test2', first_name='nob'),
+            User.objects.create(email='test@test.test', username='test',
+                                first_name='tob'),
+            User.objects.create(email='tes1t@test.test', username='test1',
+                                first_name='gob'),
+            User.objects.create(email='tes2t@test.test', username='test2',
+                                first_name='nob'),
         ]
         profiles = [
             Profile.objects.create(user=users[0]),
@@ -59,15 +68,18 @@ class TestDishViewSet(TestCase):
         one_hr = timezone.now() - timedelta(hours=1)
         three_hr = timezone.now() - timedelta(hours=3)
         day = timezone.now() - timedelta(hours=24)
-        
+
         turn_off_auto_now(Like, 'updated')
         turn_off_auto_now_add(Like, 'created')
         self.likes = {
-            'disliked_1hr': Like.objects.create(user=users[0], dish=self.dishes['disliked_1hr'],
+            'disliked_1hr': Like.objects.create(user=users[0],
+                                                dish=self.dishes['disliked_1hr'],
                                                 created=one_hr, updated=one_hr),
             'liked': Like.objects.create(user=users[0], dish=self.dishes['liked'],
-                                         created=three_hr, updated=three_hr, did_like=True),
-            'disliked_1dy': Like.objects.create(user=users[0], dish=self.dishes['disliked_1dy'],
+                                         created=three_hr, updated=three_hr,
+                                         did_like=True),
+            'disliked_1dy': Like.objects.create(user=users[0],
+                                                dish=self.dishes['disliked_1dy'],
                                                 created=day, updated=day),
             'u1_liked': Like.objects.create(user=users[1], dish=self.dishes['u1_liked'],
                                             created=day, updated=three_hr, did_like=True)
@@ -132,9 +144,9 @@ class TestDishViewSet(TestCase):
 
     def test_fresh(self):
         """Should remove dishes recently disliked."""
-        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[0]), 'disliked_1hr') 
-        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[1]), '') 
-        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[2]), '') 
+        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[0]), 'disliked_1hr')
+        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[1]), '')
+        self.prepare_and_assert_dishes(Dish.objects.fresh(self.users[2]), '')
 
     def prepare_and_assert_dishes(self, qs, exclude_target):
         arr1 = [d.title for d in qs]

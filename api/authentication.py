@@ -58,14 +58,17 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
 
     def authenticate(self, request, depth=0):
         client.context.merge({'request': request})
-        token = self._get_auth_token(request)
+        try:
+            token = self._get_auth_token(request)
+        except FirebaseAuthTokenMissing:
+            return None  # Necessary for session based api explorer
         tokenClaims = self.validate_token(token)
         auth = {'claims': tokenClaims}
         try:
             user = self._get_user(tokenClaims['sub'])
             return (user, auth)
         except User.DoesNotExist:
-            user, profile = self._create_user(tokenClaims)   
+            user, profile = self._create_user(tokenClaims)
             return (user, auth)
 
     def _get_user(self, sub):
@@ -75,11 +78,10 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             user = User.objects.get(username=sub)
         return user
 
-
     def _create_user(self, tokenClaims):
         firebase = tokenClaims.get('firebase', {})
         email = tokenClaims.get('email', '')[:254]
-        username = tokenClaims['sub']  # Data integrity 
+        username = tokenClaims['sub']  # Data integrity
         params = {
             'email': email, 'username': username,
             'first_name': firebase['identities'].get('firstname', '')[:30],
@@ -101,4 +103,3 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             user.delete()
             raise ProfileCreationFailed('A profile was not created')
         return profile
-
