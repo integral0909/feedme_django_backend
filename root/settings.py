@@ -121,58 +121,58 @@ def get_git_sha_from_sourcebundle():
         with zipfile.ZipFile(path) as z:
             return z.comment
 
-RAVEN_CONFIG = {
-    'dsn': 'https://344e9f25ef874f9289508c808589fa29:b114a3d14ebc4e2b92eb1bafe0b0c76d@sentry.io/170522',
-    # If you are using git, you can also automatically configure the
-    # release based on the git info.
-    'release': get_git_sha_from_sourcebundle(),
-    'environment': os.environ['DEPLOYMENT'],
-    'ignore_exceptions': ['django.exceptions.http.Http404']
-}
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'root': {
-        'level': 'WARNING',
-        'handlers': ['sentry'],
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
-                      '%(process)d %(thread)d %(message)s'
+if os.environ['DEPLOYMENT'] is not 'LOCAL':
+    RAVEN_CONFIG = {
+        'dsn': 'https://344e9f25ef874f9289508c808589fa29:b114a3d14ebc4e2b92eb1bafe0b0c76d@sentry.io/170522',
+        'release': get_git_sha_from_sourcebundle(),
+        'environment': os.environ['DEPLOYMENT'],
+        'ignore_exceptions': ['django.exceptions.http.Http404']
+    }
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
         },
-    },
-    'handlers': {
-        'sentry': {
-            'level': 'WARNING', # To capture more than ERROR, change to WARNING, INFO, etc.
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-            'tags': {'custom-tag': 'x'},
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s '
+                          '%(process)d %(thread)d %(message)s'
+            },
         },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'ERROR',
-            'handlers': ['console'],
-            'propagate': False,
+        'handlers': {
+            'sentry': {
+                'level': 'WARNING', # To capture more than ERROR, change to WARNING, INFO, etc.
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                'tags': {'custom-tag': 'x'},
+            },
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose'
+            }
         },
-        'raven': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
+        'loggers': {
+            'django.db.backends': {
+                'level': 'ERROR',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+            'raven': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+            'sentry.errors': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
         },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-    },
-}
+    }
 
 DEEPLINKER = {
     'USER_AGENTS': {

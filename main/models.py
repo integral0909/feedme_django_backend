@@ -296,6 +296,22 @@ class Keyword(models.Model):
         super(Keyword, self).save(*args, **kwargs)
 
 
+class Tag(models.Model):
+    """
+    Tags describe the attributes of dishes.
+    Such as 'Bacon', 'Bacon and eggs', 'burger'.
+    """
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Tag, self).save(*args, **kwargs)
+
+
 class DishesByUserQuerySet(models.QuerySet):
     M_IN_DEGREE = 111111
 
@@ -350,6 +366,7 @@ class Dish(Creatable):
     )
     instagram_user = models.CharField(max_length=61, blank=True, default='')
     keywords = models.ManyToManyField(Keyword)
+    tags = models.ManyToManyField(Tag)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
     random = models.BigIntegerField(default=random_number)
 
@@ -366,6 +383,12 @@ class Dish(Creatable):
             '\n', '{}<br>', ((keyword.word, ) for keyword in self.keywords.all())
         )
     keyword_list_html.short_description = 'keywords'
+
+    def tag_list_html(self):
+        return format_html_join(
+            '\n', '{}<br>', ((tag.name,) for tag in self.tags.all())
+        )
+    tag_list_html.short_description = 'tags'
 
     def save_from_migration(self, *args, **kwargs):
         title = self.title

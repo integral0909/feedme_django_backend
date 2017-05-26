@@ -1,8 +1,22 @@
 from django.contrib import admin
+from django import forms
 from main.models import *
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
+
+# Forms
+
+class DishAdminForm(forms.ModelForm):
+    class Meta:
+        fields = '__all__'
+        model = Dish
+        widgets = {
+            'keywords': forms.CheckboxSelectMultiple
+        }
+
+
+# Inlines
 
 class OpeningTimeInline(admin.TabularInline):
     model = OpeningTime
@@ -40,6 +54,16 @@ class CustomUserAdmin(UserAdmin):
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
+class TagInline(admin.TabularInline):
+    model = Tag
+    fields = ('name', )
+
+
+# Admin models
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('__str__', )
 
 
 @admin.register(Restaurant)
@@ -60,9 +84,12 @@ class SlugNameAdmin(admin.ModelAdmin):
 
 @admin.register(Dish)
 class DishAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'restaurant', 'price_format', 'keyword_list_html')
+    form = DishAdminForm
+    list_display = ('__str__', 'restaurant', 'price_format', 'keyword_list_html',
+                    'tag_list_html')
     list_filter = ('keywords', )
-    search_fields = ('title', )
+    # inlines = [TagInline, ]
+    search_fields = ('title', 'tags')
 
 
 @admin.register(DeliveryProvider)
