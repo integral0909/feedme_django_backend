@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from main.models import *
-from common.utils.async import run_chunked_iter, @threaded
+from common.utils.async import run_chunked_iter
 from api.tests import turn_off_auto_now, turn_off_auto_now_add
 
 
