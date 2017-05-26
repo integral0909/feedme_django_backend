@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django import forms
 from main.models import *
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 
 # Forms
@@ -24,6 +26,33 @@ class DishInline(admin.TabularInline):
     model = Dish
     fields = ('title', 'price', 'instagram_user', 'keywords', 'image_url')
 
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    fk_name = 'user'
+
+
+class CustomUserAdmin(UserAdmin):
+    inlines = (ProfileInline, )
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
+                    'get_provider', 'get_likes')
+    list_select_related = ('profile', )
+    list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
+
+    def get_likes(self, inst):
+        return inst.likes.count()
+    get_likes.short_description = 'Likes'
+
+    def get_provider(self, inst):
+        return inst.profile.provider
+    get_provider.short_description = 'Provider'
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 class TagInline(admin.TabularInline):
     model = Tag
@@ -99,7 +128,7 @@ class FulfilmentEventAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    search_fields = ('user__username', 'firebase_id')
+    search_fields = ('user__username', 'firebase_id', 'fb_id')
     list_filter = ('provider', 'country', 'state', 'city')
     list_display = ('__str__', 'user')
 
@@ -122,7 +151,8 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description')
 
-
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Highlight, SlugNameAdmin)
 admin.site.register(Cuisine, SlugNameAdmin)
 admin.site.register(Keyword, SlugNameAdmin)
