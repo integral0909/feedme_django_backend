@@ -65,6 +65,32 @@ class TagInline(admin.TabularInline):
 class TagAdmin(admin.ModelAdmin):
     list_display = ('__str__', )
 
+@admin.register(DishQuery)
+class DishQueryAdmin(admin.ModelAdmin):
+    list_display = ('created', 'user', 'result_size', 'page', 'radius_km', 'price_range',
+                    'has_delivery', 'has_booking', 'suburb')
+    list_filter = ('has_delivery', 'has_booking')
+    readonly_fields = ('latitude', 'longitude',  'result_size', 'page', 'price_range',
+                       'min_price', 'max_price', 'has_delivery', 'has_booking', 'suburb',
+                       'keywords', 'cuisines', 'highlights', 'radius_km')
+    fields = (('latitude', 'longitude', 'radius_km'),  ('result_size', 'page'),
+              'price_range', ('has_delivery', 'has_booking'), 'suburb',
+              ('keywords', 'cuisines', 'highlights'), 'user', 'from_location')
+    search_fields = ('user', 'suburb')
+
+    def price_range(self, ins):
+        try:
+            return '${:,.2} -- ${:,.2}'.format(ins.min_price/100, ins.max_price/100)
+        except TypeError:
+            return 'N/A'
+
+    def radius_km(self, ins):
+        try:
+            return '{:,}km'.format(ins.max_distance_meters//1000)
+        except TypeError:
+            return 'N/A'
+    radius_km.short_description = 'Distance'
+
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
@@ -158,3 +184,4 @@ admin.site.register(Cuisine, SlugNameAdmin)
 admin.site.register(Keyword, SlugNameAdmin)
 admin.site.register(Blog)
 admin.site.register(OpeningTime)
+admin.site.register(LikeTransaction, LikeAdmin)

@@ -115,6 +115,74 @@ class Cuisine(models.Model):
         super(Cuisine, self).save(*args, **kwargs)
 
 
+class DishQuery(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='dish_queries')
+    from_location = gis_models.PointField(default="POINT(0.0 0.0)", db_index=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    max_distance_meters = models.PositiveIntegerField(null=True)
+    result_size = models.PositiveIntegerField(default=0)
+    min_price = models.DecimalField(max_digits=9, decimal_places=2, null=True)
+    max_price = models.DecimalField(max_digits=9, decimal_places=2, null=True)
+    keywords = models.ManyToManyField('Keyword')
+    cuisines = models.ManyToManyField('Cuisine')
+    highlights = models.ManyToManyField('Highlight')
+    has_delivery = models.BooleanField(default=False)
+    has_booking = models.BooleanField(default=False)
+    suburb = models.CharField(max_length=255, default='')
+    page = models.PositiveIntegerField(default=1)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def log(self, request, results):
+        """Save a DishQuery from an API request."""
+        qp = request.query_params
+        self.result_size = results
+        self.user = request.user
+        loc = qp.get('from_location', '').split(',')
+        try:
+            self.from_location = 'POINT({} {})'.format(*loc)
+        except IndexError:
+            pass
+        try:
+            self.max_distance_meters = float(qp.get('max_distance_meters'))
+        except TypeError:
+            pass
+        self.min_price = qp.get('min_price')
+        self.max_price = qp.get('max_price')
+        self.has_delivery = bool(qp.get('has_delivery', False))
+        self.has_booking = bool(qp.get('has_booking', False))
+        self.page = qp.get('page', 1)
+        try:
+            self.suburb = ', '.join(qp.get('suburb'))
+        except TypeError:
+            pass
+        self.save()
+        self._save_m2m('Keyword', qp.getlist('keywords'))
+        self._save_m2m('Cuisine', qp.getlist('cuisines'))
+        self._save_m2m('Highlight', qp.getlist('highlights'))
+
+    def _save_m2m(self, mtm_class_name, mtm_list):
+        mtm_class = globals()[mtm_class_name]
+        if hasattr(mtm_class, 'slug') is False or mtm_list is None:
+            return
+        mtm_name = mtm_class_name.lower()+'s'
+        for itm in mtm_list:
+            if len(itm) < 1:
+                continue
+            try:
+                obj = mtm_class.objects.get(slug=slugify(itm))
+            except mtm_class.DoesNotExist:
+                print('Cannot find', mtm_class_name, slugify(itm))
+            else:
+                getattr(self, mtm_name).add(obj)
+
+    def save(self, *args, **kwargs):
+        self.latitude = self.from_location.y
+        self.longitude = self.from_location.x
+        return super(DishQuery, self).save(*args, **kwargs)
+
+
 class Restaurant(Creatable):
     name = models.CharField(max_length=255)
     slug = models.SlugField(default='', unique=True)
@@ -530,7 +598,16 @@ class Like(Creatable):
 
     def save(self, *args, **kwargs):
         super(Like, self).save(*args, **kwargs)
-        self.dish.increment_likes()
+        if self.did_like:
+            self.dish.increment_likes()
+        lt = LikeTransaction(user=self.user, dish=self.dish, did_like=self.did_like)
+        lt.save()
+
+
+class LikeTransaction(Creatable):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='like_history')
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='like_history')
+    did_like = models.BooleanField(default=False)
 
 
 class BookingProvider(models.Model):
