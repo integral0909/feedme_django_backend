@@ -128,6 +128,7 @@ class DishQuery(models.Model):
     keywords = models.ManyToManyField('Keyword')
     cuisines = models.ManyToManyField('Cuisine')
     highlights = models.ManyToManyField('Highlight')
+    tags = models.ManyToManyField('Tag')
     has_delivery = models.BooleanField(default=False)
     has_booking = models.BooleanField(default=False)
     suburb = models.CharField(max_length=255, default='')
@@ -161,6 +162,7 @@ class DishQuery(models.Model):
         self._save_m2m('Keyword', qp.getlist('keywords'))
         self._save_m2m('Cuisine', qp.getlist('cuisines'))
         self._save_m2m('Highlight', qp.getlist('highlights'))
+        self._save_m2m('Highlight', qp.getlist('tags'))
 
     def _save_m2m(self, mtm_class_name, mtm_list):
         mtm_class = globals()[mtm_class_name]
