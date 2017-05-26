@@ -196,13 +196,11 @@ class SearchTermList(APIView):
         """
         List all possible search terms
         """
-        cuisines = models.Cuisine.objects.all()
-        keywords = models.Keyword.objects.all()
-        highlights = models.Highlight.objects.all()
         res = {
-            "keywords": [keyword.word for keyword in keywords],
-            "cuisines": [cuisine.name for cuisine in cuisines],
-            'highlights': [highlight.name for highlight in highlights]
+            'keywords': [kwd.word for kwd in models.Keyword.objects.all()],
+            'cuisines': [cuis.name for cuis in models.Cuisine.objects.all()],
+            'highlights': [hlt.name for hlt in models.Highlight.objects.all()],
+            'tags': [tag.name for tag in models.Tag.objects.all()]
         }
         count = len(res['keywords']) + len(res['cuisines']) + len(res['highlights'])
         return Response({'count': count, 'results': res})
