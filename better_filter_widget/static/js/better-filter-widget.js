@@ -103,6 +103,7 @@ function BetterFilterWidget(field_name){
 
     // init
     updateSelectedDisplay();
+    $('#id_'+field_name).change(updateSelectedDisplay)
 }
 var BFWTimer = {
     _start: {},
