@@ -3,6 +3,7 @@ from django import forms
 from main.models import *
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from better_filter_widget import BetterFilterWidget
 
 
 # Forms
@@ -12,7 +13,8 @@ class DishAdminForm(forms.ModelForm):
         fields = '__all__'
         model = Dish
         widgets = {
-            'keywords': forms.CheckboxSelectMultiple
+            'keywords': forms.CheckboxSelectMultiple,
+            'tags': BetterFilterWidget,
         }
 
 
