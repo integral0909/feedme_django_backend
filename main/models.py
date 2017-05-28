@@ -616,6 +616,9 @@ class Like(Creatable):
         lt = LikeTransaction(user=self.user, dish=self.dish, did_like=self.did_like)
         lt.save()
 
+    class Meta:
+        unique_together = (('user', 'dish'), )
+
 
 class LikeTransaction(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='like_history')
