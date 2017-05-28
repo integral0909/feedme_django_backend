@@ -56,7 +56,7 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             print('ExpiredSignatureError: Signature has expired')
             raise exceptions.AuthenticationFailed('Invalid token')
 
-    def authenticate(self, request, depth=0):
+    def authenticate(self, request, retry=True):
         client.context.merge({'request': request})
         try:
             token = self._get_auth_token(request)
@@ -68,8 +68,13 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
             user = self._get_user(tokenClaims['sub'])
             return (user, auth)
         except User.DoesNotExist:
-            user, profile = self._create_user(tokenClaims)
-            return (user, auth)
+            try:
+                user, profile = self._create_user(tokenClaims)
+            except IntegrityError:
+                # >1 concurrent requests /\ race conditions -> a parallel thread created account: reauth
+                return self.authenticate(request, retry=False) if retry else None
+            else:
+                return (user, auth)
 
     def _get_user(self, sub):
         try:
@@ -97,9 +102,26 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         profile = Profile(provider=firebase['sign_in_provider'],
                           firebase_id=tokenClaims['sub'], user=user)
         if firebase['sign_in_provider'] == 'facebook.com':
-            profile.fb_id = firebase['identities'].get('uid')[:150]
-            profile.photo_url = firebase['identities'].get('photoURL', '')
-        if profile.save() is False:
+            profile.fb_id = self._get_fb_id(firebase['identities'])
+        profile.photo_url = self._get_photo_url(tokenClaims)
+        try:
+            profile.save()
+        except Exception as e:
+            print(e)
             user.delete()
             raise ProfileCreationFailed('A profile was not created')
-        return profile
+        else:
+            return profile
+
+    def _get_photo_url(self, tokenClaims):
+        try:
+            return tokenClaims['firebase']['identities']['photoURL']
+        except KeyError:
+            return tokenClaims.get('picture', '')
+
+    def _get_fb_id(self, identities):
+        try:
+            return identities.get('uid')[:150]
+        except TypeError:
+            return identities.get('facebook.com')[:150]
+

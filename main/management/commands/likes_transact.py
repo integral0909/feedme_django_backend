@@ -31,12 +31,12 @@ def dish_washer(likes):
 def save_the_world(user, dish):
     """Move all except latest to LikeTransaction."""
     likes = Like.objects.filter(user=user, dish=dish).order_by('-updated')
-    like_trans = LikeTransaction(user=likes[0].user, dish=likes[0].dish,
-                                 did_like=likes[0].did_like, created=likes[0].created,
-                                 updated=likes[0].updated)
-    like_trans.save()
     for l in likes[1:]:
-        like_trans = LikeTransaction(user=l.user, dish=l.dish, did_like=l.did_like,
-                                     created=l.created, updated=l.updated)
-        if like_trans.save():
-            l.delete()
+        try:
+            like_trans, created = LikeTransaction.objects.get_or_create(
+                user=l.user, dish=l.dish, did_like=l.did_like,
+                created=l.created, updated=l.updated
+            )
+        except LikeTransaction.MultipleObjectsReturned:
+            pass
+        l.delete()

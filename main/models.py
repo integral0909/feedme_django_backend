@@ -14,6 +14,14 @@ from django.utils.html import format_html, format_html_join
 from main.lib import weekdays
 
 
+def get_name(self):
+    if self.email:
+        return self.email
+    return '{} {}'.format(self.first_name, self.last_name)
+
+User.add_to_class("__str__", get_name)
+
+
 def random_number():
     return random.randint(1, 1000000000)
 
