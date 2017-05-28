@@ -12,12 +12,12 @@ class Command(BaseCommand):
         """
         turn_off_auto_now(LikeTransaction, 'updated')
         turn_off_auto_now_add(LikeTransaction, 'created')
-        run_chunked_iter(User.objects.all(), user_loop)
+        run_chunked_iter(User.objects.all(), user_loop, num_threads=4)
 
 
 def user_loop(users):
     for u in users:
-        run_chunked_iter(Like.objects.filter(user=u), dish_washer, num_threads=2)
+        run_chunked_iter(Like.objects.filter(user=u), dish_washer, num_threads=1)
 
 
 def dish_washer(likes):
