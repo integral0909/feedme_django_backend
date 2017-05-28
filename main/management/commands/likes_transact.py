@@ -17,14 +17,16 @@ class Command(BaseCommand):
 
 def user_loop(users):
     for u in users:
-        run_chunked_iter(Like.objects.filter(user=u), dish_washer, num_threads=1)
+        usr_likes = Like.objects.filter(user=u)
+        if usr_likes.count() > 100:
+            run_chunked_iter(usr_likes, dish_washer, num_threads=1)
+        else:
+            dish_washer(usr_likes)
 
 
 def dish_washer(likes):
     for l in likes:
-        try:
-            Like.objects.get(user=l.user, dish=l.dish)
-        except Like.MultipleObjectsReturned:
+        if Like.objects.filter(user=l.user, dish=l.dish).count() > 1:
             save_the_world(l.user, l.dish)
 
 
