@@ -17,7 +17,10 @@ from main.lib import weekdays
 def get_name(self):
     if self.email:
         return self.email
-    return '{} {}'.format(self.first_name, self.last_name)
+    if self.first_name and self.last_name:
+        return '{} {}'.format(self.first_name, self.last_name)
+    else:
+        return self.username
 
 User.add_to_class("__str__", get_name)
 
