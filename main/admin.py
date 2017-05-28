@@ -36,7 +36,7 @@ class ProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline, )
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
+    list_display = ('__str__', 'is_staff',
                     'get_provider', 'get_likes')
     list_select_related = ('profile', )
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
