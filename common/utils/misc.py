@@ -38,7 +38,7 @@ def traverse_and_compare(tree, comparison, obj, leaf_type):
             return traverse_and_compare(
                 tree=value, comparison=comparison, obj=getattr(obj, key),
                 leaf_type=leaf_type)
-    return Fals
+    return False
 
 
 def numbers_only(string):
