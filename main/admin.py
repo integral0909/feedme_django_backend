@@ -4,6 +4,7 @@ from main.models import *
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from better_filter_widget import BetterFilterWidget
+from hijack_admin.admin import HijackUserAdminMixin
 
 
 # Forms
@@ -36,10 +37,10 @@ class ProfileInline(admin.StackedInline):
     fk_name = 'user'
 
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin, HijackUserAdminMixin):
     inlines = (ProfileInline, )
     list_display = ('__str__', 'is_staff',
-                    'get_provider', 'get_likes')
+                    'get_provider', 'get_likes', 'hijack_field')
     list_select_related = ('profile', )
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
 
