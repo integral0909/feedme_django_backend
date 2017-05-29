@@ -144,11 +144,13 @@ class DishQuery(models.Model):
     has_booking = models.BooleanField(default=False)
     suburb = models.CharField(max_length=255, default='')
     page = models.PositiveIntegerField(default=1)
+    query_string = models.TextField(default='')
     created = models.DateTimeField(auto_now_add=True)
 
     def log(self, request, results):
         """Save a DishQuery from an API request."""
         qp = request.query_params
+        self.query_string = request.META.get('QUERY_STRING', '')
         self.result_size = results
         self.user = request.user
         loc = qp.get('from_location', '').split(',')
@@ -166,14 +168,14 @@ class DishQuery(models.Model):
         self.has_booking = bool(qp.get('has_booking', False))
         self.page = qp.get('page', 1)
         try:
-            self.suburb = ', '.join(qp.get('suburb'))
+            self.suburb = ', '.join(qp.getlist('suburb'))
         except TypeError:
             pass
         self.save()
         self._save_m2m('Keyword', qp.getlist('keywords'))
         self._save_m2m('Cuisine', qp.getlist('cuisines'))
         self._save_m2m('Highlight', qp.getlist('highlights'))
-        self._save_m2m('Highlight', qp.getlist('tags'))
+        self._save_m2m('Tag', qp.getlist('tags'))
 
     def _save_m2m(self, mtm_class_name, mtm_list):
         mtm_class = globals()[mtm_class_name]

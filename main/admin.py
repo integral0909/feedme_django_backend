@@ -5,9 +5,24 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from better_filter_widget import BetterFilterWidget
 from hijack_admin.admin import HijackUserAdminMixin
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.forms.widgets import BaseGeometryWidget
+
+# Widgets
+
+
+class HttpsOpenLayersWidget(BaseGeometryWidget):
+    template_name = 'gis/openlayers.html'
+
+    class Media:
+        js = (
+            'https://openlayers.org/api/2.13.1/OpenLayers.js',
+            'gis/js/OLMapWidget.js',
+        )
 
 
 # Forms
+
 
 class DishAdminForm(forms.ModelForm):
     class Meta:
@@ -57,6 +72,7 @@ class CustomUserAdmin(UserAdmin, HijackUserAdminMixin):
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
+
 class TagInline(admin.TabularInline):
     model = Tag
     fields = ('name', )
@@ -68,17 +84,23 @@ class TagInline(admin.TabularInline):
 class TagAdmin(admin.ModelAdmin):
     list_display = ('__str__', )
 
+
 @admin.register(DishQuery)
 class DishQueryAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        gis_models.PointField: {'widget': HttpsOpenLayersWidget},
+    }
     list_display = ('created', 'user', 'result_size', 'page', 'radius_km', 'price_range',
                     'has_delivery', 'has_booking', 'suburb')
     list_filter = ('has_delivery', 'has_booking')
-    readonly_fields = ('latitude', 'longitude',  'result_size', 'page', 'price_range',
-                       'min_price', 'max_price', 'has_delivery', 'has_booking', 'suburb',
-                       'keywords', 'cuisines', 'highlights', 'radius_km')
-    fields = (('latitude', 'longitude', 'radius_km'),  ('result_size', 'page'),
-              'price_range', ('has_delivery', 'has_booking'), 'suburb',
-              ('keywords', 'cuisines', 'highlights'), 'user', 'from_location')
+    readonly_fields = ('query_string', 'latitude', 'longitude',  'result_size', 'page',
+                       'price_range', 'min_price', 'max_price', 'has_delivery',
+                       'has_booking', 'suburb', 'keywords', 'cuisines', 'highlights',
+                       'tags', 'radius_km')
+    fields = ('query_string', ('latitude', 'longitude', 'radius_km'),
+              ('result_size', 'page'), 'price_range', ('has_delivery', 'has_booking'),
+              'suburb', ('keywords', 'cuisines', 'highlights', 'tags'), 'user',
+              'from_location')
     search_fields = ('user', 'suburb')
 
     def price_range(self, ins):

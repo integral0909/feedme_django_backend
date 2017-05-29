@@ -199,7 +199,6 @@ class SearchTermList(APIView):
         """
         res = {
             'keywords': [kwd.word for kwd in models.Keyword.objects.all()],
-            'cuisines': [cuis.name for cuis in models.Cuisine.objects.all()],
             'highlights': [hlt.name for hlt in models.Highlight.objects.all()],
             'tags': [tag.name for tag in models.Tag.objects.all()]
         }
