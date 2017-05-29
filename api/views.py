@@ -39,7 +39,8 @@ class DishViewSet(viewsets.ModelViewSet):
             ).not_liked(self.request.user).fresh(self.request.user)
              .order_by('random', 'id').distinct('random', 'id'))
 
-        models.DishQuery().log(request=request, results=queryset.count())
+            models.DishQuery().log(request=request, results=queryset.count())
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -202,7 +203,9 @@ class SearchTermList(APIView):
             'highlights': [hlt.name for hlt in models.Highlight.objects.all()],
             'tags': [tag.name for tag in models.Tag.objects.all()]
         }
-        count = len(res['keywords']) + len(res['cuisines']) + len(res['highlights'])
+        count = 0
+        for key, val in res.items():
+            count += len(val)
         return Response({'count': count, 'results': res})
 
 
