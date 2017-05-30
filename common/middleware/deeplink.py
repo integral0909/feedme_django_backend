@@ -69,12 +69,8 @@ class DeeplinkMiddleware(object):
         """Set deeplink attributes on request object, such as flag and deeplink path."""
         request.deeplink = {'has_deeplink': False, 'useragent_is_target': False,
                             'all_conditions_met': False}
-        try:
-            request.deeplink['has_deeplink'] = self._resolve_deeplink_path(request.path)
-        except DeeplinkNotFound as e:
-            print(e)
-        else:
-            request.deeplink['useragent_is_target'] = self._check_user_agent(request)
+        request.deeplink['has_deeplink'] = self._resolve_deeplink_path(request.path)
+        request.deeplink['useragent_is_target'] = self._check_user_agent(request)
 
         if (request.deeplink['has_deeplink']
            and request.deeplink['useragent_is_target']):

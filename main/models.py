@@ -12,6 +12,8 @@ from django.contrib.gis.measure import D
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
 from main.lib import weekdays
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_name(self):
@@ -21,6 +23,7 @@ def get_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
     else:
         return self.username
+
 
 User.add_to_class("__str__", get_name)
 
@@ -148,8 +151,22 @@ class DishQuery(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def log(self, request, results):
-        """Save a DishQuery from an API request."""
-        qp = request.query_params
+        """
+        Save a DishQuery from an API request.
+        Logging a dish query must never raise an exception.
+        Caller expects DishQuery.log() to fail silently
+        """
+        try:
+            qp = request.query_params
+            self._set_params(qp, request, results)
+            self.save()
+            self._save_related(qp)
+        except Exception as e:
+            logger.error(str(e), exc_info=True, extra={
+                'request': request
+            })
+
+    def _set_params(self, qp, request, results):
         self.query_string = request.META.get('QUERY_STRING', '')
         self.result_size = results
         self.user = request.user
@@ -171,7 +188,8 @@ class DishQuery(models.Model):
             self.suburb = ', '.join(qp.getlist('suburb'))
         except TypeError:
             pass
-        self.save()
+
+    def _save_related(self, qp):
         self._save_m2m('Keyword', qp.getlist('keywords'))
         self._save_m2m('Cuisine', qp.getlist('cuisines'))
         self._save_m2m('Highlight', qp.getlist('highlights'))
