@@ -61,6 +61,7 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         try:
             token = self._get_auth_token(request)
         except FirebaseAuthTokenMissing:
+            print('Auth token missing', token)
             return None  # Necessary for session based api explorer
         tokenClaims = self.validate_token(token)
         auth = {'claims': tokenClaims}
@@ -121,7 +122,8 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
 
     def _get_fb_id(self, identities):
         try:
+            # print(identities.get('uid')[:150])
             return identities.get('uid')[:150]
-        except TypeError:
-            return identities.get('facebook.com')[:150]
-
+        except TypeError as e:
+            fbid = identities.get('facebook.com', '')[0][:150]
+            return fbid
