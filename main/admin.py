@@ -200,7 +200,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(RecipeRequest)
 class RecipeRequestAdmin(admin.ModelAdmin):
-    list_display = ('__str__', )
+    list_display = ('__str__', 'dish', 'user')
 
 
 @admin.register(Ingredient)

@@ -614,6 +614,9 @@ class RecipeRequest(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='recipe_request')
 
+    def __str__(self):
+        return self.dish
+
 
 class View(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='views')
