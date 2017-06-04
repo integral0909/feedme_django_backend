@@ -198,9 +198,15 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description', 'ingredient_text', 'created')
 
 
+@admin.register(RecipeRequest)
+class RecipeRequestAdmin(admin.ModelAdmin):
+    list_display = ('__str__', )
+
+
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description')
+
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
