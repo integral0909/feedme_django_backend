@@ -140,7 +140,7 @@ class DishAdmin(admin.ModelAdmin):
                     'tag_list_html')
     list_filter = ('keywords', )
     # inlines = [TagInline, ]
-    search_fields = ('title', 'tags')
+    search_fields = ('title', )
 
 
 @admin.register(DeliveryProvider)
