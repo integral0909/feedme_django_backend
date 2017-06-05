@@ -137,7 +137,7 @@ class SlugNameAdmin(admin.ModelAdmin):
 class DishAdmin(admin.ModelAdmin):
     form = DishAdminForm
     list_display = ('__str__', 'restaurant', 'price_format', 'keyword_list_html',
-                    'tag_list_html')
+                    'tag_list_html', 'description')
     list_filter = ('keywords', )
     # inlines = [TagInline, ]
     search_fields = ('title', )
