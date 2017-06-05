@@ -15,11 +15,6 @@ def worker(func):
     return wrapper
 
 
-def func(dishes):
-    for dish in dishes:
-        dish.randomise()
-
-
 @csrf_exempt
 @worker
 def backup_db(request):
@@ -31,5 +26,19 @@ def backup_db(request):
 @worker
 def randomise_dishes(request):
     dishes = Dish.objects.all()
+
+    def func(items):
+        [d.randomise() for d in items]
+    run_chunked_iter(dishes, func, num_threads=24)
+    return HttpResponse('OK')
+
+
+@csrf_exempt
+@worker
+def validate_dish_integrity(request):
+    dishes = Dish.objects.all()
+
+    def func(items):
+        [d.check_integrity() for d in items]
     run_chunked_iter(dishes, func, num_threads=24)
     return HttpResponse('OK')

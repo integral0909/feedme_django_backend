@@ -385,6 +385,7 @@ class Keyword(models.Model):
     """
     Keywords can be used to describe dishes.
     """
+    CHEAPEATS_PRICE = 1500
     word = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True,
                             help_text="A slug helps query via url")
@@ -522,6 +523,19 @@ class Dish(Creatable):
     def randomise(self):
         self.random = random.randint(1, 1000000000)
         self.save()
+
+    def check_integrity(self):
+        if self.price < Keyword.CHEAPEATS_PRICE:
+            try:
+                self.keywords.get(slug='cheapeats')
+            except Keyword.DoesNotExist:
+                self.keywords.add(Keyword.objects.get(slug='cheapeats'))
+        else:
+            try:
+                kwd = self.keywords.get(slug='cheapeats')
+                self.keywords.remove(kwd)
+            except Keyword.DoesNotExist:
+                pass
 
 
 class Recipe(Creatable):

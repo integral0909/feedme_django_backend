@@ -6,4 +6,5 @@ from . import views
 urlpatterns = [
     url(r'^db/backup/', views.backup_db),
     url(r'^randomise/dishes/', views.randomise_dishes),
+    url(r'^validate/dishes/', views.validate_dish_integrity),
 ]
