@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^', include('webapp.urls')),
     url(r'^home/', views.home, name='home'),
     url('^accounts/', include('auth.urls')),
+    url(r'^reporting/', views.report),
 ]

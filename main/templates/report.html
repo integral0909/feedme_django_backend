@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container text-center">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>User Engagement</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>User Swipes</h2>
+    </div>
+  </div>
+  <br><bR>
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered table-rounded">
+        <thead>
+          <th>Over 100 Swipes</th>
+          <th>50 - 99 Swipes</th>
+          <th>20 - 49 Swipes</th>
+          <th>1 - 19 Swipes</th>
+          <th>0 Swipes</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{s100}}</td>
+            <td>{{s50}}</td>
+            <td>{{s20}}</td>
+            <td>{{s1}}</td>
+            <td>{{s0}}</td>
+          </tr>
+          <tr>
+            <td>{{p100}}%</td>
+            <td>{{p50}}%</td>
+            <td>{{p20}}%</td>
+            <td>{{p1}}%</td>
+            <td>{{p0}}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
