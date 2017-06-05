@@ -60,11 +60,11 @@ class CustomUserAdmin(UserAdmin, HijackUserAdminMixin):
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
 
     def get_likes(self, inst):
-        return inst.likes.filter(did_like=True).count()
+        return inst.like_history.filter(did_like=True).count()
     get_likes.short_description = 'Likes'
 
     def get_swipes(self, inst):
-        return inst.likes.count()
+        return inst.like_history.count()
     get_swipes.short_description = 'Swipes'
 
     def get_provider(self, inst):

@@ -12,7 +12,7 @@ def home(request):
 
 @staff_member_required
 def report(request):
-    qs = User.objects.annotate(likes_count=Count('likes'))
+    qs = User.objects.annotate(likes_count=Count('like_history'))
     users_count = User.objects.count()
     context = {
         's100': qs.filter(likes_count__gte=100).count(),
