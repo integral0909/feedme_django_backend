@@ -54,14 +54,18 @@ class ProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin, HijackUserAdminMixin):
     inlines = (ProfileInline, )
-    list_display = ('__str__', 'is_staff',
-                    'get_provider', 'get_likes', 'date_joined', 'hijack_field')
+    list_display = ('__str__', 'is_staff', 'get_provider', 'get_likes',
+                    'get_swipes', 'date_joined', 'hijack_field')
     list_select_related = ('profile', )
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
 
     def get_likes(self, inst):
-        return inst.likes.count()
+        return inst.likes.filter(did_like=True).count()
     get_likes.short_description = 'Likes'
+
+    def get_swipes(self, inst):
+        return inst.likes.count()
+    get_swipes.short_description = 'Swipes'
 
     def get_provider(self, inst):
         return inst.profile.provider

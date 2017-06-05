@@ -12,7 +12,7 @@ from cachecontrol.caches.file_cache import FileCache
 from main.models import Profile
 
 
-class FirebaseAuthException(exceptions.AuthenticationFailed):
+class FirebaseAuthException(Exception):
     pass
 
 
@@ -61,7 +61,7 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         try:
             token = self._get_auth_token(request)
         except FirebaseAuthTokenMissing:
-            print('Auth token missing', token)
+            print('Auth token missing')
             return None  # Necessary for session based api explorer
         tokenClaims = self.validate_token(token)
         auth = {'claims': tokenClaims}
