@@ -88,10 +88,10 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         firebase = tokenClaims.get('firebase', {})
         email = tokenClaims.get('email', '')[:254]
         username = tokenClaims['sub']  # Data integrity
+        first_name, last_name = self._get_names(tokenClaims)
         params = {
             'email': email, 'username': username,
-            'first_name': firebase['identities'].get('firstname', '')[:30],
-            'last_name': firebase['identities'].get('lastname', '')[:30],
+            'first_name': first_name, 'last_name': last_name,
         }
         user = User(**params)
         if user.save() is False:
@@ -114,6 +114,22 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         else:
             return profile
 
+    def _get_names(self, tokenClaims):
+        fname = ''
+        lname = ''
+        try:
+            fname = tokenClaims['firebase']['identities']['firstname'][:30]
+            lname = tokenClaims['firebase']['identities']['lastname'][:30]
+        except KeyError:
+            try:
+                names = tokenClaims['name'].split(' ')
+            except:
+                pass
+            else:
+                fname = names[0]
+                lname = names[-1]
+        return fname, lname
+
     def _get_photo_url(self, tokenClaims):
         try:
             return tokenClaims['firebase']['identities']['photoURL']
@@ -122,7 +138,6 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
 
     def _get_fb_id(self, identities):
         try:
-            # print(identities.get('uid')[:150])
             return identities.get('uid')[:150]
         except TypeError as e:
             fbid = identities.get('facebook.com', '')[0][:150]

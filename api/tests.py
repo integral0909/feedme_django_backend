@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from main.models import *
 from django.utils import timezone
+from api.authentication import FirebaseJWTBackend
 
 
 def create_fixture(app_name, filename):
@@ -155,3 +156,61 @@ class TestDishViewSet(TestCase):
                 self.assertNotIn(k, arr1)
             else:
                 self.assertIn(k, arr1)
+
+
+class TestAuthentication(TestCase):
+    def setUp(self):
+        users = [
+            User.objects.create(email='test@test.test', username='test',
+                                first_name='tob'),
+            User.objects.create(email='tes1t@test.test', username='test1',
+                                first_name='gob'),
+            User.objects.create(email='tes2t@test.test', username='test2',
+                                first_name='nob'),
+        ]
+        profiles = [
+            Profile.objects.create(user=users[0], firebase_id='111'),
+            Profile.objects.create(user=users[1], firebase_id='112'),
+            Profile.objects.create(user=users[2], firebase_id='113'),
+        ]
+        self.photo_url = 'https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/'
+        self.photo_url += '1379841_10150004552801901_469209496895221757_n'
+        self.photo_url += '.jpg?oh=a082e0f02afca5f03ab570c71732b870&oe=59B30197'
+        self.tokens = [{
+            'sub': 'EYjkm7sX2pWVHnA56YD3MykTU4I2',
+            'aud': 'feedmee-appsppl-dev', 'exp': 1496414513,
+            'picture': self.photo_url,
+            'auth_time': 1496410911, 'iat': 1496410913,
+            'user_id': 'EYjkm7sX2pWVHnA56YD3MykTU4I2',
+            'firebase': {
+                'sign_in_provider': 'facebook.com',
+                'identities': {
+                    'facebook.com': ['105626553369738']
+                }
+            },
+            'name': 'Karen Alagfgahabefh Sharpestein',
+            'iss': 'https://securetoken.google.com/feedmee-appsppl-dev'
+        }]
+        self.auth = FirebaseJWTBackend()
+        self.users = users
+        self.profiles = profiles
+
+    def test_get_user(self):
+        usr0 = self.auth._get_user('111')
+        self.assertEqual(usr0, self.users[0])
+        usr1 = self.auth._get_user('test1')
+        self.assertEqual(usr1, self.users[1])
+        with self.assertRaises(User.DoesNotExist):
+            self.auth._get_user('123')
+
+    def test_create_user(self):
+        user, profile = self.auth._create_user(self.tokens[0])
+        self.assertEqual(user.username, 'EYjkm7sX2pWVHnA56YD3MykTU4I2')
+        self.assertEqual(user.email, '')
+        self.assertEqual(user.first_name, 'Karen')
+        self.assertEqual(user.last_name, 'Sharpestein')
+        self.assertEqual(profile.user, user)
+        self.assertEqual(profile.provider, 'facebook.com')
+        self.assertEqual(profile.firebase_id, 'EYjkm7sX2pWVHnA56YD3MykTU4I2')
+        self.assertEqual(profile.fb_id, '105626553369738')
+        self.assertEqual(profile.photo_url, self.photo_url)
