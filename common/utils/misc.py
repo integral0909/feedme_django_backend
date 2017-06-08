@@ -55,3 +55,8 @@ def filter_unmatched_gen(a_collection, passable_items):
             yield item
 
 
+def divide_or_zero(numerator, denominator):
+    try:
+        return numerator / denominator
+    except ZeroDivisionError:
+        return 0

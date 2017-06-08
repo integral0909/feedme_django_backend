@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from rest_framework import routers
 from . import views
+from api import reporting
 
 router = routers.DefaultRouter()
 router.register(r'restaurants', views.RestaurantViewSet)
@@ -10,6 +11,7 @@ router.register(r'dishes', views.DishViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^reporting/', include('api.reporting.urls')),
     url(r'^likes/', views.LikesList.as_view()),
     url(r'^restaurants/(?P<restaurant_pk>.+)/dishes/$',
         views.RestaurantDishesViewSet.as_view()),
