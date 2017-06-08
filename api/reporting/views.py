@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
@@ -45,8 +46,8 @@ class RecentEngagementViewset(APIView):
     permission_classes = (IsAdminUser, )
 
     def get(self, request, format=None):
-        day_ago = datetime.now(timezone.utc) - timedelta(hours=24)
-        qs = User.objects.filter(last_login__gte=day_ago)
+        day_ago = timezone.now() - timedelta(hours=24)
+        qs = User.objects.filter(date_joined__gte=day_ago)
         new_users = qs.count()
         new_queries = DishQuery.objects.filter(created__gte=day_ago).count()
         new_swipes = Like.objects.filter(created__gte=day_ago).count()
