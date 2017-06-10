@@ -58,15 +58,19 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-4 text-center">
-      <h2><small>New Users</small></h2>
+    <div class="col-sm-3 text-center">
+      <h2><small>Recent Users</small></h2>
+      <h2 id='recent-users'></h2>
+    </div>
+    <div class="col-sm-3 text-center">
+      <h2><small>New Signups</small></h2>
       <h2 id='new-users'></h2>
     </div>
-    <div class="col-sm-4 text-center">
+    <div class="col-sm-3 text-center">
       <h2><small>New Queries</small></h2>
       <h2 id='new-queries'></h2>
     </div>
-    <div class="col-sm-4 text-center">
+    <div class="col-sm-3 text-center">
       <h2><small>New swipes</small></h2>
       <h2 id='new-swipes'></h2>
     </div>
@@ -94,9 +98,10 @@ function get_engagement(endpoint, target, callback) {
 }
 function get_recent() {
   get_engagement('recent', '#swipes-body-new', function (data) {
-    $('#new-users').text(data.new_users)
+    $('#new-users').text(data.new_signups)
     $('#new-queries').text(data.new_queries)
     $('#new-swipes').text(data.new_swipes)
+    $('#recent-users').text(data.recent_users)
   })
 }
 $(document).ready(function () {

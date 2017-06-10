@@ -48,6 +48,7 @@ class RecentEngagementViewset(APIView):
     def get(self, request, format=None):
         day_ago = timezone.now() - timedelta(hours=24)
         qs = User.objects.filter(date_joined__gte=day_ago)
+        recent_users = User.objects.filter(last_login__gte=day_ago).count()
         new_users = qs.count()
         new_queries = DishQuery.objects.filter(created__gte=day_ago).count()
         new_swipes = Like.objects.filter(created__gte=day_ago).count()
@@ -62,7 +63,8 @@ class RecentEngagementViewset(APIView):
                     qs.filter(likes_count=0).count()
                 ]
             },
-            'new_users': new_users,
+            'new_signups': new_users,
+            'recent_users': recent_users,
             'new_queries': new_queries,
             'new_swipes': new_swipes
         }
