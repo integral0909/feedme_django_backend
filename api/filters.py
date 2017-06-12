@@ -9,7 +9,7 @@ class Dish(django_filters.rest_framework.FilterSet):
     max_price = django_filters.NumberFilter(name='price', lookup_expr='lte')
     keywords = django_filters.ModelMultipleChoiceFilter(
         name='keywords__word',
-        to_field_name='word', #  conjoined=True, Removed until ui limit 3 enforced
+        to_field_name='word',  # conjoined=True, Removed until ui limit 3 enforced
         queryset=models.Keyword.objects.all())
     cuisines = django_filters.ModelMultipleChoiceFilter(
         name='restaurant__cuisines__name',
