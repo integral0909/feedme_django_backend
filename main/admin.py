@@ -198,8 +198,9 @@ class RecipeIngredientInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    inlines = (RecipeStepInline, RecipeIngredientInline)
+    inlines = (RecipeIngredientInline, )
     list_display = ('__str__', 'description', 'ingredient_text', 'created')
+    readonly_fields = ('views_count', )
 
 
 @admin.register(RecipeRequest)
