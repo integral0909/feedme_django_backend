@@ -554,6 +554,7 @@ class Recipe(Creatable):
     servings = models.PositiveIntegerField(default=0, blank=True)
     difficulty = models.CharField(default=EASY, choices=DIFFICULTY_CHOICES, max_length=3)
     notes = models.TextField(default='', blank=True)
+    source_url = models.URLField(blank=True, default='', max_length=600)
     views_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
