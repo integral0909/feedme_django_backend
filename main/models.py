@@ -435,7 +435,7 @@ class DishesByUserQuerySet(models.QuerySet):
     def order_by_distance(self, location):
         """Order dishes by their distance from user"""
         try:
-            if len(location):
+            if len(location) == 2:
                 point = Point(float(location[0]), float(location[1]), srid=4326)
                 return self.distance('restaurant__location', point).order_by('distance')
         except Exception as e:
