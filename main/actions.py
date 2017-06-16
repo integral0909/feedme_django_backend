@@ -1,5 +1,14 @@
 import csv
-from django.http import HttpResponse
+from django.http import StreamingHttpResponse
+
+
+class Echo(object):
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
 
 
 def export_as_csv_action(description="Export selected objects as CSV file",
@@ -23,20 +32,22 @@ def export_as_csv_action(description="Export selected objects as CSV file",
             excludeset = set(exclude)
             field_names = field_names - excludeset
 
-        response = HttpResponse(content_type='text/csv')
+        def gen():
+            yield list(field_names)
+            for obj in queryset:
+                row = []
+                for field in field_names:
+                    attr = getattr(obj, field)
+                    v = attr() if callable(attr) else attr
+                    row.append(v)
+                yield row
+
+        pseudo_buffer = Echo()
+        writer = csv.writer(pseudo_buffer)
+        response = StreamingHttpResponse((writer.writerow(row) for row in gen()),
+                                         content_type="text/csv")
         cd = 'attachment; filename={}.csv'.format(str(opts).replace('.', '_'))
         response['Content-Disposition'] = cd
-
-        writer = csv.writer(response)
-        if header:
-            writer.writerow(list(field_names))
-        for obj in queryset:
-            row = []
-            for field in field_names:
-                attr = getattr(obj, field)
-                v = attr() if callable(attr) else attr
-                row.append(v)
-            writer.writerow(row)
         return response
     export_as_csv.short_description = description
     return export_as_csv
