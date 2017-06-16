@@ -135,7 +135,7 @@ class RestaurantAdmin(admin.ModelAdmin):
     list_filter = ('delivery_provider', 'cuisines', 'highlights')
     search_fields = ('name', 'dishes__title')
     actions = (export_as_csv_action(description="CSV Export", fields=[
-        'name', 'address', 'cuisine_list_html']
+        'id', 'name', 'address', 'cuisine_list', 'latitude', 'longitude']
     ), )
 
 
@@ -153,7 +153,7 @@ class DishAdmin(admin.ModelAdmin):
     # inlines = [TagInline, ]
     search_fields = ('title', )
     actions = (export_as_csv_action(description="CSV Export", fields=[
-        'id', 'restaurant_id', 'price_format', 'keyword_list', 'tag_list',
+        'title', 'id', 'restaurant_id', 'price_format', 'keyword_list', 'tag_list',
         'description'
     ]), )
 
@@ -178,7 +178,7 @@ class LikeAdmin(admin.ModelAdmin):
     search_fields = ('dish__name', 'user__profile__first_name',
                      'user__profile__last_name')
     actions = (export_as_csv_action(description="CSV Export", fields=[
-        'user_id', 'dish_id', 'dish', 'created', 'updated'
+        'user_id', 'dish_id', 'created', 'updated'
     ]), )
 
 

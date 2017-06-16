@@ -24,7 +24,7 @@ def export_as_csv_action(description="Export selected objects as CSV file",
         based on http://djangosnippets.org/snippets/1697/
         """
         opts = modeladmin.model._meta
-        field_names = set([field.name for field in opts.fields])
+        field_names = set(field.name for field in opts.fields)
         if fields:
             fieldset = set(fields)
             field_names = fieldset
@@ -34,7 +34,7 @@ def export_as_csv_action(description="Export selected objects as CSV file",
 
         def gen():
             yield list(field_names)
-            for obj in queryset:
+            for obj in queryset.iterator():
                 row = []
                 for field in field_names:
                     attr = getattr(obj, field)
@@ -42,9 +42,12 @@ def export_as_csv_action(description="Export selected objects as CSV file",
                     row.append(v)
                 yield row
 
-        pseudo_buffer = Echo()
-        writer = csv.writer(pseudo_buffer)
-        response = StreamingHttpResponse((writer.writerow(row) for row in gen()),
+        def streamer(writer):
+            for row in gen():
+                yield writer.writerow(row)
+
+        writer = csv.writer(Echo())
+        response = StreamingHttpResponse(streamer(writer),
                                          content_type="text/csv")
         cd = 'attachment; filename={}.csv'.format(str(opts).replace('.', '_'))
         response['Content-Disposition'] = cd

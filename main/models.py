@@ -253,6 +253,9 @@ class Restaurant(Creatable):
         )
     cuisine_list_html.short_description = 'cuisines'
 
+    def cuisine_list(self):
+        return ', '.join([c.name for c in self.cuisines.all()])
+
     def highlight_list_html(self):
         return format_html_join(
             '\n', '{}<br>', ((highlight.name, ) for highlight in self.highlights.all())
