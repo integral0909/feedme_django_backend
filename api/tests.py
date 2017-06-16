@@ -66,7 +66,7 @@ class TestDishViewSet(TestCase):
             Profile.objects.create(user=users[1]),
             Profile.objects.create(user=users[2]),
         ]
-        one_hr = timezone.now() - timedelta(hours=1)
+        one_hr = timezone.now() - timedelta(minutes=30)  # Now 30m for 1hr freshness.
         three_hr = timezone.now() - timedelta(hours=3)
         day = timezone.now() - timedelta(hours=24)
 

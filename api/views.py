@@ -53,6 +53,31 @@ class DishViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = models.Recipe.objects.all()
+    serializer_class = serializers.Recipe
+    filter_class = filters.Recipe
+
+    def list(self, request, *args, **kwargs):
+        if self.request.query_params.get('saved') == 'true':
+            queryset = models.Dish.objects.saved(self.request.user)
+        else:
+            queryset = self.filter_queryset(
+                self.get_queryset().not_liked(self.request.user).fresh(self.request.user)
+                    .order_by('random', 'id').distinct('random', 'id')
+            )
+
+            models.RecipeQuery().log(request=request, results=queryset.count())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(convertedSet, many=True)
+        return Response(serializer.data)
+
+
 class RestaurantDishesViewSet(generics.ListAPIView):
     """
     Dishes from a particular restaurant

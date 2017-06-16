@@ -123,7 +123,7 @@ def get_git_sha_from_sourcebundle():
             return z.comment
 
 
-if os.environ['DEPLOYMENT'] is not 'LOCAL':
+if os.environ['DEPLOYMENT'] != 'LOCAL':
     RAVEN_CONFIG = {
         'dsn': 'https://344e9f25ef874f9289508c808589fa29:b114a3d14ebc4e2b92eb1bafe0b0c76d@sentry.io/170522',
         'release': get_git_sha_from_sourcebundle(),
@@ -146,7 +146,7 @@ if os.environ['DEPLOYMENT'] is not 'LOCAL':
         },
         'handlers': {
             'sentry': {
-                'level': 'WARNING', # To capture more than ERROR, change to WARNING, INFO, etc.
+                'level': 'WARNING',  # To capture more than ERROR, change to WARNING, INFO, etc.
                 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
                 'tags': {'custom-tag': 'x'},
             },

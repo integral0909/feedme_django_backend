@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.core.management import call_command
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
-from main.models import Dish
+from main.models import Dish, Recipe
 from common.utils.async import run_chunked_iter
 
 
@@ -26,6 +26,17 @@ def backup_db(request):
 @worker
 def randomise_dishes(request):
     dishes = Dish.objects.all()
+
+    def func(items):
+        [d.randomise() for d in items]
+    run_chunked_iter(dishes, func, num_threads=24)
+    return HttpResponse('OK')
+
+
+@csrf_exempt
+@worker
+def randomise_recipes(request):
+    recipes = Recipe.objects.all()
 
     def func(items):
         [d.randomise() for d in items]

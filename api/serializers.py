@@ -138,6 +138,8 @@ class Recipe(serializers.ModelSerializer):
     steps = RecipeStep(many=True)
     difficulty = serializers.SerializerMethodField('get_difficulty_display')
     notes = NullCharField()
+    source_url = NullCharField()
+    image_url = NullCharField()
 
     def get_difficulty_display(self, obj):
         return obj.get_difficulty_display()
@@ -147,9 +149,9 @@ class Recipe(serializers.ModelSerializer):
 
     class Meta:
         model = models.Recipe
-        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps',
-                  'prep_time_seconds', 'cook_time_seconds', 'servings',
-                  'difficulty', 'notes')
+        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps', 'source_url',
+                  'prep_time_seconds', 'cook_time_seconds', 'total_time_seconds',
+                  'servings', 'difficulty', 'notes', 'image_url', 'likes_count',)
 
 
 class Dish(serializers.HyperlinkedModelSerializer):
