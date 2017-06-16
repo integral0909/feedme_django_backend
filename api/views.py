@@ -31,7 +31,10 @@ class DishViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if self.request.query_params.get('saved') == 'true':
-            queryset = models.Dish.objects.saved(self.request.user).distinct('id')
+            queryset = models.Dish.objects.saved(self.request.user)\
+                             .order_by_distance(
+                location=request.query_params.get('from_location', '').split(',')
+            )
         else:
             queryset = self.filter_queryset(self.get_queryset().reduce_by_distance(
                 location=request.query_params.get('from_location', '').split(','),

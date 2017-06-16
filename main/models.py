@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Distance
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
 from main.lib import weekdays
@@ -252,6 +253,9 @@ class Restaurant(Creatable):
         )
     cuisine_list_html.short_description = 'cuisines'
 
+    def cuisine_list(self):
+        return ', '.join([c.name for c in self.cuisines.all()])
+
     def highlight_list_html(self):
         return format_html_join(
             '\n', '{}<br>', ((highlight.name, ) for highlight in self.highlights.all())
@@ -422,26 +426,33 @@ class DishesByUserQuerySet(models.QuerySet):
             if len(location) * len(meters) > 0:
                 point = Point(float(location[0]), float(location[1]))
                 return self.filter(
-                    restaurant__location__dwithin=(
-                        point, self._meters_to_degrees(meters)
-                    )
+                    restaurant__location__dwithin=(point, self._meters_to_degrees(meters))
                 )
-        except:
-            print("Could not reduce by distance")
-            exc_info = sys.exc_info()
-            traceback.print_exception(*exc_info)
-            print("Unexpected error:", exc_info[0])
+        except Exception as e:
+            logger.error(str(e), exc_info=True)
+        return self
+
+    def distance(self, field, point):
+        return self.annotate(distance=Distance(field, point))
+
+    def order_by_distance(self, location):
+        """Order dishes by their distance from user"""
+        try:
+            if len(location) == 2:
+                point = Point(float(location[0]), float(location[1]), srid=4326)
+                return self.distance('restaurant__location', point).order_by('distance')
+        except Exception as e:
+            logger.error(str(e), exc_info=True)
         return self
 
     def _meters_to_degrees(self, meters=0):
-        # add property test
         return float(meters) / self.M_IN_DEGREE
 
     def not_liked(self, user):
         return self.exclude(likes__user=user, likes__did_like=True)
 
     def fresh(self, user):
-        exclude_time = datetime.now(timezone.utc) - timedelta(hours=2)
+        exclude_time = datetime.now(timezone.utc) - timedelta(hours=1)
         return self.exclude(likes__user=user,
                             likes__updated__gte=exclude_time)
 
@@ -486,11 +497,17 @@ class Dish(Creatable):
         )
     keyword_list_html.short_description = 'keywords'
 
+    def keyword_list(self):
+        return ', '.join([k.word for k in self.keywords.all()])
+
     def tag_list_html(self):
         return format_html_join(
             '\n', '{}<br>', ((tag.name,) for tag in self.tags.all())
         )
     tag_list_html.short_description = 'tags'
+
+    def tag_list(self):
+        return ', '.join([t.name for t in self.tags.all()])
 
     def save_from_migration(self, *args, **kwargs):
         title = self.title
@@ -554,6 +571,7 @@ class Recipe(Creatable):
     servings = models.PositiveIntegerField(default=0, blank=True)
     difficulty = models.CharField(default=EASY, choices=DIFFICULTY_CHOICES, max_length=3)
     notes = models.TextField(default='', blank=True)
+    source_url = models.URLField(blank=True, default='', max_length=600)
     views_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):

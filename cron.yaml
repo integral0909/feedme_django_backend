@@ -5,7 +5,7 @@ cron:
    schedule: "0 16 * * *"
  - name: "randomisedishes"
    url: "/cron/randomise/dishes/"
-   schedule: "0 */2 * * *"
+   schedule: "10 * * * *"
  - name: "validatedishes"
    url: "/cron/validate/dishes/"
    schedule: "0 0 * * *"
