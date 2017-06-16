@@ -7,6 +7,7 @@ from better_filter_widget import BetterFilterWidget
 from hijack_admin.admin import HijackUserAdminMixin
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.forms.widgets import BaseGeometryWidget
+from main.actions import export_as_csv_action
 
 # Widgets
 
@@ -106,6 +107,9 @@ class DishQueryAdmin(admin.ModelAdmin):
               'suburb', ('keywords', 'cuisines', 'highlights', 'tags'), 'user',
               'from_location')
     search_fields = ('user', 'suburb')
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'created', 'user_id', 'latitude', 'longitude'
+    ]), )
 
     def price_range(self, ins):
         try:
@@ -130,6 +134,9 @@ class RestaurantAdmin(admin.ModelAdmin):
     list_editable = ('quandoo_id', 'delivery_provider', 'delivery_link')
     list_filter = ('delivery_provider', 'cuisines', 'highlights')
     search_fields = ('name', 'dishes__title')
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'name', 'address', 'cuisine_list_html']
+    ), )
 
 
 class SlugNameAdmin(admin.ModelAdmin):
@@ -145,6 +152,10 @@ class DishAdmin(admin.ModelAdmin):
     list_filter = ('keywords', )
     # inlines = [TagInline, ]
     search_fields = ('title', )
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'id', 'restaurant_id', 'price_format', 'keyword_list', 'tag_list',
+        'description'
+    ]), )
 
 
 @admin.register(DeliveryProvider)
@@ -166,6 +177,9 @@ class LikeAdmin(admin.ModelAdmin):
     list_display = ('dish', 'user', 'did_like', 'created', 'updated')
     search_fields = ('dish__name', 'user__profile__first_name',
                      'user__profile__last_name')
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'user_id', 'dish_id', 'dish', 'created', 'updated'
+    ]), )
 
 
 @admin.register(View)
@@ -173,6 +187,9 @@ class ViewAdmin(admin.ModelAdmin):
     list_display = ('dish', 'user', 'created')
     search_fields = ('dish__name', 'user__profile__first_name',
                      'user__profile__last_name')
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'user_id', 'dish_id', 'dish', 'created', 'updated'
+    ]), )
 
 
 @admin.register(FulfilmentEvent)

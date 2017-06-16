@@ -494,11 +494,17 @@ class Dish(Creatable):
         )
     keyword_list_html.short_description = 'keywords'
 
+    def keyword_list(self):
+        return ', '.join([k.word for k in self.keywords.all()])
+
     def tag_list_html(self):
         return format_html_join(
             '\n', '{}<br>', ((tag.name,) for tag in self.tags.all())
         )
     tag_list_html.short_description = 'tags'
+
+    def tag_list(self):
+        return ', '.join([t.name for t in self.tags.all()])
 
     def save_from_migration(self, *args, **kwargs):
         title = self.title
