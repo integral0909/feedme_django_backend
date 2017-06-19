@@ -791,7 +791,8 @@ class Like(Creatable):
         super(Like, self).save(*args, **kwargs)
         if self.did_like:
             self.dish.increment_likes()
-        LikeTransaction.create(user=self.user, dish=self.dish, did_like=self.did_like)
+        LikeTransaction.objects.create(user=self.user, dish=self.dish,
+                                       did_like=self.did_like)
 
     class Meta:
         unique_together = (('user', 'dish'), )
@@ -821,8 +822,8 @@ class RecipeLike(Creatable):
         super(RecipeLike, self).save(*args, **kwargs)
         if self.did_like:
             self.recipe.increment_likes()
-        RecipeLikeTransaction.create(user=self.user, recipe=self.recipe,
-                                     did_like=self.did_like)
+        RecipeLikeTransaction.objects.create(user=self.user, recipe=self.recipe,
+                                             did_like=self.did_like)
 
     class Meta:
         unique_together = (('user', 'recipe'), )
