@@ -1,0 +1,64 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<script src='{% static 'js/better-filter-widget.js' %}'></script>
+<link href='{% static 'css/better-filter-widget.css' %}' rel="stylesheet">
+<style>
+.bfw {
+  width: 100%;
+  margin-bottom: 15px;
+}
+</style>
+<h2>Change Restaurant</h2>
+<!-- Nav tabs -->
+ <ul class="nav nav-tabs" role="tablist">
+   <li role="presentation" class="active"><a href="#restaurant" aria-controls="restaurant" role="tab" data-toggle="tab">Restaurant</a></li>
+   <li role="presentation"><a href="#dishes" aria-controls="dishes" role="tab" data-toggle="tab">Dishes</a></li>
+   <li role="presentation"><a href="#blogs" aria-controls="blogs" role="tab" data-toggle="tab">Blogs</a></li>
+   <li role="presentation"><a href="#recipes" aria-controls="recipes" role="tab" data-toggle="tab">Recipes</a></li>
+ </ul>
+
+ <!-- Tab panes -->
+<div class="tab-content">
+  <div role="tabpanel" class="tab-pane active" id="restaurant">
+    <form method="post" action="">
+     {% bootstrap_messages %}
+     {% csrf_token %}
+     {% bootstrap_field form.name %}
+     {% bootstrap_field form.phone_number %}
+     {% bootstrap_field form.information placeholder='Describe the restaurant'%}
+     {% bootstrap_field form.image %}
+     {% bootstrap_field form.instagram_user placeholder='@username'%}
+     {% bootstrap_field form.address placeholder='123 Some St, Some Suburb, Some City, Some Country'%}
+     <div class="row">
+       <div class="form-group col-sm-6">
+         <label class="control-label" for="id_cuisines">Cuisines</label>
+         <div>{{ form.cuisines }}</div>
+       </div>
+       <div class="form-group col-sm-6">
+         <label class="control-label" for="id_highlights">Highlights</label>
+         <div>{{ form.highlights }}</div><br>
+       </div>
+     </div>
+
+
+     {% bootstrap_field form.suburb %}
+
+     {% bootstrap_field form.quandoo_id %}
+     {% bootstrap_field form.delivery_provider %}
+     {% bootstrap_field form.delivery_link %}
+     {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+    </form>
+  </div>
+  <div role="tabpanel" class="tab-pane" id="dishes">
+
+  </div>
+  <div role="tabpanel" class="tab-pane" id="blogs">
+
+  </div>
+  <div role="tabpanel" class="tab-pane" id="recipes">
+
+  </div>
+</div>
+{%endblock%}

@@ -32,5 +32,6 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^cron/', include('cron.urls')),
     url(r'^hijack/', include('hijack.urls')),
+    url(r'^data-entry/', include('data_entry.urls')),
     url(r'^', include('main.urls'))
 ]
