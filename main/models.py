@@ -1,6 +1,7 @@
 import traceback
 import sys
 import random
+import re
 from datetime import datetime, timedelta, timezone
 from django.db import models
 from django.contrib.auth.models import User
@@ -466,6 +467,11 @@ class Keyword(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.word)
         super(Keyword, self).save(*args, **kwargs)
+
+    @property
+    def word_human(self):
+        args = (r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r' \1', self.word)
+        return re.sub(*args).title()
 
 
 class Tag(models.Model):
