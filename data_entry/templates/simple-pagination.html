@@ -1,0 +1,22 @@
+<div class="pagination text-center center-block">
+  <span class="step-links">
+    <ul class="list-inline text-center">
+      {% if collection.has_previous %}
+        <li><a href="?page={{ collection.previous_page_number }}"><</a></li>
+      {% endif %}
+      {% for pg in collection.paginator.page_range %}
+        {% if pg == collection.number %}
+          <li>{{pg}}</li>
+        {% else %}
+          <li><a href="?page={{pg}}">{{pg}}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if collection.has_next %}
+          <li><a href="?page={{ collection.next_page_number }}">></a></li>
+      {% endif %}
+    </ul>
+    <span class="current">
+      {{collection | length }} items of {{collection.paginator.count}} total
+    </span>
+  </span>
+</div>

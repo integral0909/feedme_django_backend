@@ -1,0 +1,20 @@
+.card .panel-heading-image {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  padding-bottom: 74.425287356321839%;
+  background-size: cover;
+  background-position: center;
+}
+.panel-image {
+  width: 100%;
+}
+.card .panel-body h4 > a,
+.card .panel-body a {
+  color: #000;
+}
+.card-row {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}

@@ -1,0 +1,22 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<table class="table table-striped table-bordered table-rounded">
+  <thead>
+    <th>Restaurant</th>
+    <th>Address</th>
+  </thead>
+  <tbody>
+    {% for res in restaurants %}
+      <tr>
+        <td><a href="/data-entry/restaurants/{{res.id}}/change/">{{res.name}}</a></td>
+        <td>{{res.address}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include 'simple-pagination.html' with collection=restaurants %}
+
+{%endblock%}

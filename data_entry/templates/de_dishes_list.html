@@ -1,0 +1,23 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<table class="table table-striped table-bordered table-rounded">
+  <thead>
+    <th>Dish</th>
+    <th>Restaurant</th>
+  </thead>
+  <tbody>
+    {% for dish in dishes %}
+      <tr>
+        <td><a href="/data-entry/dishes/{{dish.id}}/change/">{{dish.title}}</a></td>
+        <td><a href="/data-entry/restaurants/{{dish.restaurant.id}}/change/dishes/">
+            {{dish.restaurant}}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include 'simple-pagination.html' with collection=dishes %}
+
+{%endblock%}

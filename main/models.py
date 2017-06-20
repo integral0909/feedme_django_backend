@@ -13,6 +13,7 @@ from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
+from timezone_field import TimeZoneField
 from main.lib import weekdays
 import logging
 logger = logging.getLogger(__name__)
@@ -32,6 +33,10 @@ User.add_to_class("__str__", get_name)
 
 def random_number():
     return random.randint(1, 1000000000)
+
+
+class LocationMissing(Exception):
+    pass
 
 
 class Creatable(models.Model):
@@ -292,12 +297,13 @@ class Restaurant(Creatable):
     cuisines = models.ManyToManyField(Cuisine)
     information = models.TextField(blank=True, default='')
     highlights = models.ManyToManyField(Highlight)
-    blogs = models.ManyToManyField(Blog)
+    blogs = models.ManyToManyField(Blog, related_name='restaurant')
     phone_number = models.CharField(max_length=20, blank=True, default='')
     suburb = models.CharField(max_length=55, blank=True, default='')
     instagram_user = models.CharField(max_length=61, blank=True, default='')
     time_offset_minutes = models.IntegerField(help_text="Multiply hours by 60",
                                               default=0)
+    timezone = TimeZoneField(default='', blank=True)
     tripadvisor_widget = models.TextField(blank=True, default='')
     location = gis_models.PointField(default="POINT(0.0 0.0)", blank=True, db_index=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
@@ -310,6 +316,38 @@ class Restaurant(Creatable):
 
     def __str__(self):
         return self.name
+
+    def geocode(self):
+        """Run all geocoding operations."""
+        try:
+            self.location_to_latlong()
+        except LocationMissing:
+            self.address_to_location()
+            self.location_to_latlong()
+        try:
+            self.timezone_to_offset_minutes()
+        except Exception as e:
+            print(e)
+            self.location_to_timezone()
+            self.timezone_to_offset_minutes()
+
+    def location_to_latlong(self):
+        if 0.0 in [float(self.location.y), float(self.location.x)]:
+            raise LocationMissing()
+        self.latitude = self.location.y
+        self.longitude = self.location.x
+
+    def timezone_to_offset_minutes(self):
+        """Convert timezone to current offset minutes."""
+        pass
+
+    def location_to_timezone(self):
+        """Convert location to timezone via google geocoding."""
+        pass
+
+    def address_to_location(self):
+        """Convert address to location."""
+        pass
 
     def time_offset_hours(self):
         return self.time_offset_minutes / 60
@@ -356,10 +394,9 @@ class Restaurant(Creatable):
 
     def save(self, depth=0, *args, **kwargs):
         """
-        Make slugs unique
+        Make slugs unique, geocode timezone.
         """
-        self.latitude = self.location.y
-        self.longitude = self.location.x
+        self.geocode()
         if depth > 1000:
             print('Slug recursion error restaurant', self.name)
         if depth > 0:

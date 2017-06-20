@@ -33,5 +33,6 @@ urlpatterns = [
     url(r'^cron/', include('cron.urls')),
     url(r'^hijack/', include('hijack.urls')),
     url(r'^data-entry/', include('data_entry.urls')),
+    url(r'^s3direct/', include('s3direct.urls')),
     url(r'^', include('main.urls'))
 ]

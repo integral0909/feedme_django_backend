@@ -19,6 +19,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="{% static 'js/demain.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/demain.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/webmain.css' %}" />
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -34,16 +35,25 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Link</a></li>
+            <li><a href="/data-entry/restaurants/">Restaurants</a></li>
+            <li><a href="/data-entry/recipes/">Recipes</a></li>
+            <li><a href="/data-entry/dishes/">Dishes</a></li>
           </ul>
         </div>
       </div>
     </nav>
     <div class="container">
       <ol class="breadcrumb">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Library</a></li>
-        <li class="active">Data</li>
+        <li><a href="/data-entry/">Home</a></li>
+        {% for crumb in breadcrumbs %}
+          <li{%if forloop.last%} class="active"{%endif%}>
+            {%if forloop.last is False%}
+            <a href="{{crumb.url}}">{{crumb.name}}</a>
+            {% else %}
+            {{crumb.name}}
+            {%endif%}
+          </li>
+        {% endfor %}
       </ol>
       {% block 'content'%}{% endblock %}
     </div>

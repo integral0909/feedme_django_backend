@@ -4,33 +4,37 @@
 {% block 'content'%}
 <script src='{% static 'js/better-filter-widget.js' %}'></script>
 <link href='{% static 'css/better-filter-widget.css' %}' rel="stylesheet">
-<style>
-.bfw {
-  width: 100%;
-  margin-bottom: 15px;
-}
-</style>
-<h2>Change Restaurant</h2>
 <!-- Nav tabs -->
  <ul class="nav nav-tabs" role="tablist">
-   <li role="presentation" class="active"><a href="#restaurant" aria-controls="restaurant" role="tab" data-toggle="tab">Restaurant</a></li>
-   <li role="presentation"><a href="#dishes" aria-controls="dishes" role="tab" data-toggle="tab">Dishes</a></li>
-   <li role="presentation"><a href="#blogs" aria-controls="blogs" role="tab" data-toggle="tab">Blogs</a></li>
+   <li role="presentation"{%if tab is False %} class="active"{%endif%}><a href="#restaurant" aria-controls="restaurant" role="tab" data-toggle="tab">Restaurant</a></li>
+   <li role="presentation"{%if tab == 'dishes'%} class="active"{%endif%}><a href="#dishes" aria-controls="dishes" role="tab" data-toggle="tab">Dishes</a></li>
+   <li role="presentation"{%if tab == 'blogs'%} class="active"{%endif%}><a href="#blogs" aria-controls="blogs" role="tab" data-toggle="tab">Blogs</a></li>
    <li role="presentation"><a href="#recipes" aria-controls="recipes" role="tab" data-toggle="tab">Recipes</a></li>
  </ul>
 
  <!-- Tab panes -->
 <div class="tab-content">
-  <div role="tabpanel" class="tab-pane active" id="restaurant">
-    <form method="post" action="">
+  <div role="tabpanel" class="tab-pane{%if tab is False%} active{%endif%}" id="restaurant">
+    <h2>Change Restaurant</h2>
+    <form method="post" action="" style="margin-top:25px;">
      {% bootstrap_messages %}
      {% csrf_token %}
      {% bootstrap_field form.name %}
      {% bootstrap_field form.phone_number %}
      {% bootstrap_field form.information placeholder='Describe the restaurant'%}
-     {% bootstrap_field form.image %}
-     {% bootstrap_field form.instagram_user placeholder='@username'%}
-     {% bootstrap_field form.address placeholder='123 Some St, Some Suburb, Some City, Some Country'%}
+     <div class="row">
+       <div class="form-group col-sm-6">
+         <label class="control-label" for="id_image">Image</label>
+         {{form.image_url}}
+       </div>
+       <div class="col-sm-6">
+         <img src="{{form.image_url.value}}" style="max-height:350px;" class="img-responsive" id="rest_img">
+       </div>
+     </div>
+     {% bootstrap_field form.instagram_user placeholder='username' addon_before='@' %}
+     {% bootstrap_field form.address placeholder='123 Some St, Some Suburb, Some City, Some Country' %}
+     {% bootstrap_field form.suburb %}
+     {% bootstrap_field form.timezone %}
      <div class="row">
        <div class="form-group col-sm-6">
          <label class="control-label" for="id_cuisines">Cuisines</label>
@@ -38,24 +42,70 @@
        </div>
        <div class="form-group col-sm-6">
          <label class="control-label" for="id_highlights">Highlights</label>
-         <div>{{ form.highlights }}</div><br>
+         <div>{{ form.highlights }}</div>
        </div>
      </div>
-
-
-     {% bootstrap_field form.suburb %}
-
      {% bootstrap_field form.quandoo_id %}
      {% bootstrap_field form.delivery_provider %}
      {% bootstrap_field form.delivery_link %}
+     {{form.latitude}}
+     {{form.longitude}}
      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
     </form>
   </div>
-  <div role="tabpanel" class="tab-pane" id="dishes">
-
+  <div role="tabpanel" class="tab-pane{%if tab == 'dishes'%} active{%endif%}" id="dishes">
+    <h2>Add a dish</h2>
+    <form method="post">
+      {% bootstrap_field dishform.title %}
+      {% bootstrap_field dishform.description placeholder='A description of the dish.' %}
+      {% bootstrap_field dishform.price %}
+      <div class="row">
+        <div class="form-group col-sm-6">
+          <label class="control-label" for="id_image_url">Image</label>
+          {{dishform.image_url}}
+        </div>
+        <div class="col-sm-6">
+          <img src="{{dishform.image_url.value}}" style="max-height:350px;" class="img-responsive" id="dish_img">
+        </div>
+      </div>
+      {% bootstrap_field dishform.instagram_user placeholder='username' addon_before='@'%}
+      <div class="row">
+        <div class="col-sm-6">
+          {% bootstrap_field dishform.keywords %}
+        </div>
+        <div class="col-sm-6">
+          {% bootstrap_field dishform.tags %}
+          <div class="help-text text-muted">{{dishform.tags.help_text}}</div>
+        </div>
+      </div>
+      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+    </form>
+    <hr>
+    <h3>Existing dishes</h3>
+    <div class="row card-row">
+      {% for dish in dishes %}
+        {% include 'dish_card.html' %}
+        {% cycle '' '' '</div><div class="row card-row">' %}
+      {% endfor %}
+    </div>
   </div>
-  <div role="tabpanel" class="tab-pane" id="blogs">
-
+  <div role="tabpanel" class="tab-pane{%if tab == 'blogs'%} active{%endif%}" id="blogs">
+    <h2>Add a blog</h2>
+    <form method="post">
+      {% bootstrap_field blogform.title %}
+      {% bootstrap_field blogform.author addon_before='@' placeholder='username' %}
+      {% bootstrap_field blogform.url placeholder='https://somewebsite.com/' %}
+      {% bootstrap_field blogform.image_url %}
+      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+    </form>
+    <hr>
+    <h3>Existing blogs</h3>
+    <div class="row card-row">
+      {% for blog in blogs %}
+        {% include 'blog_card.html' %}
+        {% cycle '' '' '</div><div class="row card-row">' %}
+      {% endfor %}
+    </div>
   </div>
   <div role="tabpanel" class="tab-pane" id="recipes">
 

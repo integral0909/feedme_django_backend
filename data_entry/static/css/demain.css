@@ -4,3 +4,11 @@ footer {
   background: #aab;
   color: #F1f1f1;
 }
+.bfw {
+  width: 100% !important;
+  margin-bottom: 15px !important;
+}
+.bfw .item-list,
+.bfw input.item-filter {
+  font-size: 1em !important;
+}

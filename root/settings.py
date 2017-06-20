@@ -76,10 +76,12 @@ INSTALLED_APPS = [
     'fixture_magic',
     'bootstrap3',
     'phonenumber_field',
+    'timezone_field',
     'dbbackup',
     'storages',
     'rest_framework',
     'corsheaders',
+    's3direct',
     'raven.contrib.django.raven_compat',
     'better_filter_widget',
     'django.contrib.admin',
@@ -192,6 +194,11 @@ DEEPLINKER = {
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/donations/$'
 
+# GOOGLE API
+GOOGLEMAPS_API = {
+    'key': 'AIzaSyDRrMIIWKhaei6Orp5q6Cnhn0lWdJLgM0o'
+}
+
 ROOT_URLCONF = 'root.urls'
 
 TEMPLATES = [
@@ -273,6 +280,21 @@ else:
 AWS_ACCESS_KEY_ID = os.environ['AWS_S3_STATIC_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_S3_STATIC_KEY']
 
+AWS_STORAGE_RAWIMG_BUCKET_NAME = 'fdme-raw-img'
+S3DIRECT_REGION = 'us-west-2'
+S3DIRECT_DESTINATIONS = {
+    'raw-img': {
+        # REQUIRED
+        'key': '',
+        # OPTIONAL
+        'auth': lambda u: u.is_staff,
+        'allowed': ['image/jpeg', 'image/png'],  # Default allow all mime types
+        'bucket': 'fdme-raw-img',  # Default is 'AWS_STORAGE_BUCKET_NAME'
+        'content_length_range': (5000, 20000000),  # Default allow any size
+    }
+}
+
+
 # Tell django-storages that when coming up with the URL for an item in S3 storage,
 # keep it simple - just use this domain plus the path. (If this isn't set,
 # things get complicated).
@@ -295,6 +317,10 @@ if os.environ['DEPLOYMENT'] != 'LOCAL':
     DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 else:
     STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    'common-static/',
+)
 # Tell the staticfiles app to use S3Boto storage when writing the collected static
 # files (when you run `collectstatic`).
 # STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
