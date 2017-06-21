@@ -7,6 +7,16 @@
       <p>{{dish.description}}</p>
       <p>{{dish.price_format}}</p>
       <a href="https://instagram.com/{{dish.instagram_user}}">@{{dish.instagram_user}}</a>
+      {% if admin %}
+        <div class="pull-right">
+          <ul class="list-inline">
+            <li><a href="/data-entry/dishes/{{dish.id}}/change/" class="btn btn-primary">
+              Edit</a></li>
+            <li><a href="/data-entry/dishes/{{dish.id}}/delete/" class="btn btn-danger">
+              Delete</a></li>
+          </ul>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>

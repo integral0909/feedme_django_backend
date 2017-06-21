@@ -1,0 +1,28 @@
+{% load bootstrap3 %}
+<form method="post">
+  {% csrf_token %}
+  {% bootstrap_field dishform.title %}
+  {% bootstrap_field dishform.description placeholder='A description of the dish.' %}
+  {% bootstrap_field dishform.price addon_before='$'%}
+  <div class="row">
+    <div class="form-group col-sm-6">
+      <label class="control-label" for="id_image_url">Image</label>
+      {{dishform.image_url}}
+    </div>
+    <div class="col-sm-6">
+      <img src="{{dishform.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="dish_img">
+    </div>
+  </div>
+  {% bootstrap_field dishform.instagram_user placeholder='username' addon_before='@'%}
+  <div class="row">
+    <div class="col-sm-6">
+      {% bootstrap_field dishform.keywords %}
+    </div>
+    <div class="col-sm-6">
+      {% bootstrap_field dishform.tags %}
+      <div class="help-text text-muted">{{dishform.tags.help_text}}</div>
+    </div>
+  </div>
+  {{dishform.restaurant}}
+  {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+</form>

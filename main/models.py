@@ -49,6 +49,17 @@ class Creatable(models.Model):
     class Meta:
         abstract = True
 
+    def get_logs(self):
+        """Get change logs for model."""
+        from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
+        from django.contrib.contenttypes.models import ContentType
+        logs = LogEntry.objects.exclude(change_message="No fields changed.")\
+                       .filter(content_type=ContentType.objects.get_for_model(self),
+                               object_id=self.id).order_by('-action_time')[:20]
+        logCount = logs.count()
+        return logs, logCount
+
+
 
 class Profile(models.Model):
     """

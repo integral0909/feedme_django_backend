@@ -4,6 +4,7 @@
 {% block 'content'%}
 <script src='{% static 'js/better-filter-widget.js' %}'></script>
 <link href='{% static 'css/better-filter-widget.css' %}' rel="stylesheet">
+
 <!-- Nav tabs -->
  <ul class="nav nav-tabs" role="tablist">
    <li role="presentation"{%if tab is False %} class="active"{%endif%}><a href="#restaurant" aria-controls="restaurant" role="tab" data-toggle="tab">Restaurant</a></li>
@@ -15,7 +16,7 @@
  <!-- Tab panes -->
 <div class="tab-content">
   <div role="tabpanel" class="tab-pane{%if tab is False%} active{%endif%}" id="restaurant">
-    <h2>Change Restaurant</h2>
+    <h2>{{action}} Restaurant</h2>
     <form method="post" action="" style="margin-top:25px;">
      {% bootstrap_messages %}
      {% csrf_token %}
@@ -28,7 +29,7 @@
          {{form.image_url}}
        </div>
        <div class="col-sm-6">
-         <img src="{{form.image_url.value}}" style="max-height:350px;" class="img-responsive" id="rest_img">
+         <img src="{{form.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="rest_img">
        </div>
      </div>
      {% bootstrap_field form.instagram_user placeholder='username' addon_before='@' %}
@@ -54,61 +55,39 @@
     </form>
   </div>
   <div role="tabpanel" class="tab-pane{%if tab == 'dishes'%} active{%endif%}" id="dishes">
-    <h2>Add a dish</h2>
-    <form method="post">
-      {% bootstrap_field dishform.title %}
-      {% bootstrap_field dishform.description placeholder='A description of the dish.' %}
-      {% bootstrap_field dishform.price %}
-      <div class="row">
-        <div class="form-group col-sm-6">
-          <label class="control-label" for="id_image_url">Image</label>
-          {{dishform.image_url}}
-        </div>
-        <div class="col-sm-6">
-          <img src="{{dishform.image_url.value}}" style="max-height:350px;" class="img-responsive" id="dish_img">
-        </div>
+    {% if dishform %}
+      <h2>Add a dish</h2>
+      {% include 'de_dishform.html' %}
+      <hr>
+      <h3>Existing dishes</h3>
+      <div class="row card-row">
+        {% for dish in dishes %}
+          {% include 'dish_card.html' with admin=True %}
+          {% cycle '' '' '</div><div class="row card-row">' %}
+        {% endfor %}
       </div>
-      {% bootstrap_field dishform.instagram_user placeholder='username' addon_before='@'%}
-      <div class="row">
-        <div class="col-sm-6">
-          {% bootstrap_field dishform.keywords %}
-        </div>
-        <div class="col-sm-6">
-          {% bootstrap_field dishform.tags %}
-          <div class="help-text text-muted">{{dishform.tags.help_text}}</div>
-        </div>
-      </div>
-      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
-    </form>
-    <hr>
-    <h3>Existing dishes</h3>
-    <div class="row card-row">
-      {% for dish in dishes %}
-        {% include 'dish_card.html' %}
-        {% cycle '' '' '</div><div class="row card-row">' %}
-      {% endfor %}
-    </div>
+    {%else%}
+      <h4 class="text-center">Please finish adding a new restaurant before adding its dishes or blogs</h3>
+    {% endif %}
   </div>
   <div role="tabpanel" class="tab-pane{%if tab == 'blogs'%} active{%endif%}" id="blogs">
-    <h2>Add a blog</h2>
-    <form method="post">
-      {% bootstrap_field blogform.title %}
-      {% bootstrap_field blogform.author addon_before='@' placeholder='username' %}
-      {% bootstrap_field blogform.url placeholder='https://somewebsite.com/' %}
-      {% bootstrap_field blogform.image_url %}
-      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
-    </form>
-    <hr>
-    <h3>Existing blogs</h3>
-    <div class="row card-row">
-      {% for blog in blogs %}
-        {% include 'blog_card.html' %}
-        {% cycle '' '' '</div><div class="row card-row">' %}
-      {% endfor %}
-    </div>
+    {% if blogform %}
+      <h2>Add a blog</h2>
+      {% include 'de_blogform.html' %}
+      <hr>
+      <h3>Existing blogs</h3>
+      <div class="row card-row">
+        {% for blog in blogs %}
+          {% include 'blog_card.html' with admin=True %}
+          {% cycle '' '' '</div><div class="row card-row">' %}
+        {% endfor %}
+      </div>
+    {%else%}
+      <h4 class="text-center">Please finish adding a new restaurant before adding its dishes or blogs</h3>
+    {% endif %}
   </div>
   <div role="tabpanel" class="tab-pane" id="recipes">
-
+    <h4 class="text-center">Please finish adding a new restaurant before adding its dishes or blogs</h3>
   </div>
 </div>
 {%endblock%}

@@ -4,7 +4,8 @@ from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from timezone_field import TimeZoneFormField
 from s3direct.widgets import S3DirectWidget
-from main.models import Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish
+from main.models import (Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish,
+                         Recipe)
 import pytz
 
 
@@ -47,10 +48,17 @@ class RestaurantForm(forms.ModelForm):
 
 class BlogForm(forms.ModelForm):
     image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
+    restaurant_id = forms.IntegerField(min_value=0, widget=forms.HiddenInput())
 
     class Meta:
         model = Blog
-        fields = ('author', 'image_url', 'title', 'url')
+        fields = ('author', 'image_url', 'title', 'url', 'restaurant_id')
+
+    def save(self, commit=True):
+        restaurant = Restaurant.objects.get(pk=self.cleaned_data['restaurant_id'])
+        obj = super(BlogForm, self).save(commit=commit)
+        restaurant.blogs.add(obj)
+        return obj
 
 
 class DishForm(forms.ModelForm):
@@ -76,4 +84,17 @@ class DishForm(forms.ModelForm):
                     please spell check it first.''',
             'price': '''Numbers only. Multiply dollars by 100.
                      For example for $14.95 input 1495 or for $10 input 1000.'''
+        }
+
+
+class RecipeForm(forms.ModelForm):
+    image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
+
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+        exclude = ('steps', 'total_time_seconds', 'likes_count', 'views_count')
+        widgets = {
+            'keywords': forms.CheckboxSelectMultiple(),
+            'tags': BetterFilterWidget(),
         }

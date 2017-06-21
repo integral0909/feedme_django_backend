@@ -1,0 +1,9 @@
+{% load bootstrap3 %}
+<form method="post">
+  {% csrf_token %}
+  {% bootstrap_field recipeform.name %}
+  {% bootstrap_field recipeform.source_url placeholder='https://somewebsite.com/' %}
+  {% bootstrap_field recipeform.image_url %}
+  {{recipeform.restaurant_id}}
+  {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+</form>

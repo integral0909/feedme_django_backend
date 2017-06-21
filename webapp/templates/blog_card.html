@@ -5,6 +5,16 @@
     <div class="panel-body">
       <h4><a href="{{blog.url}}">{{blog.title}}</a></h4>
       <a href="https://instagram.com/{{blog.author}}">@{{blog.author}}</a>
+      {% if admin %}
+        <div class="pull-right">
+          <ul class="list-inline">
+            <li><a href="/data-entry/blogs/{{blog.id}}/change/" class="btn btn-primary">
+              Edit</a></li>
+            <li><a href="/data-entry/blogs/{{blog.id}}/delete/" class="btn btn-danger">
+              Delete</a></li>
+          </ul>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
