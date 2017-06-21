@@ -60,7 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if self.request.query_params.get('saved') == 'true':
-            queryset = models.Dish.objects.saved(self.request.user)
+            queryset = models.Recipe.objects.saved(self.request.user)
         else:
             queryset = self.filter_queryset(
                 self.get_queryset().not_liked(self.request.user).fresh(self.request.user)
