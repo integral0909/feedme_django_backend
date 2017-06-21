@@ -26,3 +26,10 @@
   {{dishform.restaurant}}
   {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
 </form>
+{% if dishform.instance.recipe %}
+<hr>
+<h3>Dish Recipe</h3>
+<div class="row card-row">
+  {% include 'recipe_card.html' with admin=True recipe=dishform.instance.recipe %}
+</div>
+{% endif %}

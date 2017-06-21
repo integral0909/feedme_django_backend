@@ -5,7 +5,7 @@ from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from timezone_field import TimeZoneFormField
 from s3direct.widgets import S3DirectWidget
 from main.models import (Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish,
-                         Recipe)
+                         Recipe, RecipeIngredient)
 import pytz
 
 
@@ -98,3 +98,9 @@ class RecipeForm(forms.ModelForm):
             'keywords': forms.CheckboxSelectMultiple(),
             'tags': BetterFilterWidget(),
         }
+
+
+class RecipeIngredientForm(forms.ModelForm):
+    class Meta:
+        model = RecipeIngredient
+        fields = '__all__'

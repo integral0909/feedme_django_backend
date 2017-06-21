@@ -3,7 +3,39 @@
   {% csrf_token %}
   {% bootstrap_field recipeform.name %}
   {% bootstrap_field recipeform.source_url placeholder='https://somewebsite.com/' %}
-  {% bootstrap_field recipeform.image_url %}
-  {{recipeform.restaurant_id}}
+  {% bootstrap_field recipeform.prep_time_seconds %}
+  {% bootstrap_field recipeform.cook_time_seconds %}
+  {% bootstrap_field recipeform.servings %}
+  {% bootstrap_field recipeform.difficulty %}
+  {% bootstrap_field recipeform.notes %}
+  <div class="row">
+    <div class="col-sm-6">
+      {% bootstrap_field recipeform.keywords %}
+    </div>
+    <div class="col-sm-6">
+      {% bootstrap_field recipeform.tags %}
+      <div class="help-text text-muted">{{recipeform.tags.help_text}}</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-sm-6">
+      <label class="control-label" for="id_image_url">Image</label>
+      {{recipeform.image_url}}
+    </div>
+    <div class="col-sm-6">
+      <img src="{{recipeform.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="recipe_img">
+    </div>
+  </div>
+  {% bootstrap_formset formset layout='horizontal' %}
   {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
 </form>
+{% if recipeform.instance.dishes.count %}
+<hr>
+<h3>Dishes with this recipe</h3>
+<div class="row card-row">
+  {% for dish in recipeform.instance.dishes.all %}
+    {% include 'dish_card.html' with admin=True %}
+    {% cycle '' '' '</div><div class="row card-row">' %}
+  {% endfor %}
+</div>
+{% endif%}

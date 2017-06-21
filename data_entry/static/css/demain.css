@@ -35,7 +35,7 @@ footer {
 }
 .logs-dropdown-list > li {
   padding: 10px 10px 5px 10px;
-  border-bottom: 2px solid #abc;
+  border-bottom: 1px solid #abc;
   min-height: 52px;
   position: relative;
 }
@@ -89,6 +89,16 @@ footer {
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
   border: 1px solid #eff2f5;
   border-bottom-color: transparent;
+}
+.form-control {
+  border: 1px solid #e1e3e5;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  -o-box-shadow: none;
+}
+.mini-paginator > .pagination {
+  margin: 0;
 }
 body {
   color: #134;
