@@ -114,7 +114,22 @@
     {% endif %}
   </div>
   <div role="tabpanel" class="tab-pane" id="recipes">
-    <h4 class="text-center">Please finish adding a new restaurant before adding its dishes or blogs</h3>
+    {% if recipeform %}
+      <h2>Add a recipe <small>@ <em>{{form.instance.name}}</small></em></h2>
+      {% include 'de_recipeform.html' with formset=recipeformset %}
+      <hr>
+      <h3>Existing recipes <small>@ <em>{{form.instance.name}}</small></em></h3>
+      <div class="row card-row">
+        {% for recipe in recipes %}
+          {% include 'recipe_card.html' with admin=True %}
+          {% cycle '' '' '</div><div class="row card-row">' %}
+        {% empty %}
+          <h4 class="text-muted text-center">No existing recipes</h4>
+        {% endfor %}
+      </div>
+    {% else %}
+      <h4 class="text-center">Please finish adding a new restaurant before adding its dishes or blogs</h3>
+    {% endif %}
   </div>
 </div>
 {%endblock%}

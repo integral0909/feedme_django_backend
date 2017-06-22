@@ -89,6 +89,24 @@ class DishForm(forms.ModelForm):
 
 class RecipeForm(forms.ModelForm):
     image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
+    dish = forms.ModelChoiceField(queryset=Dish.objects.none(), label='For Dish',
+                                  widget=forms.RadioSelect())
+
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('dish_opts'):
+            qs = kwargs.pop('dish_opts')
+        super(RecipeForm, self).__init__(*args, **kwargs)
+        try:
+            self.fields['dish'].queryset = qs
+        except UnboundLocalError:
+            pass
+
+    def save(self, commit=True):
+        recipe = super(RecipeForm, self).save(commit=commit)
+        if self.cleaned_data.get('dish'):
+            dish.recipe = recipe
+            dish.save()
+        return recipe
 
     class Meta:
         model = Recipe

@@ -2,6 +2,18 @@
 <form method="post">
   {% csrf_token %}
   {% bootstrap_field recipeform.name %}
+  {% if dishes %}
+    <div class="form-group">
+      <label>{{recipeform.dish.label}}</label><br>
+      {% for radio in recipeform.dish %}
+        {% if forloop.counter0 > 0%}
+        <label for="{{ radio.id_for_label }}" class="radio-inline">
+          {{ radio.tag }} {{ radio.choice_label }}
+        </label>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
   {% bootstrap_field recipeform.source_url placeholder='https://somewebsite.com/' %}
   <div class="row">
     <div class="col-sm-4">
@@ -38,24 +50,24 @@
   <form method="post" action="">
   {{ formset.management_form }}
       {% for form in formset %}
-      <div class="row">
-        <div class="col-sm-6">
-          {% bootstrap_field form.ingredient %}
+        <div class="row">
+          <div class="col-sm-6">
+            {% bootstrap_field form.ingredient %}
+          </div>
+          <div class="col-sm-1">
+            {% bootstrap_field form.quantity %}
+          </div>
+          <div class="col-sm-2">
+            {% bootstrap_field form.unit_type %}
+          </div>
+          <div class="col-sm-2">
+            {% bootstrap_field form.ingredient_type %}
+          </div>
+          <div class="col-sm-1">
+            <label>Delete</label>
+            <a href="#" class="btn btn-danger">X</a>
+          </div>
         </div>
-        <div class="col-sm-1">
-          {% bootstrap_field form.quantity %}
-        </div>
-        <div class="col-sm-2">
-          {% bootstrap_field form.unit_type %}
-        </div>
-        <div class="col-sm-2">
-          {% bootstrap_field form.ingredient_type %}
-        </div>
-        <div class="col-sm-1">
-          <label>Delete</label>
-          <a href="#" class="btn btn-danger">X</a>
-        </div>
-      </div>
       {% endfor %}
   </form>
   {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}

@@ -46,17 +46,22 @@ def change_item(request, item_type, item_id=None, tab=False):
 def _extra_processing(item_type, obj=None):
     """Extra model-specific processing such as formsets for recipes."""
     ctx = {}
-    if item_type == 'recipes':
+    if item_type == 'recipes' or (item_type == 'restaurants' and obj):
         RecipeFormSet = modelformset_factory(RecipeIngredient, form=RecipeIngredientForm,
                                              exclude=('recipe', ))
+    if item_type == 'recipes':
         ctx['formset'] = RecipeFormSet(
             queryset=RecipeIngredient.objects.filter(recipe=obj))
     if item_type == 'restaurants' and obj:
+        dishes = Dish.objects.filter(restaurant=obj)
         ctx = {
             'blogs': Blog.objects.filter(restaurant=obj),
-            'dishes': Dish.objects.filter(restaurant=obj),
+            'dishes': dishes,
             'blogform': BlogForm(initial={'restaurant_id': obj.id}),
             'dishform': DishForm(initial={'restaurant': obj}),
+            'recipeformset': RecipeFormSet(queryset=Recipe.objects.none()),
+            'recipeform': RecipeForm(dish_opts=dishes.filter(recipe__isnull=True)),
+            'recipes': Recipe.objects.filter(dishes__restaurant=obj)
         }
     return ctx
 
