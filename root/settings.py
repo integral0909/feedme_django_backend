@@ -318,7 +318,6 @@ if os.environ['DEPLOYMENT'] != 'LOCAL':
 else:
     STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
     'common-static/',
 )
 # Tell the staticfiles app to use S3Boto storage when writing the collected static
