@@ -241,7 +241,8 @@ class SearchTermList(APIView):
         res = {
             'keywords': [kwd.word for kwd in models.Keyword.objects.all()],
             'highlights': [hlt.name for hlt in models.Highlight.objects.all()],
-            'tags': [tag.name for tag in models.Tag.objects.all()]
+            'tags': [tag.name for tag in models.Tag.objects.all()],
+            'ingredients': [i.name for i in models.Ingredient.objects.all()]
         }
         count = 0
         for key, val in res.items():
