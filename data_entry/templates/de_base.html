@@ -50,18 +50,6 @@
       </div>
     </nav>
     <div class="container">
-      <ol class="breadcrumb">
-        <li><a href="/data-entry/">Home</a></li>
-        {% for crumb in breadcrumbs %}
-          <li{%if forloop.last%} class="active"{%endif%}>
-            {%if forloop.last is False%}
-            <a href="{{crumb.url}}">{{crumb.name}}</a>
-            {% else %}
-            {{crumb.name}}
-            {%endif%}
-          </li>
-        {% endfor %}
-      </ol>
       {% block 'content'%}{% endblock %}
     </div>
     <footer>

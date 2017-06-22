@@ -5,15 +5,18 @@
   {% bootstrap_field dishform.description placeholder='A description of the dish.' %}
   {% bootstrap_field dishform.price addon_before='$'%}
   <div class="row">
-    <div class="form-group col-sm-6">
-      <label class="control-label" for="id_image_url">Image</label>
-      {{dishform.image_url}}
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label class="control-label" for="id_image_url">Image</label>
+        {{dishform.image_url}}
+      </div>
+      {% bootstrap_field dishform.instagram_user placeholder='username' addon_before='@'%}
     </div>
     <div class="col-sm-6">
       <img src="{{dishform.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="dish_img">
     </div>
   </div>
-  {% bootstrap_field dishform.instagram_user placeholder='username' addon_before='@'%}
+
   <div class="row">
     <div class="col-sm-6">
       {% bootstrap_field dishform.keywords %}
@@ -24,7 +27,7 @@
     </div>
   </div>
   {{dishform.restaurant}}
-  {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+  {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
 </form>
 {% if dishform.instance.recipe %}
 <hr>

@@ -3,9 +3,17 @@
   {% csrf_token %}
   {% bootstrap_field recipeform.name %}
   {% bootstrap_field recipeform.source_url placeholder='https://somewebsite.com/' %}
-  {% bootstrap_field recipeform.prep_time_seconds %}
-  {% bootstrap_field recipeform.cook_time_seconds %}
-  {% bootstrap_field recipeform.servings %}
+  <div class="row">
+    <div class="col-sm-4">
+      {% bootstrap_field recipeform.prep_time_seconds %}
+    </div>
+    <div class="col-sm-4">
+      {% bootstrap_field recipeform.cook_time_seconds %}
+    </div>
+    <div class="col-sm-4">
+      {% bootstrap_field recipeform.servings %}
+    </div>
+  </div>
   {% bootstrap_field recipeform.difficulty %}
   {% bootstrap_field recipeform.notes %}
   <div class="row">
@@ -26,8 +34,31 @@
       <img src="{{recipeform.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="recipe_img">
     </div>
   </div>
-  {% bootstrap_formset formset layout='horizontal' %}
-  {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+  <h4 class="dividing">Recipe ingredients</h4>
+  <form method="post" action="">
+  {{ formset.management_form }}
+      {% for form in formset %}
+      <div class="row">
+        <div class="col-sm-6">
+          {% bootstrap_field form.ingredient %}
+        </div>
+        <div class="col-sm-1">
+          {% bootstrap_field form.quantity %}
+        </div>
+        <div class="col-sm-2">
+          {% bootstrap_field form.unit_type %}
+        </div>
+        <div class="col-sm-2">
+          {% bootstrap_field form.ingredient_type %}
+        </div>
+        <div class="col-sm-1">
+          <label>Delete</label>
+          <a href="#" class="btn btn-danger">X</a>
+        </div>
+      </div>
+      {% endfor %}
+  </form>
+  {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
 </form>
 {% if recipeform.instance.dishes.count %}
 <hr>

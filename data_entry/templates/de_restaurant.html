@@ -20,22 +20,37 @@
     <form method="post" action="" style="margin-top:25px;">
      {% bootstrap_messages %}
      {% csrf_token %}
-     {% bootstrap_field form.name %}
-     {% bootstrap_field form.phone_number %}
-     {% bootstrap_field form.information placeholder='Describe the restaurant'%}
      <div class="row">
-       <div class="form-group col-sm-6">
-         <label class="control-label" for="id_image">Image</label>
-         {{form.image_url}}
+       <div class="col-sm-12">
+         {% bootstrap_field form.name %}
+         {% bootstrap_field form.phone_number %}
+         {% bootstrap_field form.information placeholder='Describe the restaurant'%}
+       </div>
+     </div>
+     <div class="row" style="margin-bottom:20px;">
+       <div class="col-sm-6">
+         <div class="form-group">
+           <label class="control-label" for="id_image">Image</label>
+           {{form.image_url}}
+         </div>
+         {% bootstrap_field form.instagram_user placeholder='username' addon_before='@' %}
        </div>
        <div class="col-sm-6">
          <img src="{{form.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="rest_img">
        </div>
      </div>
-     {% bootstrap_field form.instagram_user placeholder='username' addon_before='@' %}
-     {% bootstrap_field form.address placeholder='123 Some St, Some Suburb, Some City, Some Country' %}
-     {% bootstrap_field form.suburb %}
-     {% bootstrap_field form.timezone %}
+
+     <div class="row">
+       <div class="col-sm-6">
+        {% bootstrap_field form.address placeholder='123 Some St, Some Suburb, Some City, Some Country' %}
+       </div>
+       <div class="col-sm-3">
+        {% bootstrap_field form.suburb %}
+       </div>
+       <div class="col-sm-3">
+        {% bootstrap_field form.timezone %}
+       </div>
+     </div>
      <div class="row">
        <div class="form-group col-sm-6">
          <label class="control-label" for="id_cuisines">Cuisines</label>
@@ -46,24 +61,34 @@
          <div>{{ form.highlights }}</div>
        </div>
      </div>
-     {% bootstrap_field form.quandoo_id %}
-     {% bootstrap_field form.delivery_provider %}
-     {% bootstrap_field form.delivery_link %}
+     <div class="row">
+       <div class="col-sm-4">
+        {% bootstrap_field form.quandoo_id %}
+       </div>
+       <div class="col-sm-4">
+        {% bootstrap_field form.delivery_provider %}
+       </div>
+       <div class="col-sm-4">
+        {% bootstrap_field form.delivery_link %}
+       </div>
+     </div>
      {{form.latitude}}
      {{form.longitude}}
-     {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+     {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
     </form>
   </div>
   <div role="tabpanel" class="tab-pane{%if tab == 'dishes'%} active{%endif%}" id="dishes">
     {% if dishform %}
-      <h2>Add a dish</h2>
+      <h2>Add a dish <small>@ <em>{{form.instance.name}}</small></em></h2>
       {% include 'de_dishform.html' %}
       <hr>
-      <h3>Existing dishes</h3>
+      <h3>Existing dishes <small>@ <em>{{form.instance.name}}</small></em></h3>
       <div class="row card-row">
         {% for dish in dishes %}
           {% include 'dish_card.html' with admin=True %}
           {% cycle '' '' '</div><div class="row card-row">' %}
+        {% empty %}
+          <h4 class="text-muted text-center">No existing dishes</h4>
         {% endfor %}
       </div>
     {%else%}
@@ -72,14 +97,16 @@
   </div>
   <div role="tabpanel" class="tab-pane{%if tab == 'blogs'%} active{%endif%}" id="blogs">
     {% if blogform %}
-      <h2>Add a blog</h2>
+      <h2>Add a blog <small>@ <em>{{form.instance.name}}</small></em></h2>
       {% include 'de_blogform.html' %}
       <hr>
-      <h3>Existing blogs</h3>
+      <h3>Existing blogs <small>@ <em>{{form.instance.name}}</small></em></h3>
       <div class="row card-row">
         {% for blog in blogs %}
           {% include 'blog_card.html' with admin=True %}
           {% cycle '' '' '</div><div class="row card-row">' %}
+        {% empty %}
+          <h4 class="text-muted text-center">No existing blogs</h4>
         {% endfor %}
       </div>
     {%else%}

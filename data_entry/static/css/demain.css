@@ -100,6 +100,38 @@ footer {
 .mini-paginator > .pagination {
   margin: 0;
 }
+h4.dividing {
+  border-bottom: 1px solid #eee;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+.input-group-addon {
+  color: #456;
+  background-color: #e1e3e5;
+  border: none;
+}
+form > .row {
+  margin-bottom: 15px;
+  margin-top: 10px
+}
+.text-muted,
+.help-block,
+.h1 .small, .h1 small, .h2 .small, .h2 small, .h3 .small, .h3 small, .h4 .small,
+.h4 small, .h5 .small, .h5 small, .h6 .small, .h6 small, h1 .small, h1 small,
+h2 .small, h2 small, h3 .small, h3 small, h4 .small, h4 small, h5 .small, h5 small,
+h6 .small, h6 small {
+    color: #6a737c;
+}
+.btn-danger {
+    color: #d9534f;
+    background-color: #FFF;
+    border-color: #d9534f;
+}
+.btn-success {
+    color: #5cb85c;
+    background-color: #FFF;
+    border-color: #5cb85c;
+}
 body {
   color: #134;
 }
