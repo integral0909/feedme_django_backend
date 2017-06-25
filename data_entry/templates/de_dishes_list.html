@@ -1,0 +1,27 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<div class="pull-right mini-paginator">
+  {% bootstrap_pagination dishes pages_to_show='5' size='small' extra='bob' %}
+</div>
+<h2>All Dishes</h2>
+
+<table class="table">
+  <thead>
+    <th>Dish</th>
+    <th>Restaurant</th>
+  </thead>
+  <tbody>
+    {% for dish in dishes %}
+      <tr>
+        <td><a href="/data-entry/dishes/{{dish.id}}/change/">{{dish.title}}</a></td>
+        <td><a href="/data-entry/restaurants/{{dish.restaurant.id}}/change/dishes/">
+            {{dish.restaurant}}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'simple-pagination.html' with collection=dishes %}
+
+{%endblock%}

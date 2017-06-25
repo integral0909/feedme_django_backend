@@ -1,0 +1,20 @@
+<div class="card-wrapper col-sm-4">
+  <div class="card panel panel-default">
+    <div class="panel-heading panel-heading-image" style="background-image: url({{blog.image_url}})">
+    </div>
+    <div class="panel-body">
+      <h4><a href="{{blog.url}}">{{blog.title}}</a></h4>
+      <a href="https://instagram.com/{{blog.author}}">@{{blog.author}}</a>
+      {% if admin %}
+        <div class="pull-right">
+          <ul class="list-inline">
+            <li><a href="/data-entry/blogs/{{blog.id}}/change/" class="btn btn-default">
+              Edit</a></li>
+            <li><a href="/data-entry/blogs/{{blog.id}}/delete/" class="btn btn-danger">
+              Delete</a></li>
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -125,6 +125,24 @@ class DishQueryAdmin(admin.ModelAdmin):
     radius_km.short_description = 'Distance'
 
 
+@admin.register(RecipeQuery)
+class RecipeQueryAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        gis_models.PointField: {'widget': HttpsOpenLayersWidget},
+    }
+    list_display = ('created', 'user', 'result_size', 'page', )
+    readonly_fields = ('query_string', 'latitude', 'longitude',  'result_size', 'page',
+                       'min_total_time', 'max_total_time', 'keywords', 'tags')
+    fields = ('query_string', ('latitude', 'longitude'),
+              ('result_size', 'page'), 'min_total_time', 'max_total_time',
+              ('keywords', 'tags'), 'user',
+              'from_location')
+    search_fields = ('user', )
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'created', 'user_id', 'latitude', 'longitude'
+    ]), )
+
+
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
     inlines = [OpeningTimeInline, DishInline]
@@ -217,7 +235,7 @@ class RecipeIngredientInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     inlines = (RecipeIngredientInline, )
     list_display = ('__str__', 'description', 'ingredient_text', 'created')
-    readonly_fields = ('views_count', )
+    readonly_fields = ('views_count', 'total_time_seconds', 'likes_count', 'random')
 
 
 @admin.register(RecipeRequest)

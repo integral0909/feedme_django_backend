@@ -1,0 +1,27 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<a href="/data-entry/recipes/add/" class="btn btn-default btn-sm pull-right" style="margin-left: 15px;">Add New Recipe</a>
+<div class="pull-right mini-paginator">
+  {% bootstrap_pagination recipes pages_to_show='5' size='small' extra='bob' %}
+</div>
+<h2>All Recipes</h2>
+<table class="table table-rounded">
+  <thead>
+    <th>Recipe</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    {% for recipe in recipes %}
+      <tr>
+        <td><a href="/data-entry/recipes/{{recipe.id}}/change/">{{recipe.name}}</a></td>
+        <td>{{recipe.description}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include 'simple-pagination.html' with collection=recipes %}
+
+{%endblock%}

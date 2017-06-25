@@ -1,6 +1,7 @@
 import traceback
 import sys
 import random
+import re
 from datetime import datetime, timedelta, timezone
 from django.db import models
 from django.contrib.auth.models import User
@@ -12,6 +13,7 @@ from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from django.utils.text import slugify
 from django.utils.html import format_html, format_html_join
+from timezone_field import TimeZoneField
 from main.lib import weekdays
 import logging
 logger = logging.getLogger(__name__)
@@ -33,6 +35,10 @@ def random_number():
     return random.randint(1, 1000000000)
 
 
+class LocationMissing(Exception):
+    pass
+
+
 class Creatable(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -42,6 +48,14 @@ class Creatable(models.Model):
 
     class Meta:
         abstract = True
+
+    def get_logs(self):
+        """Get change logs for model."""
+        from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
+        from django.contrib.contenttypes.models import ContentType
+        return LogEntry.objects.exclude(change_message="No fields changed.")\
+                       .filter(content_type=ContentType.objects.get_for_model(self),
+                               object_id=self.id).order_by('-action_time')[:20]
 
 
 class Profile(models.Model):
@@ -128,6 +142,72 @@ class Cuisine(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Cuisine, self).save(*args, **kwargs)
+
+
+class RecipeQuery(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='recipe_queries')
+    from_location = gis_models.PointField(default="POINT(0.0 0.0)")
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    result_size = models.PositiveIntegerField(default=0)
+    min_total_time = models.PositiveIntegerField(default=0, null=True)
+    max_total_time = models.PositiveIntegerField(default=0, null=True)
+    keywords = models.ManyToManyField('Keyword')
+    tags = models.ManyToManyField('Tag')
+    difficulty = models.CharField(max_length=5, default='')
+    page = models.PositiveIntegerField(default=1)
+    query_string = models.TextField(default='')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def log(self, request, results):
+        """
+        Save a RecipeQuery from an API request.
+        Logging a recipe query must never raise an exception.
+        Caller expects RecipeQuery.log() to fail silently
+        """
+        try:
+            qp = request.query_params
+            self._set_params(qp, request, results)
+            self.save()
+            self._save_related(qp)
+        except Exception as e:
+            logger.error(str(e), exc_info=True, extra={
+                'request': request
+            })
+
+    def _set_params(self, qp, request, results):
+        self.query_string = request.META.get('QUERY_STRING', '')
+        self.result_size = results
+        self.user = request.user
+        loc = qp.get('from_location', '').split(',')
+        try:
+            self.from_location = 'POINT({} {})'.format(*loc)
+        except IndexError:
+            pass
+        self.min_total_time = qp.get('min_total_time')
+        self.max_total_time = qp.get('max_total_time')
+        self.difficulty = qp.getlist('difficulty')
+        self.page = qp.get('page', 1)
+
+    def _save_related(self, qp):
+        self._save_m2m('Keyword', qp.getlist('keywords'))
+        self._save_m2m('Tag', qp.getlist('tags'))
+
+    def _save_m2m(self, mtm_class_name, mtm_list):
+        mtm_class = globals()[mtm_class_name]
+        if hasattr(mtm_class, 'slug') is False or mtm_list is None:
+            return
+        mtm_name = mtm_class_name.lower()+'s'
+        for itm in mtm_list:
+            if len(itm) < 1:
+                continue
+            try:
+                obj = mtm_class.objects.get(slug=slugify(itm))
+            except mtm_class.DoesNotExist:
+                print('Cannot find', mtm_class_name, slugify(itm))
+            else:
+                getattr(self, mtm_name).add(obj)
 
 
 class DishQuery(models.Model):
@@ -225,12 +305,13 @@ class Restaurant(Creatable):
     cuisines = models.ManyToManyField(Cuisine)
     information = models.TextField(blank=True, default='')
     highlights = models.ManyToManyField(Highlight)
-    blogs = models.ManyToManyField(Blog)
+    blogs = models.ManyToManyField(Blog, related_name='restaurant')
     phone_number = models.CharField(max_length=20, blank=True, default='')
     suburb = models.CharField(max_length=55, blank=True, default='')
     instagram_user = models.CharField(max_length=61, blank=True, default='')
     time_offset_minutes = models.IntegerField(help_text="Multiply hours by 60",
                                               default=0)
+    timezone = TimeZoneField(default='', blank=True)
     tripadvisor_widget = models.TextField(blank=True, default='')
     location = gis_models.PointField(default="POINT(0.0 0.0)", blank=True, db_index=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
@@ -243,6 +324,10 @@ class Restaurant(Creatable):
 
     def __str__(self):
         return self.name
+
+    def location_to_latlong(self):
+        self.latitude = self.location.y
+        self.longitude = self.location.x
 
     def time_offset_hours(self):
         return self.time_offset_minutes / 60
@@ -289,10 +374,9 @@ class Restaurant(Creatable):
 
     def save(self, depth=0, *args, **kwargs):
         """
-        Make slugs unique
+        Make slugs unique, geocode timezone.
         """
-        self.latitude = self.location.y
-        self.longitude = self.location.x
+        self.location_to_latlong()
         if depth > 1000:
             print('Slug recursion error restaurant', self.name)
         if depth > 0:
@@ -400,6 +484,11 @@ class Keyword(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.word)
         super(Keyword, self).save(*args, **kwargs)
+
+    @property
+    def word_human(self):
+        args = (r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r' \1', self.word)
+        return re.sub(*args).title()
 
 
 class Tag(models.Model):
@@ -555,6 +644,19 @@ class Dish(Creatable):
                 pass
 
 
+class RecipesByUserQuerySet(models.QuerySet):
+    def not_liked(self, user):
+        return self.exclude(likes__user=user, likes__did_like=True)
+
+    def fresh(self, user):
+        exclude_time = datetime.now(timezone.utc) - timedelta(hours=1)
+        return self.exclude(likes__user=user,
+                            likes__updated__gte=exclude_time)
+
+    def saved(self, user):
+        return self.filter(likes__user=user, likes__did_like=True)
+
+
 class Recipe(Creatable):
     EASY = 'es'
     MODERATE = 'md'
@@ -566,16 +668,30 @@ class Recipe(Creatable):
     )
     name = models.CharField(max_length=255, default='')
     description = models.TextField(default='', blank=True)
-    prep_time_seconds = models.PositiveIntegerField(default=0, blank=True)
-    cook_time_seconds = models.PositiveIntegerField(default=0, blank=True)
-    servings = models.PositiveIntegerField(default=0, blank=True)
+    image_url = models.URLField(blank=True, default='', max_length=600)
+    prep_time_seconds = models.PositiveIntegerField(default=0)
+    cook_time_seconds = models.PositiveIntegerField(default=0)
+    total_time_seconds = models.PositiveIntegerField(default=0)
+    servings = models.PositiveIntegerField(default=0)
     difficulty = models.CharField(default=EASY, choices=DIFFICULTY_CHOICES, max_length=3)
     notes = models.TextField(default='', blank=True)
     source_url = models.URLField(blank=True, default='', max_length=600)
+    keywords = models.ManyToManyField(Keyword, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    likes_count = models.PositiveIntegerField(default=0)
     views_count = models.PositiveIntegerField(default=0)
+    random = models.BigIntegerField(default=random_number)
+
+    objects = RecipesByUserQuerySet.as_manager()
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.prep_time_seconds is None:
+            self.prep_time_seconds = 0
+        self.total_time_seconds = self.prep_time_seconds + self.cook_time_seconds
+        return super(Recipe, self).save(*args, **kwargs)
 
     def ingredient_text(self):
         txt = ''
@@ -587,6 +703,36 @@ class Recipe(Creatable):
                 txt += '%sx %s, ' % (int(ingr.quantity), ingr.name)
         return txt.rstrip(', ')
     ingredient_text.short_description = 'Ingredients'
+
+    def keyword_list_html(self):
+        return format_html_join(
+            '\n', '{}<br>', ((keyword.word, ) for keyword in self.keywords.all())
+        )
+    keyword_list_html.short_description = 'keywords'
+
+    def keyword_list(self):
+        return ', '.join([k.word for k in self.keywords.all()])
+
+    def tag_list_html(self):
+        return format_html_join(
+            '\n', '{}<br>', ((tag.name,) for tag in self.tags.all())
+        )
+    tag_list_html.short_description = 'tags'
+
+    def tag_list(self):
+        return ', '.join([t.name for t in self.tags.all()])
+
+    def increment_views(self):
+        self.views_count += 1
+        self.save()
+
+    def increment_likes(self):
+        self.likes_count += 1
+        self.save()
+
+    def randomise(self):
+        self.random = random.randint(1, 1000000000)
+        self.save()
 
 
 class RecipeStep(Creatable):
@@ -668,8 +814,8 @@ class Like(Creatable):
         super(Like, self).save(*args, **kwargs)
         if self.did_like:
             self.dish.increment_likes()
-        lt = LikeTransaction(user=self.user, dish=self.dish, did_like=self.did_like)
-        lt.save()
+        LikeTransaction.objects.create(user=self.user, dish=self.dish,
+                                       did_like=self.did_like)
 
     class Meta:
         unique_together = (('user', 'dish'), )
@@ -678,6 +824,39 @@ class Like(Creatable):
 class LikeTransaction(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='like_history')
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='like_history')
+    did_like = models.BooleanField(default=False)
+
+
+class RecipeView(Creatable):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipe_views')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='views')
+
+    def save(self, *args, **kwargs):
+        super(RecipeView, self).save(*args, **kwargs)
+        self.recipe.increment_views()
+
+
+class RecipeLike(Creatable):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipe_likes')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='likes')
+    did_like = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super(RecipeLike, self).save(*args, **kwargs)
+        if self.did_like:
+            self.recipe.increment_likes()
+        RecipeLikeTransaction.objects.create(user=self.user, recipe=self.recipe,
+                                             did_like=self.did_like)
+
+    class Meta:
+        unique_together = (('user', 'recipe'), )
+
+
+class RecipeLikeTransaction(Creatable):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='recipe_like_history')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               related_name='like_history')
     did_like = models.BooleanField(default=False)
 
 

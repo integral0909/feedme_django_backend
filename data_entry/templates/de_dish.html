@@ -1,0 +1,12 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<script src='{% static 'js/better-filter-widget.js' %}'></script>
+<link href='{% static 'css/better-filter-widget.css' %}' rel="stylesheet">
+
+  <h2>{{action}} Dish</h2>
+  {% bootstrap_messages %}
+  {% include 'de_dishform.html' with dishform=form %}
+
+{%endblock%}

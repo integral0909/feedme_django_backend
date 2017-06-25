@@ -20,16 +20,14 @@ class Dish(django_filters.rest_framework.FilterSet):
         to_field_name='name',
         queryset=models.Highlight.objects.all())
     tags = django_filters.ModelMultipleChoiceFilter(
-        name='tags__name',
-        to_field_name='name',
+        name='tags__name', to_field_name='name',
         queryset=models.Tag.objects.all())
     has_delivery = django_filters.BooleanFilter(
         name='restaurant__delivery_provider', lookup_expr='isnull', exclude=True)
     has_booking = django_filters.BooleanFilter(
         name='restaurant__quandoo_id', lookup_expr='isnull', exclude=True)
     suburb = django_filters.ModelMultipleChoiceFilter(
-        name='restaurant__suburb',
-        to_field_name='suburb',
+        name='restaurant__suburb', to_field_name='suburb',
         queryset=models.Restaurant.objects.all().distinct('suburb')
     )
     order = django_filters.OrderingFilter(fields=(
@@ -40,3 +38,24 @@ class Dish(django_filters.rest_framework.FilterSet):
     class Meta:
         model = models.Dish
         fields = ['min_price', 'max_price', 'keywords']
+
+
+class Recipe(django_filters.rest_framework.FilterSet):
+    min_total_time = django_filters.NumberFilter(name='total_time_seconds',
+                                                 lookup_expr='gte')
+    max_total_time = django_filters.NumberFilter(name='total_time_seconds',
+                                                 lookup_expr='lte')
+    keywords = django_filters.ModelMultipleChoiceFilter(
+        name='keywords__word',
+        to_field_name='word',  # conjoined=True, Removed until ui limit 3 enforced
+        queryset=models.Keyword.objects.all())
+    tags = django_filters.ModelMultipleChoiceFilter(
+        name='tags__name', to_field_name='name',
+        queryset=models.Tag.objects.all())
+    difficulty = django_filters.MultipleChoiceFilter(
+        choices=models.Recipe.DIFFICULTY_CHOICES
+    )
+
+    class Meta:
+        model = models.Recipe
+        fields = ['min_total_time', 'max_total_time', 'keywords', 'tags', 'difficulty']

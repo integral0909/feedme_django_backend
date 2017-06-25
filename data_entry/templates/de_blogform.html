@@ -1,0 +1,10 @@
+{% load bootstrap3 %}
+<form method="post">
+  {% csrf_token %}
+  {% bootstrap_field blogform.title %}
+  {% bootstrap_field blogform.author addon_before='@' placeholder='username' %}
+  {% bootstrap_field blogform.url placeholder='https://somewebsite.com/' %}
+  {% bootstrap_field blogform.image_url %}
+  {{blogform.restaurant_id}}
+  {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
+</form>

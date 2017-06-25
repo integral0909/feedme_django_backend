@@ -1,0 +1,27 @@
+{% extends 'de_base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block 'content'%}
+<a href="/data-entry/restaurants/add/" class="btn btn-default btn-sm pull-right" style="margin-left:15px;">Add New Restaurant</a>
+<div class="pull-right mini-paginator">
+  {% bootstrap_pagination restaurants pages_to_show='5' size='small' extra='bob' %}
+</div>
+<h2>All Restaurants</h2>
+<table class="table table-rounded">
+  <thead>
+    <th>Restaurant</th>
+    <th>Address</th>
+  </thead>
+  <tbody>
+    {% for res in restaurants %}
+      <tr>
+        <td><a href="/data-entry/restaurants/{{res.id}}/change/">{{res.name}}</a></td>
+        <td>{{res.address}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include 'simple-pagination.html' with collection=restaurants %}
+
+{%endblock%}

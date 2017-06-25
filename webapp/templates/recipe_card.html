@@ -1,0 +1,22 @@
+<div class="card-wrapper col-sm-4">
+  <div class="card panel panel-default">
+    <div class="panel-heading panel-heading-image" style="background-image: url({{recipe.image_url}})">
+    </div>
+    <div class="panel-body">
+      <h4><a href="/recipes/{{recipe.id}}/">{{recipe.name}}</a></h4>
+      <p>{{recipe.description}}</p>
+      <p>{{recipe.ingredient_text}}</p>
+      <a href="{{recipe.source_url}}">{{recipe.source_url}}</a>
+      {% if admin %}
+        <div class="pull-right">
+          <ul class="list-inline">
+            <li><a href="/data-entry/recipes/{{recipe.id}}/change/" class="btn btn-default">
+              Edit</a></li>
+            <li><a href="/data-entry/recipes/{{recipe.id}}/delete/" class="btn btn-danger">
+              Delete</a></li>
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

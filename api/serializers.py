@@ -54,7 +54,7 @@ class OpeningTime(serializers.ModelSerializer):
 
 class Keyword(serializers.ModelSerializer):
     def to_representation(self, obj):
-        return obj.word
+        return obj.word_human
 
     class Meta:
         model = models.Keyword
@@ -138,6 +138,9 @@ class Recipe(serializers.ModelSerializer):
     steps = RecipeStep(many=True)
     difficulty = serializers.SerializerMethodField('get_difficulty_display')
     notes = NullCharField()
+    source_url = NullCharField()
+    image_url = NullCharField()
+    keywords = Keyword(many=True)
 
     def get_difficulty_display(self, obj):
         return obj.get_difficulty_display()
@@ -147,9 +150,10 @@ class Recipe(serializers.ModelSerializer):
 
     class Meta:
         model = models.Recipe
-        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps',
-                  'prep_time_seconds', 'cook_time_seconds', 'servings',
-                  'difficulty', 'notes')
+        fields = ('pg_id', 'name', 'description', 'ingredients', 'steps', 'source_url',
+                  'prep_time_seconds', 'cook_time_seconds', 'total_time_seconds',
+                  'servings', 'difficulty', 'notes', 'image_url', 'likes_count',
+                  'keywords')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):

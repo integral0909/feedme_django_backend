@@ -53,6 +53,31 @@ class DishViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = models.Recipe.objects.all()
+    serializer_class = serializers.Recipe
+    filter_class = filters.Recipe
+
+    def list(self, request, *args, **kwargs):
+        if self.request.query_params.get('saved') == 'true':
+            queryset = models.Recipe.objects.saved(self.request.user)
+        else:
+            queryset = self.filter_queryset(
+                self.get_queryset().not_liked(self.request.user).fresh(self.request.user)
+                    .order_by('random', 'id').distinct('random', 'id')
+            )
+
+            models.RecipeQuery().log(request=request, results=queryset.count())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(convertedSet, many=True)
+        return Response(serializer.data)
+
+
 class RestaurantDishesViewSet(generics.ListAPIView):
     """
     Dishes from a particular restaurant
@@ -87,45 +112,57 @@ class DeliveryProviderViewSet(viewsets.ModelViewSet):
 
 
 class LikesList(APIView):
-    """
-    Post only, for saving likes
-
-    * Requires token authentication.
-    """
-    def post(self, request, format=None):
+    """Post only, for saving likes."""
+    def post(self, request, format=None, subject='dishes'):
         did_like = request.data.get("did_like")
+        user = request.user
+        subject_class, class_name, like_class, view_class = self._setup_type(subject)
         try:
-            user = request.user
-            dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
-            like = models.Like.objects.get(dish=dish, user=user)
+            obj = subject_class.objects.get(pk=request.data.get("{}_id".format(class_name)))
+        except subject_class.DoesNotExist:
+            return self._error_response(class_name)
+        try:
+            like = like_class.objects.get(**{class_name: obj, 'user': user})
             like.did_like = did_like
             like.save()
             return Response({"success": True, "created": False})
-        except models.Like.DoesNotExist:
-            like = models.Like(user=user, dish=dish, did_like=did_like)
+        except like_class.DoesNotExist:
+            like = like_class(**{'user': user, class_name: obj, 'did_like': did_like})
             like.save()
             return Response({"success": True, "created": True})
-        except models.Dish.DoesNotExist:
-            return Response({"success": False, "created": False,
-                             "Error": "Dish not found"}, 400)
+
+    @staticmethod
+    def _setup_type(subject):
+        if subject == 'recipes':
+            subject_class = models.Recipe
+            class_name = 'recipe'
+            like_class = models.RecipeLike
+            view_class = models.RecipeView
+        else:
+            subject_class = models.Dish
+            class_name = 'dish'
+            like_class = models.Like
+            view_class = models.View
+        return subject_class, class_name, like_class, view_class
+
+    @staticmethod
+    def _error_response(class_name):
+        return Response({"success": False, "created": False,
+                         "Error": "{} not found".format(class_name.upper())}, 400)
 
 
-class ViewsList(APIView):
-    """
-    Post only, for saving views
-
-    * Requires token authentication.
-    """
-    def post(self, request, format=None):
+class ViewsList(LikesList):
+    """Post only, for saving views."""
+    def post(self, request, format=None, subject='dishes'):
+        user = request.user
+        subject_class, class_name, like_class, view_class = self._setup_type(subject)
         try:
-            user = request.user
-            dish = models.Dish.objects.get(pk=request.data.get("dish_id"))
-            view = models.View(dish=dish, user=user)
-            view.save()
-            return Response({"success": True})
-        except models.Dish.DoesNotExist:
-            return Response({"success": False, "created": False,
-                             "Error": "Dish not found"}, 400)
+            obj = subject_class.objects.get(pk=request.data.get("{}_id".format(class_name)))
+        except subject_class.DoesNotExist:
+            return self._error_response(class_name)
+        view = view_class(**{class_name: obj, 'user': user})
+        view.save()
+        return Response({"success": True})
 
 
 class FulfilmentEventList(APIView):
@@ -204,7 +241,8 @@ class SearchTermList(APIView):
         res = {
             'keywords': [kwd.word for kwd in models.Keyword.objects.all()],
             'highlights': [hlt.name for hlt in models.Highlight.objects.all()],
-            'tags': [tag.name for tag in models.Tag.objects.all()]
+            'tags': [tag.name for tag in models.Tag.objects.all()],
+            'ingredients': [i.name for i in models.Ingredient.objects.all()]
         }
         count = 0
         for key, val in res.items():

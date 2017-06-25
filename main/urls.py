@@ -8,6 +8,6 @@ urlpatterns = [
     # url(r'^$', r_login, name='index'),
     url(r'^', include('webapp.urls')),
     url(r'^home/', views.home, name='home'),
-    url('^accounts/', include('auth.urls')),
+    url(r'^accounts/', include('auth.urls')),
     url(r'^reporting/', views.report),
 ]

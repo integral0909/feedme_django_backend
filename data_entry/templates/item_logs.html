@@ -1,0 +1,34 @@
+<ul class="dropdown-menu logs-dropdown">
+  <li class="external">
+    <h3><strong>{{ logCount }}</strong> activity log(s)</h3>
+  </li>
+    {% if logs %}
+      <ul class="dropdown-menu-list logs-dropdown-list list-unstyled">
+        {% for log in logs %}
+          <li>
+            <span class="time pull-right label label-default">{{ log.action_time|date:"m/d/Y - g:ia" }}</span>
+            {% if log.action_flag == 1 %}
+              <span class="label label-icon label-success pull-left">
+                <i class="fa fa-plus"></i>
+              </span>
+            {% elif log.action_flag == 2 %}
+              <span class="label label-icon label-info pull-left">
+                <i class="fa fa-edit"></i>
+              </span>
+            {% elif log.action_flag == 3 %}
+              <span class="label label-icon label-danger pull-left">
+                <i class="fa fa-minus"></i>
+              </span>
+            {% endif %}
+            <span class="details">
+              <small>{{ log }}</small>
+              </span>
+              <div class="user"><small><small>{{log.user}}</small></small></div>
+            </li>
+         {% endfor %}
+      </ul>
+    {% else %}
+      <p>This object doesn't have a change history. It probably wasn't added via this admin site.</p>
+    {% endif %}
+  </li>
+</ul>
