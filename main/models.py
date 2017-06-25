@@ -325,37 +325,9 @@ class Restaurant(Creatable):
     def __str__(self):
         return self.name
 
-    def geocode(self):
-        """Run all geocoding operations."""
-        try:
-            self.location_to_latlong()
-        except LocationMissing:
-            self.address_to_location()
-            self.location_to_latlong()
-        try:
-            self.timezone_to_offset_minutes()
-        except Exception as e:
-            print(e)
-            self.location_to_timezone()
-            self.timezone_to_offset_minutes()
-
     def location_to_latlong(self):
-        if 0.0 in [float(self.location.y), float(self.location.x)]:
-            raise LocationMissing()
         self.latitude = self.location.y
         self.longitude = self.location.x
-
-    def timezone_to_offset_minutes(self):
-        """Convert timezone to current offset minutes."""
-        pass
-
-    def location_to_timezone(self):
-        """Convert location to timezone via google geocoding."""
-        pass
-
-    def address_to_location(self):
-        """Convert address to location."""
-        pass
 
     def time_offset_hours(self):
         return self.time_offset_minutes / 60
@@ -404,7 +376,7 @@ class Restaurant(Creatable):
         """
         Make slugs unique, geocode timezone.
         """
-        self.geocode()
+        self.location_to_latlong()
         if depth > 1000:
             print('Slug recursion error restaurant', self.name)
         if depth > 0:

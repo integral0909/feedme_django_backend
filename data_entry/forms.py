@@ -45,6 +45,28 @@ class RestaurantForm(forms.ModelForm):
             'longitude': forms.HiddenInput()
         }
 
+    def geocode(self):
+        """Run all geocoding operations."""
+        self.address_to_location()
+        try:
+            self.timezone_to_offset_minutes()
+        except Exception as e:  # If there is no timezone, derive it from location
+            print(e)
+            self.location_to_timezone()
+            self.timezone_to_offset_minutes()
+
+    def timezone_to_offset_minutes(self):
+        """Convert timezone to current offset minutes."""
+        pass
+
+    def location_to_timezone(self):
+        """Convert location to timezone via google geocoding."""
+        pass
+
+    def address_to_location(self):
+        """Convert address to location."""
+        pass
+
 
 class BlogForm(forms.ModelForm):
     image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
