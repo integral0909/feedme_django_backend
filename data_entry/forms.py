@@ -5,7 +5,7 @@ from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from timezone_field import TimeZoneFormField
 from s3direct.widgets import S3DirectWidget
 from main.models import (Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish,
-                         Recipe, RecipeIngredient)
+                         Recipe, RecipeIngredient, Cuisine, Highlight, Tag)
 import pytz
 
 
@@ -144,3 +144,21 @@ class RecipeIngredientForm(forms.ModelForm):
     class Meta:
         model = RecipeIngredient
         fields = '__all__'
+
+
+class CuisineForm(forms.ModelForm):
+    class Meta:
+        model = Cuisine
+        fields = ['name']
+
+
+class HighlightForm(forms.ModelForm):
+    class Meta:
+        model = Highlight
+        fields = ['name']
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ['name']

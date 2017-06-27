@@ -1,0 +1,32 @@
+{% load bootstrap3 %}
+<form action="{{request.path}}?{{request.GET.urlencode}}" method="post">
+  {% bootstrap_messages %}
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  <input type="submit" class="btn btn-success" value="SUBMIT"></input>
+</form>
+<script id="modal-data">
+  DE.FormModal.activeForm = {
+    "url": "{{request.path}}",
+    "success": function (response) {
+      var $res = DE.FormModal.modalBody.find('div.return-data')
+      if ($res.data('success')) {
+        var id = $res.data('id')
+        var name = $res.data('name')
+        $('#id_{{modal}}').prepend('<option value="'+id+'">'+name+'</option>')
+        BetterFilterWidget('{{modal}}');
+        setTimeout(function(){
+          console.log($('#available_{{modal}}'))
+          console.log('#available_{{modal}}')
+          $('#available_{{modal}} > .item-available[data-id="'+id+'"]').click()
+        }, 500)
+        setTimeout(function() {
+          DE.FormModal.hideModal()
+        }, 2000)
+      }
+    },
+    "failure": function () {
+      console.log("Uh oh")
+    }
+  }
+</script>

@@ -4,7 +4,6 @@
 {% block 'content'%}
 <script src='{% static 'js/better-filter-widget.js' %}'></script>
 <link href='{% static 'css/better-filter-widget.css' %}' rel="stylesheet">
-
 <!-- Nav tabs -->
  <ul class="nav nav-tabs" role="tablist">
    <li role="presentation"{%if tab is False %} class="active"{%endif%}><a href="#restaurant" aria-controls="restaurant" role="tab" data-toggle="tab">Restaurant</a></li>
@@ -55,9 +54,15 @@
        <div class="form-group col-sm-6">
          <label class="control-label" for="id_cuisines">Cuisines</label>
          <div>{{ form.cuisines }}</div>
+         <div class="bfw-add-item">
+           <a href="#" class="btn btn-success btn-sm" data-modal-open="form" data-form-url="/data-entry/modals/cuisines/?basic=t">Add New Cuisine</a>
+         </div>
        </div>
        <div class="form-group col-sm-6">
          <label class="control-label" for="id_highlights">Highlights</label>
+         <div class="bfw-add-item">
+           <a href="#" class="btn btn-success btn-sm" data-modal-open="form" data-form-url="/data-entry/modals/highlights/?basic=t">Add New Highlight</a>
+         </div>
          <div>{{ form.highlights }}</div>
        </div>
      </div>

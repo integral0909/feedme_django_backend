@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect, HttpResponse
-from .forms import RestaurantForm, BlogForm, DishForm, RecipeForm, RecipeIngredientForm
-from main.models import Restaurant, Blog, Dish, Recipe, RecipeIngredient
+from .forms import (RestaurantForm, BlogForm, DishForm, RecipeForm, RecipeIngredientForm,
+                    HighlightForm, TagForm, CuisineForm)
+from main.models import (Restaurant, Blog, Dish, Recipe, RecipeIngredient,
+                         Highlight, Tag, Cuisine)
 from django.forms import modelformset_factory, formset_factory
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
@@ -41,6 +43,26 @@ def change_item(request, item_type, item_id=None, tab=False):
     defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}
     context = merge_dicts(defaults, context)
     return render(request, 'de_%s.html' % class_name.lower(), context)
+
+
+@staff_member_required
+def modal(request, modal):
+    basic = request.GET.get('basic')
+    class_name, ObjClass, FormClass = _get_class_objects(modal)
+    template = 'modals/basic.html' if basic else 'modals/%s.html' % modal
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = FormClass(request.POST)
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            obj = form.save()
+            template = 'modals/success.html'
+            # redirect to a new URL:
+            return render(request, template, {'obj': obj})
+    else:
+        form = FormClass()
+    return render(request, template, {'form': form, 'modal': modal})
 
 
 def _extra_processing(item_type, obj=None):
