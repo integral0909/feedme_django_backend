@@ -66,7 +66,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.query_params.get('saved') == 'true':
             if self.request.query_params.get('count') == 'true':
                 return Response({
-                    'count': models.Dish.objects.saved(self.request.user).count()
+                    'count': models.Recipe.objects.saved(self.request.user).count()
                 })
             queryset = models.Recipe.objects.saved(self.request.user)
         else:
