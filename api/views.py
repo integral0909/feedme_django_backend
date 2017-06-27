@@ -31,6 +31,10 @@ class DishViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if self.request.query_params.get('saved') == 'true':
+            if self.request.query_params.get('count') == 'true':
+                return Response({
+                    'count': models.Dish.objects.saved(self.request.user).count()
+                })
             queryset = models.Dish.objects.saved(self.request.user)\
                              .order_by_distance(
                 location=request.query_params.get('from_location', '').split(',')
@@ -60,6 +64,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if self.request.query_params.get('saved') == 'true':
+            if self.request.query_params.get('count') == 'true':
+                return Response({
+                    'count': models.Dish.objects.saved(self.request.user).count()
+                })
             queryset = models.Recipe.objects.saved(self.request.user)
         else:
             queryset = self.filter_queryset(
