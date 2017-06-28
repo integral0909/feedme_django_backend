@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 import raven
 import zipfile
+from common.utils import create_uuid_filename
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -285,7 +286,7 @@ S3DIRECT_REGION = 'us-west-2'
 S3DIRECT_DESTINATIONS = {
     'raw-img': {
         # REQUIRED
-        'key': '',
+        'key': create_uuid_filename,
         # OPTIONAL
         'auth': lambda u: u.is_staff,
         'allowed': ['image/jpeg', 'image/png'],  # Default allow all mime types
@@ -320,6 +321,7 @@ else:
 STATICFILES_DIRS = (
     'common-static/',
 )
+CDN_URL = 'https://cdn.feedmeeapp.com/images/'
 # Tell the staticfiles app to use S3Boto storage when writing the collected static
 # files (when you run `collectstatic`).
 # STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'

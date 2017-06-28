@@ -12,6 +12,7 @@ router.register(r'recipes', views.RecipeViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^geocode/', views.Geocode.as_view()),
     url(r'^reporting/', include('api.reporting.urls')),
     url(r'^likes/(?P<subject>[\w]+)/', views.LikesList.as_view()),
     url(r'^likes/', views.LikesList.as_view()),

@@ -1,12 +1,18 @@
 from django import forms
+from django.conf import settings
 from better_filter_widget import BetterFilterWidget
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from timezone_field import TimeZoneFormField
 from s3direct.widgets import S3DirectWidget
 from main.models import (Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish,
-                         Recipe, RecipeIngredient, Cuisine, Highlight, Tag)
+                         Recipe, RecipeIngredient, Cuisine, Highlight, Tag, OpeningTime)
 import pytz
+import uuid
+
+
+def _get_cdn_image(data):
+    return '%s%s' % (settings.CDN_URL, data.get('image_url', '').split('/')[-1:][0])
 
 
 class RestaurantForm(forms.ModelForm):
@@ -26,60 +32,62 @@ class RestaurantForm(forms.ModelForm):
     timezone = TimeZoneFormField(help_text='Auto-filled by address')
     instagram_user = forms.CharField(label='Photo credit', max_length=61, min_length=2,
                                      required=False)
-    # Some sort of timezone offset selector?
-    # Location should be set via address and Google Places API or 3rd party.
     quandoo_id = forms.IntegerField(label='Quandoo ID', min_value=1, required=False)
     delivery_provider = forms.ModelChoiceField(label='Delivery service provider',
-                                               queryset=DeliveryProvider.objects.all())
-    delivery_link = forms.URLField()
+                                               queryset=DeliveryProvider.objects.all(),
+                                               required=False)
+    delivery_link = forms.URLField(required=False)
 
     class Meta:
         model = Restaurant
         fields = ('name', 'image_url', 'address', 'cuisines', 'information', 'highlights',
                   'phone_number', 'suburb', 'instagram_user', 'quandoo_id',
-                  'delivery_provider', 'delivery_link', 'latitude', 'longitude')
+                  'delivery_provider', 'delivery_link', 'latitude', 'longitude',
+                  'time_offset_minutes', 'firebase_id', 'id')
         widgets = {
             'highlights': BetterFilterWidget(),
             'cuisines': BetterFilterWidget(),
             'latitude': forms.HiddenInput(),
-            'longitude': forms.HiddenInput()
+            'longitude': forms.HiddenInput(),
+            'time_offset_minutes': forms.HiddenInput(),
+            'id': forms.HiddenInput()
         }
 
-    def geocode(self):
-        """Run all geocoding operations."""
-        self.address_to_location()
-        try:
-            self.timezone_to_offset_minutes()
-        except Exception as e:  # If there is no timezone, derive it from location
-            print(e)
-            self.location_to_timezone()
-            self.timezone_to_offset_minutes()
-
-    def timezone_to_offset_minutes(self):
-        """Convert timezone to current offset minutes."""
-        pass
-
-    def location_to_timezone(self):
-        """Convert location to timezone via google geocoding."""
-        pass
-
-    def address_to_location(self):
-        """Convert address to location."""
-        pass
+    def save(self, commit=True):
+        data = self.cleaned_data
+        obj = super(RestaurantForm, self).save(commit=False)
+        obj.image_url = _get_cdn_image(data)
+        obj.location = 'POINT({0} {1})'.format(data.get('longitude'),
+                                               data.get('latitude'))
+        obj.firebase_id = uuid.uuid4().hex
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
 
 
 class BlogForm(forms.ModelForm):
     image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
-    restaurant_id = forms.IntegerField(min_value=0, widget=forms.HiddenInput())
+    restaurant_id = forms.IntegerField(min_value=0, widget=forms.HiddenInput(),
+                                       required=False)
 
     class Meta:
         model = Blog
-        fields = ('author', 'image_url', 'title', 'url', 'restaurant_id')
+        fields = ('author', 'image_url', 'title', 'url', 'restaurant_id', 'id')
 
     def save(self, commit=True):
-        restaurant = Restaurant.objects.get(pk=self.cleaned_data['restaurant_id'])
-        obj = super(BlogForm, self).save(commit=commit)
-        restaurant.blogs.add(obj)
+        obj = super(BlogForm, self).save(commit=False)
+        obj.image_url = _get_cdn_image(self.cleaned_data)
+        obj.firebase_id = uuid.uuid4().hex
+        if commit:
+            obj.save()
+            self.save_m2m()
+        try:
+            restaurant = Restaurant.objects.get(pk=self.cleaned_data.get('restaurant_id'))
+        except Restaurant.DoesNotExist:
+            pass
+        else:
+            restaurant.blogs.add(obj)
         return obj
 
 
@@ -108,6 +116,15 @@ class DishForm(forms.ModelForm):
                      For example for $14.95 input 1495 or for $10 input 1000.'''
         }
 
+    def save(self, commit=True):
+        obj = super(DishForm, self).save(commit=False)
+        obj.image_url = _get_cdn_image(self.cleaned_data)
+        obj.firebase_id = uuid.uuid4().hex
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
+
 
 class RecipeForm(forms.ModelForm):
     image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
@@ -115,8 +132,7 @@ class RecipeForm(forms.ModelForm):
                                   widget=forms.RadioSelect())
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get('dish_opts'):
-            qs = kwargs.pop('dish_opts')
+        qs = kwargs.pop('dish_opts')
         super(RecipeForm, self).__init__(*args, **kwargs)
         try:
             self.fields['dish'].queryset = qs
@@ -144,6 +160,10 @@ class RecipeIngredientForm(forms.ModelForm):
     class Meta:
         model = RecipeIngredient
         fields = '__all__'
+        widgets = {
+            'recipe': forms.HiddenInput()
+        }
+        exclude = ('valid_from', 'valid_through')
 
 
 class CuisineForm(forms.ModelForm):
@@ -162,3 +182,15 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ['name']
+
+
+class RestaurantOpeningTimeForm(forms.ModelForm):
+    class Meta:
+        model = OpeningTime
+        fields = '__all__'
+        widgets = {
+            'restaurant': forms.HiddenInput()
+        }
+        labels = {
+            'day_of_week': 'Day of the week'
+        }

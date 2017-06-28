@@ -5,6 +5,7 @@ from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from django.conf import settings
 import api.serializers as serializers
 import main.models as models
 import api.filters as filters
@@ -266,3 +267,31 @@ class SuburbList(APIView):
         rests = models.Restaurant.objects.all().distinct('suburb')
         rests = [rest.suburb for rest in rests]
         return Response({'count': len(rests), 'results': rests})
+
+
+class Geocode(APIView):
+    def get(self, request, format=None):
+        """Pass parameters via query string and get their transformed value."""
+        import googlemaps
+        gmaps = googlemaps.Client(key=settings.GOOGLEMAPS_API['key'])
+        return_type = request.query_params.get('return')
+        if request.query_params.get('address'):
+            addr = request.query_params.get('address')
+            geocode_results = gmaps.geocode(addr)
+            loc = self._extract_coords(geocode_results[0])
+            suburb = self._extract_suburb(geocode_results[0])
+            return Response({'longitude': loc['lng'], 'latitude': loc['lat'],
+                             'suburb': suburb})
+        coords = request.query_params.get('coords')
+        if coords and return_type == 'timezone':
+            georesult = gmaps.timezone(location=coords)
+            return Response(georesult)
+
+    @staticmethod
+    def _extract_coords(geocode_result):
+        return geocode_result['geometry']['location']
+
+    @staticmethod
+    def _extract_suburb(geocode_result):
+        return (cmp['short_name'] for cmp in geocode_result['address_components']
+                if 'locality' in cmp['types'])

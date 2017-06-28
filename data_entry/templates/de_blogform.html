@@ -1,10 +1,22 @@
 {% load bootstrap3 %}
-<form method="post">
+<form method="post" action="{% if async%}/data-entry/forms/blogs/"
+      class="async-managed{%endif%}" id="blog-form">
   {% csrf_token %}
-  {% bootstrap_field blogform.title %}
-  {% bootstrap_field blogform.author addon_before='@' placeholder='username' %}
-  {% bootstrap_field blogform.url placeholder='https://somewebsite.com/' %}
-  {% bootstrap_field blogform.image_url %}
-  {{blogform.restaurant_id}}
+  {% bootstrap_field form.title %}
+  {% bootstrap_field form.author addon_before='@' placeholder='username' %}
+  {% bootstrap_field form.url placeholder='https://somewebsite.com/' %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <label class="control-label" for="id_image">Image</label>
+        {{form.image_url}}<br>
+        <span class="help-block">{{form.image_url.errors}}</span>
+      </div>
+    </div>
+  </div>
+  {{form.restaurant_id}}
+  {% if async is False and form.instance.id%}
+    <input type="hidden" name="id" value="{{form.instance.id}}" />
+  {% endif %}
   {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
 </form>
