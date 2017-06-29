@@ -132,7 +132,10 @@ class RecipeForm(forms.ModelForm):
                                   widget=forms.RadioSelect())
 
     def __init__(self, *args, **kwargs):
-        qs = kwargs.pop('dish_opts')
+        try:
+            qs = kwargs.pop('dish_opts')
+        except KeyError:
+            pass
         super(RecipeForm, self).__init__(*args, **kwargs)
         try:
             self.fields['dish'].queryset = qs
