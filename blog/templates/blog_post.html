@@ -1,0 +1,14 @@
+{% extends "app_base.html" %}
+
+{% load static %}
+
+{% block title %} | {{post.title}}{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top:40px;">
+  <img class="img-responsive" src='{{post.image_url}}'>
+  <h1>{{post.title}}</h1>
+  <h3><small>By {{post.author}}</small></h3>
+{{post.content | safe }}
+</div>
+{% endblock %}

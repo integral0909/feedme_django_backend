@@ -12,6 +12,7 @@ coverage==4.3.4
 Django==1.10.5
 django-bootstrap3==8.2.3
 django-cities==0.5.0.3
+django-ckeditor==5.2.2
 django-compat==1.0.14
 django-cors-headers==2.0.2
 django-crispy-forms==1.6.1
