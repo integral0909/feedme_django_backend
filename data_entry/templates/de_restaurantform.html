@@ -60,9 +60,11 @@
     {% bootstrap_field form.delivery_link %}
   </div>
 </div>
-<hr>
-<h4>Opening Times</h4>
-{% include 'de_opentimeformset.html' %}
+{% if otfset %}
+  <hr>
+  <h4>Opening Times</h4>
+  {% include 'de_opentimeformset.html' %}
+{% endif %}
 {{form.latitude}}
 {{form.longitude}}
 {{form.time_offset_minutes}}
