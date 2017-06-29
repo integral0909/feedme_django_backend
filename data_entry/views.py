@@ -28,17 +28,18 @@ def change_item(request, item_type, item_id=None, tab=False):
         context = merge_dicts({'action': 'Change', 'form': FormClass(instance=obj),
                                'logs': obj.get_logs()}, _extra_processing(item_type, obj))
     else:
+        obj = None
         context = _extra_processing(item_type)
 
     if request.method == 'POST':
-        return _change_item_post(request, item_id, obj, FormClass, context, item_type)
+        return _change_item_post(request, item_id, FormClass, context, item_type, obj=obj)
 
     defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}
     context = merge_dicts(defaults, context)
     return render(request, 'de_%s.html' % class_name.lower(), context)
 
 
-def _change_item_post(request, item_id, obj, FormClass, context, item_type):
+def _change_item_post(request, item_id, FormClass, context, item_type, obj=None):
     """All logic unique to handling a POST request for change_item."""
     form, FLAG = _update_or_insert(item_id, FormClass, obj, request.POST)
     if form.is_valid():
@@ -159,11 +160,19 @@ def _extra_processing(item_type, obj=None):
     if item_type == 'recipes':
         ctx['formset'] = RecipeFormSet(
             queryset=RecipeIngredient.objects.filter(recipe=obj))
+    if item_type == 'restaurants':
+        OTFormset = inlineformset_factory(Restaurant, OpeningTime, extra=7,
+                                          form=RestaurantOpeningTimeForm)
+        otfset = OTFormset(initial=[
+            {'day_of_week': 'sun'}, {'day_of_week': 'mon'}, {'day_of_week': 'tue'},
+            {'day_of_week': 'wed'}, {'day_of_week': 'thu'}, {'day_of_week': 'fri'},
+            {'day_of_week': 'sat'}])
+        ctx = {'otfset': otfset, 'OTFormset': OTFormset}
     if item_type == 'restaurants' and obj:
-        dishes = Dish.objects.filter(restaurant=obj)
-        OTFormset = inlineformset_factory(Restaurant, OpeningTime,
+        OTFormset = inlineformset_factory(Restaurant, OpeningTime, extra=2,
                                           form=RestaurantOpeningTimeForm)
         otfset = OTFormset(instance=obj)
+        dishes = Dish.objects.filter(restaurant=obj)
         ctx = {
             'blogs': Blog.objects.filter(restaurant=obj),
             'dishes': dishes,
