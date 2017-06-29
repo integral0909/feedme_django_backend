@@ -7,6 +7,8 @@
 
   <h2>{{action}} Dish</h2>
   {% bootstrap_messages %}
-  {% include 'de_dishform.html' with dishform=form %}
-
+  {% include 'de_dishform.html' %}
+  <script>
+    $(document).ready(function(){DE.currentPage = new DE.pageManagers.Dish()})
+  </script>
 {%endblock%}

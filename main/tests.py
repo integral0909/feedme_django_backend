@@ -1,5 +1,5 @@
 from django.test import TestCase
-from main.models import Restaurant
+from main.models import Restaurant, Recipe
 from main.lib import weekdays
 
 
@@ -22,3 +22,10 @@ class TestRestaurant(TestCase):
                 prev_tup = tup
             for flag in list(day_flags.values()):
                 self.assertTrue(flag)
+
+
+class TestRecipe(TestCase):
+    fixtures = ['main/fixtures/recipefixture.json']
+
+    def test_recipe(self):
+        self.assertTrue(Recipe.objects.all().count())

@@ -40,7 +40,7 @@ def randomise_recipes(request):
 
     def func(items):
         [d.randomise() for d in items]
-    run_chunked_iter(dishes, func, num_threads=24)
+    run_chunked_iter(recipes, func, num_threads=24)
     return HttpResponse('OK')
 
 

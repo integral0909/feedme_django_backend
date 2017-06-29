@@ -1,0 +1,53 @@
+{% load bootstrap3 %}
+{% bootstrap_messages %}
+{{ otfset.management_form }}
+<div class="formset-rows">
+{% for form in otfset %}
+  {{ form.id }}
+  <div class="row">
+    {{form.restaurant}}
+    <div class="col-sm-2 col-sm-offset-2">
+      {% bootstrap_field form.day_of_week %}
+    </div>
+    <div class="col-sm-2">
+      {% bootstrap_field form.opens %}
+    </div>
+    <div class="col-sm-2">
+      {% bootstrap_field form.closes %}
+    </div>
+    <div class="col-sm-1">
+      {% if form.instance.id %}
+        <label>Delete</label>
+        <a href="#" class="btn btn-danger formset-delete-btn">X</a>
+        <div class="formset-delete-cx hidden">{{ form.DELETE }}</div>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+</div>
+<div class="empty-form-wrapper hidden"id='empty-form'>
+  <div class="row">
+    {{otfset.empty_form.restaurant}}
+    <div class="col-sm-2 col-sm-offset-2">
+      {% bootstrap_field otfset.empty_form.day_of_week %}
+    </div>
+    <div class="col-sm-2">
+      {% bootstrap_field otfset.empty_form.opens %}
+    </div>
+    <div class="col-sm-2">
+      {% bootstrap_field otfset.empty_form.closes %}
+    </div>
+    <div class="col-sm-1">
+      {% if otfset.empty_form.instance.id %}
+        <label>Delete</label>
+        <a href="#" class="btn btn-danger formset-delete-btn">X</a>
+        <div class="formset-delete-cx hidden">{{ otfset.empty_form.DELETE }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2 col-sm-offset-2">
+    <a href="#" class="btn btn-success formset-add-btn" data-form-name='opening_times'>+ Another Open Time</a>
+  </div>
+</div>

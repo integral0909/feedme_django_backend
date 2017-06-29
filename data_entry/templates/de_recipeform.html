@@ -1,11 +1,13 @@
 {% load bootstrap3 %}
-<form method="post">
+<form method="post" action="{% if async%}/data-entry/forms/recipes/"
+      class="async-managed{%endif%}">
   {% csrf_token %}
-  {% bootstrap_field recipeform.name %}
+  {% bootstrap_field form.name %}
   {% if dishes %}
+    <input type="hidden" value="{{dishes.0.instance.restaurant.id}}" name="restaurant_id" />
     <div class="form-group">
-      <label>{{recipeform.dish.label}}</label><br>
-      {% for radio in recipeform.dish %}
+      <label>{{form.dish.label}}</label><br>
+      {% for radio in form.dish %}
         {% if forloop.counter0 > 0%}
         <label for="{{ radio.id_for_label }}" class="radio-inline">
           {{ radio.tag }} {{ radio.choice_label }}
@@ -14,42 +16,42 @@
       {% endfor %}
     </div>
   {% endif %}
-  {% bootstrap_field recipeform.source_url placeholder='https://somewebsite.com/' %}
+  {% bootstrap_field form.source_url placeholder='https://somewebsite.com/' %}
   <div class="row">
     <div class="col-sm-4">
-      {% bootstrap_field recipeform.prep_time_seconds %}
+      {% bootstrap_field form.prep_time_seconds %}
     </div>
     <div class="col-sm-4">
-      {% bootstrap_field recipeform.cook_time_seconds %}
+      {% bootstrap_field form.cook_time_seconds %}
     </div>
     <div class="col-sm-4">
-      {% bootstrap_field recipeform.servings %}
+      {% bootstrap_field form.servings %}
     </div>
   </div>
-  {% bootstrap_field recipeform.difficulty %}
-  {% bootstrap_field recipeform.notes %}
+  {% bootstrap_field form.difficulty %}
+  {% bootstrap_field form.notes %}
   <div class="row">
     <div class="col-sm-6">
-      {% bootstrap_field recipeform.keywords %}
+      {% bootstrap_field form.keywords %}
     </div>
     <div class="col-sm-6">
-      {% bootstrap_field recipeform.tags %}
-      <div class="help-text text-muted">{{recipeform.tags.help_text}}</div>
+      {% bootstrap_field form.tags %}
+      <div class="help-text text-muted">{{form.tags.help_text}}</div>
     </div>
   </div>
   <div class="row">
-    <div class="form-group col-sm-6">
-      <label class="control-label" for="id_image_url">Image</label>
-      {{recipeform.image_url}}
-    </div>
     <div class="col-sm-6">
-      <img src="{{recipeform.image_url.value|default:"https://cdn.feedmeeapp.com/images/1489613123874.jpg"}}" style="max-height:350px;" class="img-responsive pull-right" id="recipe_img">
+      <div class="form-group">
+        <label class="control-label" for="id_image">Image</label>
+        {{form.image_url}}
+      </div>
     </div>
   </div>
   <h4 class="dividing">Recipe ingredients</h4>
-  <form method="post" action="">
+  <div class="form formset">
   {{ formset.management_form }}
       {% for form in formset %}
+        {{ form.id }}
         <div class="row">
           <div class="col-sm-6">
             {% bootstrap_field form.ingredient %}
@@ -64,19 +66,25 @@
             {% bootstrap_field form.ingredient_type %}
           </div>
           <div class="col-sm-1">
-            <label>Delete</label>
-            <a href="#" class="btn btn-danger">X</a>
+            {% if form.instance.id %}
+              <label>Delete</label>
+              <a href="#" class="btn btn-danger formset-delete-btn">X</a>
+              <div class="formset-delete-cx hidden">{{ form.DELETE }}</div>
+            {% endif %}
           </div>
         </div>
       {% endfor %}
-  </form>
+  </div>
+  {% if async is False and form.instance.id%}
+    <input type="hidden" name="id" value="{{form.instance.id}}" />
+  {% endif %}
   {% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
 </form>
-{% if recipeform.instance.dishes.count %}
+{% if form.instance.dishes.count %}
 <hr>
 <h3>Dishes with this recipe</h3>
 <div class="row card-row">
-  {% for dish in recipeform.instance.dishes.all %}
+  {% for dish in form.instance.dishes.all %}
     {% include 'dish_card.html' with admin=True %}
     {% cycle '' '' '</div><div class="row card-row">' %}
   {% endfor %}

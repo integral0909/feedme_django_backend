@@ -71,3 +71,8 @@ def merge_dicts(*dict_args):
     for dictionary in dict_args:
         result.update(dictionary)
     return result
+
+
+def create_uuid_filename(filename):
+    import uuid
+    return '%s.%s' % (uuid.uuid4().hex, filename.split('.')[-1])

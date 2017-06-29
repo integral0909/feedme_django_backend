@@ -314,8 +314,8 @@ class Restaurant(Creatable):
     timezone = TimeZoneField(default='', blank=True)
     tripadvisor_widget = models.TextField(blank=True, default='')
     location = gis_models.PointField(default="POINT(0.0 0.0)", blank=True, db_index=True)
-    latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
-    longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0)
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, default=0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, default=0)
     firebase_id = models.CharField(max_length=255, default='', blank=True, unique=True)
     quandoo_id = models.BigIntegerField(blank=True, null=True)
     delivery_provider = models.ForeignKey('DeliveryProvider', on_delete=models.SET_NULL,
@@ -435,8 +435,8 @@ class OpeningTime(models.Model):
     )
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,
                                    related_name='opening_times')
-    opens = models.TimeField()
-    closes = models.TimeField()
+    opens = models.TimeField(help_text='24 hrs, e.g. 17:00 is 5pm')
+    closes = models.TimeField(help_text='24 hrs, e.g. 17:00 is 5pm')
     day_of_week = models.CharField(max_length=3, choices=WEEKDAY_CHOICES)
     valid_from = models.DateField(null=True, blank=True)
     valid_through = models.DateField(null=True, blank=True)

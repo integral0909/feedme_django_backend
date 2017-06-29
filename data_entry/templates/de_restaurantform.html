@@ -1,0 +1,73 @@
+{% load bootstrap3 %}
+<form method="post" action="" style="margin-top:25px;" id="restaurant-form">
+{% bootstrap_messages %}
+{% csrf_token %}
+<div class="row">
+  <div class="col-sm-12">
+    {% bootstrap_field form.name %}
+    {% bootstrap_field form.phone_number %}
+    {% bootstrap_field form.information placeholder='Describe the restaurant'%}
+  </div>
+</div>
+<div class="row" style="margin-bottom:20px;">
+  <div class="col-sm-6">
+    <div class="form-group">
+      <label class="control-label" for="id_image">Image</label>
+      {{form.image_url}}
+      <span class="help-block">{{form.image_url.errors}}</span>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    {% bootstrap_field form.instagram_user placeholder='username' addon_before='@' %}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-6">
+    {% bootstrap_field form.address placeholder='123 Some St, Some Suburb, Some City, Some Country' %}
+  </div>
+  <div class="col-sm-3">
+    {% bootstrap_field form.suburb %}
+  </div>
+  <div class="col-sm-3">
+    {% bootstrap_field form.timezone %}
+  </div>
+</div>
+<div class="row">
+  <div class="form-group col-sm-6">
+    <label class="control-label" for="id_cuisines">Cuisines</label>
+    <div>{{ form.cuisines }}</div>
+    <div class="bfw-add-item">
+      <a href="#" class="btn btn-success btn-sm" data-modal-open="form" data-form-url="/data-entry/modals/cuisines/?basic=t">Add New Cuisine</a>
+    </div>
+  </div>
+  <div class="form-group col-sm-6">
+    <label class="control-label" for="id_highlights">Highlights</label>
+    <div class="bfw-add-item">
+      <a href="#" class="btn btn-success btn-sm" data-modal-open="form" data-form-url="/data-entry/modals/highlights/?basic=t">Add New Highlight</a>
+    </div>
+    <div>{{ form.highlights }}</div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    {% bootstrap_field form.quandoo_id %}
+  </div>
+  <div class="col-sm-4">
+    {% bootstrap_field form.delivery_provider %}
+  </div>
+  <div class="col-sm-4">
+    {% bootstrap_field form.delivery_link %}
+  </div>
+</div>
+<hr>
+<h4>Opening Times</h4>
+{% include 'de_opentimeformset.html' %}
+{{form.latitude}}
+{{form.longitude}}
+{{form.time_offset_minutes}}
+{% if form.instance.id%}
+  <input type="hidden" name="id" value="{{form.instance.id}}" />
+{% endif %}
+{% bootstrap_button "SUBMIT" button_type="submit" button_class="btn-success btn-block" %}
+</form>

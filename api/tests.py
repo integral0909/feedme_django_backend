@@ -239,8 +239,7 @@ class TestApiEndpoints(TestCase):
 
     def test_like_dish(self):
         dish_id = list(self.dishes.values())[0].id
-        res = self.c.post('/api/likes/dishes/', {'did_like': True,
-                                                 'dish_id': dish_id})
+        res = self.c.post('/api/likes/dishes/', {'did_like': True, 'dish_id': dish_id})
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, '"created":true', count=1)
         self.assertContains(res, '"success":true', count=1)
