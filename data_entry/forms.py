@@ -43,7 +43,7 @@ class RestaurantForm(forms.ModelForm):
         fields = ('name', 'image_url', 'address', 'cuisines', 'information', 'highlights',
                   'phone_number', 'suburb', 'instagram_user', 'quandoo_id',
                   'delivery_provider', 'delivery_link', 'latitude', 'longitude',
-                  'time_offset_minutes', 'firebase_id', 'id')
+                  'time_offset_minutes', 'firebase_id', 'id', 'timezone')
         widgets = {
             'highlights': BetterFilterWidget(),
             'cuisines': BetterFilterWidget(),

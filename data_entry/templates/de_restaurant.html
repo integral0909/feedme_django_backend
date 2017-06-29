@@ -7,7 +7,6 @@
 <!-- Nav tabs -->
  <ul class="nav nav-tabs" role="tablist">
    <li role="presentation"{%if tab is False %} class="active"{%endif%}><a href="#restaurant" aria-controls="restaurant" role="tab" data-toggle="tab">Restaurant</a></li>
-   <li role="presentation"><a href="#opentimes" aria-controls="opentimes" role="tab" data-toggle="tab">Opening Times</a></li>
    <li role="presentation"{%if tab == 'dishes'%} class="active"{%endif%}><a href="#dishes" aria-controls="dishes" role="tab" data-toggle="tab">Dishes</a></li>
    <li role="presentation"{%if tab == 'blogs'%} class="active"{%endif%}><a href="#blogs" aria-controls="blogs" role="tab" data-toggle="tab">Blogs</a></li>
    <li role="presentation"><a href="#recipes" aria-controls="recipes" role="tab" data-toggle="tab">Recipes</a></li>
@@ -15,14 +14,6 @@
 
  <!-- Tab panes -->
 <div class="tab-content">
-  <div role="tabpanel" class="tab-pane{%if tab == 'opentimes'%} active{%endif%}" id="opentimes">
-    {% if otfset %}
-    <h2>Opening Times <small>@ <em>{{form.instance.name}}</small></em></h2>
-    {% include 'de_opentimeformset.html' with async=True %}
-    {% else %}
-      <h4 class="text-center">Please finish adding a new restaurant before adding its opening times.</h3>
-    {% endif %}
-  </div>
   <div role="tabpanel" class="tab-pane{%if tab is False%} active{%endif%}" id="restaurant">
     <h2>{{action}} Restaurant</h2>
     {% include 'de_restaurantform.html'%}

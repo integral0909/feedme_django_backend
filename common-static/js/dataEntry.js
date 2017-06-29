@@ -142,12 +142,26 @@ var FormsetManager = (function () {
         var _this = this;
         this.delClickSelector = '.formset-delete-btn';
         this.delCheckWrapperSelector = '.formset-delete-cx';
+        this.addClickSelector = '.formset-add-btn';
         this.deleteForm = function (event) {
             event.preventDefault();
             event.stopPropagation();
-            var $chck = $(event.target).siblings(_this.delCheckWrapperSelector).find('input');
+            var $trgt = $(event.target);
+            var $chck = $trgt.siblings(_this.delCheckWrapperSelector).find('input');
             $chck.click();
-            $(event.target).closest('.row').hide(300);
+            $trgt.closest('.row').hide(300);
+        };
+        this.addForm = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $trgt = $(event.target);
+            var formName = $trgt.data('formName');
+            var $form = $trgt.closest('form');
+            var $total_forms = $('#id_' + formName + '-TOTAL_FORMS', $form);
+            var $empty = $('#empty-form', $form);
+            var form_idx = $total_forms.val();
+            $('.formset-rows', $form).append($empty.html().replace(/__prefix__/g, form_idx));
+            $total_forms.val(parseInt(form_idx) + 1);
         };
         if (options !== undefined) {
             if (options.delClickSelector !== undefined) {
@@ -158,6 +172,7 @@ var FormsetManager = (function () {
             }
         }
         $('body').on('click', this.delClickSelector, this.deleteForm);
+        $('body').on('click', this.addClickSelector, this.addForm);
     }
     return FormsetManager;
 }());
