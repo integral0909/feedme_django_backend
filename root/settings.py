@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.sites',
+    'django.contrib.flatpages',
 ]
 
 REST_FRAMEWORK = {
