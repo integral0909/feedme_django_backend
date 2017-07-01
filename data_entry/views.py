@@ -23,6 +23,7 @@ def list_items(request, item_type):
 @staff_member_required
 def change_item(request, item_type, item_id=None, tab=False):
     class_name, ObjClass, FormClass = _get_class_objects(item_type)
+    defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}
     if item_id:
         obj = get_object_or_404(ObjClass, pk=item_id)
         context = merge_dicts({'action': 'Change', 'form': FormClass(instance=obj),
@@ -32,16 +33,18 @@ def change_item(request, item_type, item_id=None, tab=False):
         context = _extra_processing(item_type)
 
     if request.method == 'POST':
-        return _change_item_post(request, item_id, FormClass, context, item_type, obj=obj)
+        return _change_item_post(
+            request, item_id, merge_dicts(defaults, context), item_type, obj=obj,
+            class_name=class_name, FormClass=FormClass)
 
-    defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}
     context = merge_dicts(defaults, context)
     return render(request, 'de_%s.html' % class_name.lower(), context)
 
 
-def _change_item_post(request, item_id, FormClass, context, item_type, obj=None):
+def _change_item_post(request, item_id, context, item_type, obj=None,
+                      class_name=None, FormClass=None):
     """All logic unique to handling a POST request for change_item."""
-    form, FLAG = _update_or_insert(item_id, FormClass, obj, request.POST)
+    form, flag = _update_or_insert(item_id, FormClass, obj, request.POST)
     if form.is_valid():
         obj = form.save(commit=False)
         try:
@@ -52,9 +55,12 @@ def _change_item_post(request, item_id, FormClass, context, item_type, obj=None)
             if formset.is_valid():
                 obj.save()
                 formset.save()
-        finally:
-            form.save_m2m()
-            return _change_item_post_success(request, obj, FLAG, item_type)
+            else:
+                context['form'] = form
+                context['otfset'] = formset
+                return render(request, 'de_%s.html' % class_name.lower(), context)
+        form.save_m2m()
+        return _change_item_post_success(request, obj, flag, item_type)
     else:
         context['form'] = form
         return render(request, 'de_%s.html' % class_name.lower(), context)
