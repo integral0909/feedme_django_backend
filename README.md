@@ -126,6 +126,29 @@ $ python manage.py loaddata fixtures/dishes_restaurants_subsets.json
 $ python manage.py loaddata fixtures/opening_times.json
 ```
 
+### Setup sites and subdomains
+
+1. Run `$ python manage.py shell`
+2. Run the following command sequence:
+```python
+from django.contrib.sites.models import Site
+d = Site.objects.all()[0]
+d.domain = 'localhost.com'
+d.name = 'Localdev'
+d.save()
+```
+3. Add the following lines to hosts:
+**On macOS** `$ sudo vim /etc/hosts`
+```
+127.0.0.1   api.localhost.com
+
+127.0.0.1   www.localhost.com
+
+127.0.0.1   use.localhost.com
+
+127.0.0.1   localhost.com
+```
+
 ### Hoorah!
 
 Now you can start the webserver by running `$ python manage.py runserver`.

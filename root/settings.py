@@ -41,6 +41,8 @@ if os.environ['DEPLOYMENT'] != 'PRODUCTION':
         '.us-west-2.elasticbeanstalk.com',
         'localhost',
         'localhost:8000',
+        '.localhost.com',
+        '.feedmeetastycode.click',
     ]
 else:
     ALLOWED_HOSTS = [
@@ -92,6 +94,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
 ]
 
 REST_FRAMEWORK = {
@@ -107,10 +111,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'subdomains.middleware.SubdomainURLRoutingMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -201,6 +208,11 @@ GOOGLEMAPS_API = {
 }
 
 ROOT_URLCONF = 'root.urls'
+
+SUBDOMAIN_URLCONFS = {
+    'www': 'webapp.urls',
+    'api': 'api.urls',
+}
 
 TEMPLATES = [
     {
