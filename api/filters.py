@@ -55,6 +55,11 @@ class Recipe(django_filters.rest_framework.FilterSet):
     difficulty = django_filters.MultipleChoiceFilter(
         choices=models.Recipe.DIFFICULTY_CHOICES
     )
+    ingredients = django_filters.ModelMultipleChoiceFilter(
+        name='ingredients__ingredient__name',
+        to_field_name='name',
+        queryset=models.Ingredient.objects.all()
+    )
 
     class Meta:
         model = models.Recipe
