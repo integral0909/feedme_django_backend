@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Feedmee&#39;s impact events aim to fight hunger, one meal at a time." />
+  <meta name="keywords" content="" />
+  <meta property="og:image" content="{% static 'images/og-image.jpg' %}" />
+  <meta property="og:image:height" content="312" />
+  <meta property="og:image:width" content="596" />
+  <meta property="og:title" content="Feedmee app | Eat out, give back">
+  <meta property="og:description" content="The food app that helps you give back.  Every time you book a table or order food delivery through the app, we donate a meal to someone in need.">
+  <meta property="og:url" content="www.feedmeeapp.com">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+  <link rel="manifest" href="/static/favicon/manifest.json">
+  <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <title>Feedmee - Our Events</title>
+  <script src="{% static 'js/fdme.min.js' %}"></script>
+  <link href="https://fonts.googleapis.com/css?family=Muli:400,700" rel="stylesheet">
+  <link href="{% static 'css/fdme.min.css' %}" rel="stylesheet" />
+</head>
+<body class="events">
+  <div class="root">
+    <div class="wrapper ">
+<header class="section-header">
+  <div class="container">
+    <div class="logo">
+      <a href="/"><img src="{% static 'images/logo.svg' %}" alt="Feedmee"></a>
+    </div>
+    <button type="button" class="navbar-toggle burger visible-sm visible-xs">
+        <div class="burger-wrapper">
+            <div class="x"></div>
+            <div class="y"></div>
+            <div class="z"></div>
+        </div>
+        <p>Menu</p>
+    </button>
+    <div class="main-menu">
+      <ul class="list-unstyled list-inline">
+        <li><a href="/impact/">Impact</a></li>
+        <li><a href="/events/">Events</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li class="button-download"><a href="https:&#x2F;&#x2F;itunes.apple.com&#x2F;au&#x2F;app&#x2F;feedmee-discover-food-4-you-eat-out-give-back&#x2F;id1120549992?mt=8" target="_blank">Download</a></li>
+      </ul>
+    </div>
+    <div class="menu-bg visible-sm visible-xs"></div>
+  </div>
+</header>
+<!-- end: .section-header -->
+      <!-- end: .section-header -->
+      <main id="main">
+        <div class="section-opening">
+          <div class="container">
+            <div class="col-md-6 col-sm-7 opening-text">
+              <h1>We run impact events that aims to fight hunger, one meal at a time.</h1>
+              <p>Feedmee runs these events and initiatives to support our mission.</p>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-opening -->
+          <div class="section-events">
+            <div class="container">
+              <h3>Impact Events</h3>
+              <div class="event-wrapper">
+<div class="col-sm-4 event-list">
+  <a href="https://medium.com/feedmee-app/feedmee-expresstival-2016-4188e40da7dc">
+    <img src="{% static 'images/event-image@2x.jpg' %}" alt="">
+    <div class="event-desc">
+      <p>Expresstival 2016</p>
+      <span>PERTH AUSTRALIA</span>
+    </div>
+  </a>
+</div>
+<div class="col-sm-4 event-list">
+  <a href="https://medium.com/feedmee-app/feedmee-food-challenges-773701228a07">
+    <img src="https://cdn-images-1.medium.com/max/1600/1*gUGWwebYDgGS_jkxhcAxUw.jpeg" alt="">
+    <div class="event-desc">
+      <p>Feedmee Food Challenges 2016</p>
+      <span>PERTH AUSTRALIA</span>
+    </div>
+  </a>
+</div>
+<div class="col-sm-4 event-list">
+  <a href="https://medium.com/feedmee-app/christmas-is-for-everyone-c1ceb46d6529">
+    <img src="https://cdn-images-1.medium.com/max/2000/1*e8JQak1LezIQhnBShZzmWA.jpeg" alt="">
+    <div class="event-desc">
+      <p>Christmas Is For Everyone</p>
+      <span>AUSTRALIA</span>
+    </div>
+  </a>
+</div>
+<div class="col-sm-4 event-list event-hide">
+  <a href="https://medium.com/feedmee-app/easter-is-for-everyone-e7c64fb8626a">
+    <img src="https://cdn-images-1.medium.com/max/2000/1*ULZK-7bu3qu3Ah8Bm-04yQ.jpeg" alt="">
+    <div class="event-desc">
+      <p>Easter Is For Everyone</p>
+      <span>AUSTRALIA</span>
+    </div>
+  </a>
+</div>
+              </div>
+              <a class="button-pink see-more button-hide" href="#">See More</a>
+            </div>
+          </div>
+        <!-- end: .section-event -->
+        <div class="section-form">
+          <div class="container">
+            <h3>Want to be part of the movement?</h3>
+            <p>Are you a restaurant owner, a food blogger or someone who wants to make a difference in this world?
+            Contact us today and become part of this exciting movement.</p>
+            <div class="form-contact">
+            <form action="" method="post" autocomplete="on" id="contactForm">
+              <input type="text" name="name" placeholder="Your name">
+              <input type="email" name="email" placeholder="Email">
+              <input type="text" name="phone" placeholder="Mobile number (optional)">
+              <select name="type" id="subject" name="subject" data-placeholder="Are you a ...">
+                <option></option>
+                <option value="Restaurant owner/manager">Restaurant owner/manager</option>
+                <option value="Food blogger">Food blogger</option>
+                <option value="Volunteer">Volunteer</option>
+                <option value="Charity">Charity</option>
+                <option value="Homeless support">Homeless support</option>
+                <option value="Others">Others</option>
+              </select>
+              <textarea cols="40" rows="3" aria-invalid="false" name="comments" placeholder="Comments"></textarea>
+              <span class="form-info"></span>
+              <input type="submit" name="submit" value="Submit" class="button-pink">
+            </form>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-form -->
+      </main>
+      <!-- end: #main -->
+<footer class="section-footer">
+  <div class="footer-links">
+    <div class="container">
+      <div class="list-links">
+        <h4>What we do</h4>
+        <ul>
+          <li><a href="/impact/">Impact</a></li>
+          <li><a href="/events/">Events</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8">Download</a></li>
+        </ul>
+      </div>
+      <div class="list-links">
+        <h4>About us</h4>
+        <ul>
+          <li><a href="/team/">Team</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- end: .footer-links -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="social-links">
+        <div class="logo-icon">
+          <img src="/static/images/feedmee-heart.svg" alt="Feedmee Heart">
+        </div>
+        <ul class="list-unstyled">
+          <li><a href="https:&#x2F;&#x2F;www.instagram.com&#x2F;feedmeeapp_au&#x2F;"><img src="{% static 'images/instagram.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;www.facebook.com&#x2F;Feedmeeapp&#x2F;"><img src="{% static 'images/facebook.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;twitter.com&#x2F;FeedmeeA"><img src="{% static 'images/twitter.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;www.linkedin.com&#x2F;company-beta&#x2F;13179226&#x2F;"><img src="{% static 'images/linkedin.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;medium.com&#x2F;feedmee-app"><img src="{% static 'images/medium.svg' %}" alt=""></a></li>
+        </ul>
+      </div>
+      <div class="term-links">
+        <ul class="list-unstyled">
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/terms/">Term of Use</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- end: .footer-bottom -->
+</footer>
+      <!-- end: .section-footer -->
+    </div>
+    <!-- end: .wrapper -->
+  </div>
+  <!-- end: .root -->
+</body>
+</html>
