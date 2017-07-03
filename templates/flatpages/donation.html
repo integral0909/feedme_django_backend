@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta property="og:image" content="{% static 'images/og-image.jpg' %}" />
+  <meta property="og:image:height" content="312" />
+  <meta property="og:image:width" content="596" />
+  <meta property="og:title" content="Feedmee app | Eat out, give back">
+  <meta property="og:description" content="The food app that helps you give back.  Every time you book a table or order food delivery through the app, we donate a meal to someone in need.">
+  <meta property="og:url" content="www.feedmeeapp.com">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+  <link rel="manifest" href="/static/favicon/manifest.json">
+  <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <title>Feedmee - Donation</title>
+  <script src="{% static 'js/fdme.min.js' %}"></script>
+  <link href="https://fonts.googleapis.com/css?family=Muli:400,700" rel="stylesheet">
+  <link href="{% static 'css/fdme.min.css' %}" rel="stylesheet" />
+</head>
+<body class="donation">
+  <div class="root">
+    <div class="wrapper ">
+<header class="section-header">
+  <div class="container">
+    <div class="logo">
+      <a href="/"><img src="{% static 'images/logo.svg' %}" alt="Feedmee"></a>
+    </div>
+    <button type="button" class="navbar-toggle burger visible-sm visible-xs">
+        <div class="burger-wrapper">
+            <div class="x"></div>
+            <div class="y"></div>
+            <div class="z"></div>
+        </div>
+        <p>Menu</p>
+    </button>
+    <div class="main-menu">
+      <ul class="list-unstyled list-inline">
+        <li><a href="/impact/">Impact</a></li>
+        <li><a href="/events/">Events</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li class="button-download"><a href="https:&#x2F;&#x2F;itunes.apple.com&#x2F;au&#x2F;app&#x2F;feedmee-discover-food-4-you-eat-out-give-back&#x2F;id1120549992?mt=8" target="_blank">Download</a></li>
+      </ul>
+    </div>
+    <div class="menu-bg visible-sm visible-xs"></div>
+  </div>
+</header>
+<!-- end: .section-header -->
+      <!-- end: .section-header -->
+      <main id="main">
+        <div class="section-opening">
+          <div class="container">
+            <div class="col-md-6 col-sm-7 opening-text">
+              <h1>How does the donation work on Feedmee?</h1>
+              <p>Every time you book a table or order food delivery through the app, we donate a meal to someone in need.
+              </p>
+<a class="button-outline" href="https:&#x2F;&#x2F;itunes.apple.com&#x2F;au&#x2F;app&#x2F;feedmee-discover-food-4-you-eat-out-give-back&#x2F;id1120549992?mt=8"><img src="{% static 'images/apple-logo@2x.png' %}" alt="">AppStore</a>
+<a class="button-outline" href="http:&#x2F;&#x2F;eepurl.com&#x2F;cPK-Ab"><img src="{% static 'images/android-logo@2x.png' %}" alt="">PlayStore</a>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-opening -->
+          <div class="section-guidelines">
+            <div class="container">
+              <div class="col-md-6 col-sm-7 guidelines-desc">
+                <h2>How does it work</h2>
+                <div class="guidelines-list-wrapper">
+                  <div class="guidelines-list">
+                    <div class="guidelines-list-image">
+                      <img src="{% static 'images/food@2x.png' %}" alt="">
+                    </div>
+                    <div class="guidelines-text">
+                      <h4>Use Feedmee to find food</h4>
+                      <p>By using Feedmee app when dining out, you help to
+                        donate a meal to someone in need.</p>
+                    </div>
+                  </div>
+                  <div class="guidelines-list">
+                    <div class="guidelines-list-image">
+                      <img src="{% static 'images/coins@2x.png' %}" alt="">
+                    </div>
+                    <div class="guidelines-text">
+                      <h4>Book tables or order deliveries</h4>
+                      <p>Every time you book a table or order delivery through
+                        the app, the service providers pay us a small fee.</p>
+                    </div>
+                  </div>
+                  <div class="guidelines-list">
+                    <div class="guidelines-list-image">
+                      <img src="{% static 'images/box@2x.png' %}" alt="">
+                    </div>
+                    <div class="guidelines-text">
+                      <h4>And then you help to give back</h4>
+                      <p>We then donate a portion of that revenue to a local food
+                        charity, covering the cost of a meal for someone in need.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-5 guidlines-image">
+                <img src="{% static 'images/guidelines-image@2x.png' %}" alt="">
+              </div>
+            </div>
+          </div>
+        <!-- end: .section-guidelines -->
+<div class="section-help">
+  <div class="container">
+    <img src="{% static 'images/box-hearth@2x.png' %}" alt="">
+    <p>Together, we’ve helped to feed</p>
+    <h2><span class="fed-counter">1,890</span> people in need.</h2>
+  </div>
+</div>
+<!-- end: .section-help -->
+<script>
+$(document).ready(function(){
+  $.getJSON("https://use.feedmeeapp.com/api/donations/", function(d) {
+    var c = d.count.toString().split('').reverse().join('')
+                   .replace(/(\d{3}(?!.*\.|$))/g,'$1,')
+                   .split('').reverse().join('');
+    $(".fed-counter").text(c);
+  })
+});
+</script>
+<div class="section-download">
+  <div class="container">
+    <h3>Download Now</h3>
+    <ul class="list-unstyled">
+      <li>
+        <a href="https:&#x2F;&#x2F;itunes.apple.com&#x2F;au&#x2F;app&#x2F;feedmee-discover-food-4-you-eat-out-give-back&#x2F;id1120549992?mt=8">
+          <img src="{% static 'images/apple-logo@2x.png' %}" alt="AppStore icon">
+          <p>AppStore</p>
+        </a>
+      </li>
+      <li>
+        <a href="http:&#x2F;&#x2F;eepurl.com&#x2F;cPK-Ab">
+          <img src="{% static 'images/android-logo@2x.png' %}" alt="PlayStore icon">
+          <p>PlayStore</p>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- end: .section-store -->
+      </main>
+      <!-- end: #main -->
+<footer class="section-footer">
+  <div class="footer-links">
+    <div class="container">
+      <div class="list-links">
+        <h4>What we do</h4>
+        <ul>
+          <li><a href="/impact/">Impact</a></li>
+          <li><a href="/events/">Events</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8">Download</a></li>
+        </ul>
+      </div>
+      <div class="list-links">
+        <h4>About us</h4>
+        <ul>
+          <li><a href="/team/">Team</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- end: .footer-links -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="social-links">
+        <div class="logo-icon">
+          <img src="/static/images/feedmee-heart.svg" alt="Feedmee Heart">
+        </div>
+        <ul class="list-unstyled">
+          <li><a href="https:&#x2F;&#x2F;www.instagram.com&#x2F;feedmeeapp_au&#x2F;"><img src="{% static 'images/instagram.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;www.facebook.com&#x2F;Feedmeeapp&#x2F;"><img src="{% static 'images/facebook.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;twitter.com&#x2F;FeedmeeA"><img src="{% static 'images/twitter.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;www.linkedin.com&#x2F;company-beta&#x2F;13179226&#x2F;"><img src="{% static 'images/linkedin.svg' %}" alt=""></a></li>
+          <li><a href="https:&#x2F;&#x2F;medium.com&#x2F;feedmee-app"><img src="{% static 'images/medium.svg' %}" alt=""></a></li>
+        </ul>
+      </div>
+      <div class="term-links">
+        <ul class="list-unstyled">
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/terms/">Term of Use</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- end: .footer-bottom -->
+</footer>
+    </div>
+    <!-- end: .wrapper -->
+  </div>
+  <!-- end: .root -->
+</body>
+</html>
