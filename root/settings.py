@@ -42,6 +42,7 @@ if os.environ['DEPLOYMENT'] != 'PRODUCTION':
         'localhost',
         'localhost:8000',
         '.localhost.com',
+        '.feedmeetastycode.click',
     ]
 else:
     ALLOWED_HOSTS = [
