@@ -763,14 +763,23 @@ class RecipeIngredient(Creatable):
         (GARNISH, 'Garnish'),
         (SIDE, 'Side')
     )
+    FRACTION_CHOICES = (
+        ('1/2', '1/2'), ('1/3', '1/3'), ('2/3', '2/3'), ('1/4', '1/4'), ('3/4', '3/4'),
+        ('1/5', '1/5'), ('2/5', '2/5'), ('3/5', '3/5'), ('4/5', '4/5'), ('1/8', '1/8'),
+        ('3/8', '3/8'), ('5/8', '5/8'), ('7/8', '7/8'), ('N/A', 'N/A')
+    )
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE,
                                related_name='ingredients')
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE,
                                    related_name='recipes')
-    quantity = models.DecimalField(max_digits=9, decimal_places=1, default=1.0)
+    quantity = models.DecimalField(max_digits=9, decimal_places=3, default=1.0)
     unit_type = models.CharField(max_length=127, default='', blank=True)
     ingredient_type = models.CharField(max_length=2, default=MAIN,
                                        blank=True, choices=TYPE_CHOICES)
+    preparation = models.CharField(max_length=255, blank=True, default='')
+    fraction = models.CharField(max_length=4, blank=True, default='N/A',
+                                choices=FRACTION_CHOICES)
+    uses_fractions = models.BooleanField(default=False, blank=True)
 
     @property
     def name(self):

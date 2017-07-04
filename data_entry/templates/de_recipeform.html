@@ -53,18 +53,21 @@
       {% for form in formset %}
         {{ form.id }}
         <div class="row">
-          <div class="col-sm-6">
+          <div class="col-sm-2">
             {% bootstrap_field form.ingredient %}
           </div>
-          <div class="col-sm-1">
-            {% bootstrap_field form.quantity %}
-          </div>
+          <div class="col-sm-2">{% bootstrap_field form.preparation %}</div>
+          <div class="col-sm-1">{% bootstrap_field form.quantity %}</div>
+          <div class="col-sm-1">{% bootstrap_field form.fraction %}</div>
+          <div class="col-sm-1">{% bootstrap_field form.uses_fractions %}</div>
           <div class="col-sm-2">
             {% bootstrap_field form.unit_type %}
           </div>
           <div class="col-sm-2">
             {% bootstrap_field form.ingredient_type %}
           </div>
+
+
           <div class="col-sm-1">
             {% if form.instance.id %}
               <label>Delete</label>
