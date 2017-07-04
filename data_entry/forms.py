@@ -1,13 +1,11 @@
 from django import forms
 from django.conf import settings
 from better_filter_widget import BetterFilterWidget
-from phonenumber_field.formfields import PhoneNumberField
-from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from timezone_field import TimeZoneFormField
 from s3direct.widgets import S3DirectWidget
 from main.models import (Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish,
-                         Recipe, RecipeIngredient, Cuisine, Highlight, Tag, OpeningTime)
-import pytz
+                         Recipe, RecipeIngredient, Cuisine, Highlight, Tag, OpeningTime,
+                         Ingredient)
 import uuid
 
 
@@ -168,6 +166,15 @@ class RecipeIngredientForm(forms.ModelForm):
         }
         exclude = ('valid_from', 'valid_through')
 
+    def save(self, commit=True):
+        obj = super(RecipeIngredientForm, self).save(commit=False)
+        obj.preparation = obj.preparation.lower()
+        obj.unit_type = obj.unit_type.lower()
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
+
 
 class CuisineForm(forms.ModelForm):
     class Meta:
@@ -185,6 +192,20 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ['name']
+
+
+class IngredientForm(forms.ModelForm):
+    class Meta:
+        model = Ingredient
+        fields = ['name', 'description']
+
+    def save(self, commit=True):
+        obj = super(IngredientForm, self).save(commit=False)
+        obj.name = obj.name.title()
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
 
 
 class RestaurantOpeningTimeForm(forms.ModelForm):
