@@ -8,5 +8,7 @@
   <h2>{{action}} Recipe</h2>
   {% bootstrap_messages %}
   {% include 'de_recipeform.html' with recipeform=form %}
-
+  <script>
+    $(document).ready(function(){DE.currentPage = new DE.pageManagers.Recipe()})
+  </script>
 {%endblock%}

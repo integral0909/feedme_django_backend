@@ -48,36 +48,7 @@
     </div>
   </div>
   <h4 class="dividing">Recipe ingredients</h4>
-  <div class="form formset">
-  {{ formset.management_form }}
-      {% for form in formset %}
-        {{ form.id }}
-        <div class="row">
-          <div class="col-sm-2">
-            {% bootstrap_field form.ingredient %}
-          </div>
-          <div class="col-sm-2">{% bootstrap_field form.preparation %}</div>
-          <div class="col-sm-1">{% bootstrap_field form.quantity %}</div>
-          <div class="col-sm-1">{% bootstrap_field form.fraction %}</div>
-          <div class="col-sm-1">{% bootstrap_field form.uses_fractions %}</div>
-          <div class="col-sm-2">
-            {% bootstrap_field form.unit_type %}
-          </div>
-          <div class="col-sm-2">
-            {% bootstrap_field form.ingredient_type %}
-          </div>
-
-
-          <div class="col-sm-1">
-            {% if form.instance.id %}
-              <label>Delete</label>
-              <a href="#" class="btn btn-danger formset-delete-btn">X</a>
-              <div class="formset-delete-cx hidden">{{ form.DELETE }}</div>
-            {% endif %}
-          </div>
-        </div>
-      {% endfor %}
-  </div>
+  {% include 'de_recipeingredientform.html' %}
   {% if async is False and form.instance.id%}
     <input type="hidden" name="id" value="{{form.instance.id}}" />
   {% endif %}
