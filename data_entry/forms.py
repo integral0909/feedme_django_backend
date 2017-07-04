@@ -127,7 +127,7 @@ class DishForm(forms.ModelForm):
 class RecipeForm(forms.ModelForm):
     image_url = forms.URLField(label='Image', widget=S3DirectWidget(dest='raw-img'))
     dish = forms.ModelChoiceField(queryset=Dish.objects.none(), label='For Dish',
-                                  widget=forms.RadioSelect())
+                                  widget=forms.RadioSelect(), required=False)
 
     def __init__(self, *args, **kwargs):
         try:
@@ -150,7 +150,7 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('steps', 'total_time_seconds', 'likes_count', 'views_count')
+        exclude = ('steps', 'total_time_seconds', 'likes_count', 'views_count', 'random')
         widgets = {
             'keywords': forms.CheckboxSelectMultiple(),
             'tags': BetterFilterWidget(),

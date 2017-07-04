@@ -1,0 +1,72 @@
+{% load bootstrap3 %}
+{% bootstrap_messages %}
+<div class="form formset formset-rows">
+  {{ formset.management_form }}
+    {% for form in formset %}
+      {{ form.id }}
+      <div class="row">
+        <div class="col-sm-2">
+          {% bootstrap_field form.ingredient %}
+          <a href="#" class="btn btn-success btn-xs" data-modal-open="form" data-form-url="/data-entry/modals/ingredients/?i={{forloop.counter0}}">+ New Ingredient</a><br><br>
+        </div>
+        <div class="col-sm-2">{% bootstrap_field form.preparation %}</div>
+        <div class="col-sm-1">{% bootstrap_field form.quantity %}</div>
+        <div class="col-sm-1">{% bootstrap_field form.fraction %}</div>
+        <div class="col-sm-1">{% bootstrap_field form.uses_fractions %}</div>
+        <div class="col-sm-2">
+          {% bootstrap_field form.unit_type %}
+        </div>
+        <div class="col-sm-2">
+          {% bootstrap_field form.ingredient_type %}
+        </div>
+
+
+        <div class="col-sm-1">
+          {% if form.instance.id %}
+            <label>Delete</label>
+            <a href="#" class="btn btn-danger formset-delete-btn">X</a>
+            <div class="formset-delete-cx hidden">{{ form.DELETE }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+</div>
+
+<div class="empty-form-wrapper hidden"id='empty-form'>
+   <div class="row">
+      <div class="col-sm-2">
+        {% bootstrap_field formset.empty_form.ingredient %}
+        <a href="#" class="btn btn-success btn-xs" data-modal-open="form" data-form-url="/data-entry/modals/ingredients/?i={form_idx}">+ New Ingredient</a><br><br>
+      </div>
+      <div class="col-sm-2">
+          {% bootstrap_field formset.empty_form.preparation %}
+      </div>
+      <div class="col-sm-1">
+          {% bootstrap_field formset.empty_form.quantity %}
+      </div>
+      <div class="col-sm-1">
+          {% bootstrap_field formset.empty_form.fraction %}
+      </div>
+      <div class="col-sm-1">
+          {% bootstrap_field formset.empty_form.uses_fractions %}
+      </div>
+      <div class="col-sm-2">
+        {% bootstrap_field formset.empty_form.unit_type %}
+      </div>
+      <div class="col-sm-2">
+        {% bootstrap_field formset.empty_form.ingredient_type %}
+      </div>
+      <div class="col-sm-1">
+        {% if formset.empty_form.instance.id %}
+          <label>Delete</label>
+          <a href="#" class="btn btn-danger formset-delete-btn">X</a>
+          <div class="formset-delete-cx hidden">{{ form.DELETE }}</div>
+        {% endif %}
+      </div>
+   </div>
+</div>
+<div class="row">
+  <div class="col-sm-2 col-sm-offset-">
+    <a href="#" class="btn btn-success formset-add-btn" data-form-name='ingredients'>+ Another Recipe Ingredient</a>
+  </div>
+</div>
