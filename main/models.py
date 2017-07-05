@@ -1,18 +1,15 @@
-import traceback
-import sys
 import random
 import re
 from datetime import datetime, timedelta, timezone
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from django.utils.text import slugify
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html_join
 from timezone_field import TimeZoneField
 from main.lib import weekdays
 import logging
@@ -33,6 +30,9 @@ User.add_to_class("__str__", get_name)
 
 def random_number():
     return random.randint(1, 1000000000)
+
+def _get_cdn_image(url_str):
+    return '%s%s' % (settings.CDN_URL, url_str.split('/')[-1:][0])
 
 
 class LocationMissing(Exception):
@@ -692,6 +692,11 @@ class Recipe(Creatable):
             self.prep_time_seconds = 0
         self.total_time_seconds = self.prep_time_seconds + self.cook_time_seconds
         return super(Recipe, self).save(*args, **kwargs)
+
+    def check_integrity(self):
+        if settings.CDN_URL not in self.image_url and len(self.image_url) > 0:
+            self.image_url = _get_cdn_image(self.image_url)
+            self.save()
 
     def ingredient_text(self):
         txt = ''
