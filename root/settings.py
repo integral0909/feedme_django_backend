@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     'main',
     'api',
     'data_entry',
-
+    'django_social_share',
     'hijack',
     'hijack_admin',
     'compat',

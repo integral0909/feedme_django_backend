@@ -9,14 +9,14 @@ from django.forms import modelformset_factory, formset_factory, inlineformset_fa
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
-from common.utils import merge_dicts
+from common.utils import merge_dicts, paginate
 
 
 @staff_member_required
 def list_items(request, item_type):
     class_name, ObjClass, FormClass = _get_class_objects(item_type)
     paginator = Paginator(ObjClass.objects.all().order_by('-id'), 100)
-    items = _paginate(paginator, request.GET.get('page'))
+    items = paginate(paginator, request.GET.get('page'))
     return render(request, 'de_%s_list.html' % item_type, {item_type: items})
 
 
@@ -196,12 +196,3 @@ def _get_class_objects(item_type):
 def _get_classname(item_type):
     """Transform pluralized name to Model name."""
     return 'Dish' if item_type == 'dishes' else item_type[:-1].title()
-
-
-def _paginate(paginator, page):
-    try:
-        return paginator.page(page)
-    except PageNotAnInteger:
-        return paginator.page(1)
-    except EmptyPage:
-        return paginator.page(paginator.num_pages)
