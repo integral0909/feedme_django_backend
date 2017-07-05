@@ -1,0 +1,123 @@
+{% extends "flatpages/fp_base.html" %}
+
+{% load static %}
+
+{% block title %} | {{post.title}}{% endblock %}
+
+{% block opening %}
+<style>
+.section-opening:before {
+  height: 370px;
+}
+.section-opening {
+  min-height: 190px;
+}
+body {
+  background-color: #f1f1f1;
+}
+.blog-post-card {
+  background-color: #FFF;
+  padding: 75px;
+  padding-top: 0;
+  padding-bottom: 50px;
+}
+.blog-post-card-image {
+  margin-left: -75px;
+  margin-right: -75px;
+  padding-bottom: 58%;
+  background-position: center;
+  background-size: cover;
+  margin-bottom: 50px;
+}
+.blog-post-card h1,
+.blog-post-card h2,
+.blog-post-card h3,
+.blog-post-card h4,
+.blog-post-card h5,
+.blog-post-card h6 {
+  color: #cd0a13;
+}
+.blog-post-card h3 {
+  font-size: 1.4em;
+}
+.blog-post-card-date > small {
+  color: #c1c1c1;
+  font-weight: 200;
+}
+.blog-post-card-date {
+  margin-bottom: 20px;
+}
+.blog-post-content {
+  line-height: 1.8;
+  font-size: 14.5px;
+}
+.blog-post-app-promo {
+  margin-top: 40px;
+  border: 1px solid #eee;
+}
+.blog-post-app-promo .button-outline {
+  border-color: #cd0a13;
+  color: #cd0a13;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.blog-post-app-promo-img {
+  background-position: center;
+  background-size: cover;
+  padding: 50px;
+}
+.blog-post-app-promo-img p {
+  color: #FFF !important;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+.blog-card {
+  background: #FFF;
+  margin-top: 40px;
+}
+.blog-card > div:first-child {
+  margin-left: -30px;
+}
+.blog-card > div:last-child {
+  padding: 20px;
+}
+.blog-card a {
+  color:#cd0a13; 
+}
+@media (max-width: 480px) {
+  .section-opening:before {
+    height: 250px;
+  }
+  .blog-post-card {
+    padding: 45px;
+    padding-top: 0;
+    padding-bottom: 30px;
+  }
+  .blog-post-card-image {
+    margin-left: -45px;
+    margin-right: -45px;
+    background-position: center;
+    background-size: cover;
+    margin-bottom: 30px;
+  }
+}
+</style>
+<div class="col-md-6 col-sm-7 opening-text">
+  <h1><strong>Blogs</strong></h1>
+</div>
+{% endblock %}
+
+{% block content %}
+{% for post in posts %}
+  <div class="blog-card container">
+    <div class="col-sm-7"><img src="{{post.image_url}}" class="img-responsive"></div>
+    <div class="col-sm-5">
+      <h3>{{post.title}}</h3>
+      <h3 class="blog-post-card-date"><small>{{post.created|date:"d M Y"}}</small></h3>
+      <div class="blog-post-content">
+        {{post.content|striptags|truncatewords:50 }}&hellip;
+      </div><br>
+      <a href="/blog/{{post.slug}}/">Read more</a>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

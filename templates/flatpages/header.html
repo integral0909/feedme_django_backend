@@ -1,0 +1,25 @@
+{% load static %}
+<header class="section-header">
+  <div class="container">
+    <div class="logo">
+      <a href="/"><img src="{% static 'images/logo.svg' %}" alt="Feedmee"></a>
+    </div>
+    <button type="button" class="navbar-toggle burger visible-sm visible-xs">
+        <div class="burger-wrapper">
+            <div class="x"></div>
+            <div class="y"></div>
+            <div class="z"></div>
+        </div>
+        <p>Menu</p>
+    </button>
+    <div class="main-menu">
+      <ul class="list-unstyled list-inline">
+        <li><a href="/impact/">Impact</a></li>
+        <li><a href="/events/">Events</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li class="button-download"><a href="https:/itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8" target="_blank">Download</a></li>
+      </ul>
+    </div>
+    <div class="menu-bg visible-sm visible-xs"></div>
+  </div>
+</header>
