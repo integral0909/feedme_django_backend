@@ -4,123 +4,38 @@
 {% load social_share %}
 
 {% block title %} | {{post.title}}{% endblock %}
-
+{% block extra_headers %}
+  <link href="{% static 'css/blog.css' %}" rel="stylesheet" />
+{% endblock %}
 {% block opening %}
-<style>
-.section-opening:before {
-  height: 370px;
-}
-.section-opening {
-  min-height: 190px;
-}
-body {
-  background-color: #f1f1f1;
-}
-.blog-post-card {
-  background-color: #FFF;
-  padding: 75px;
-  padding-top: 0;
-  padding-bottom: 50px;
-}
-.blog-post-card-image {
-  margin-left: -75px;
-  margin-right: -75px;
-  padding-bottom: 58%;
-  background-position: center;
-  background-size: cover;
-  margin-bottom: 50px;
-}
-.blog-post-card h1,
-.blog-post-card h2,
-.blog-post-card h3,
-.blog-post-card h4,
-.blog-post-card h5,
-.blog-post-card h6 {
-  color: #cd0a13;
-}
-.blog-post-card h3 {
-  font-size: 1.4em;
-}
-.blog-post-card-date > small {
-  color: #c1c1c1;
-  font-weight: 200;
-}
-.blog-post-card-date {
-  margin-bottom: 20px;
-}
-.blog-post-content {
-  line-height: 1.8;
-  font-size: 14.5px;
-}
-.blog-post-app-promo {
-  margin-top: 40px;
-  border: 1px solid #eee;
-}
-.blog-post-app-promo .button-outline {
-  border-color: #cd0a13;
-  color: #cd0a13;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.blog-post-app-promo-img {
-  background-position: center;
-  background-size: cover;
-  padding: 50px;
-}
-.blog-post-app-promo-img p {
-  color: #FFF !important;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
-}
-.share-block {
-  margin-top: 15px;
-}
-.share-block > li:not(.title) > div {
-  color: #FFF;
-  background: #cd0a13;
-  border-radius: 40px;
-  padding: 0px;
-  width: 35px;
-  height: 35px;
-  text-align: center;
-  font-size: 18.5px;
-  line-height: 35px;
-}
-.share-block > li:not(.title) > div > a {
-  color: #FFF;
-}
-@media (max-width: 480px) {
-  .section-opening:before {
-    height: 250px;
-  }
-  .blog-post-card {
-    padding: 45px;
-    padding-top: 0;
-    padding-bottom: 30px;
-  }
-  .blog-post-card-image {
-    margin-left: -45px;
-    margin-right: -45px;
-    background-position: center;
-    background-size: cover;
-    margin-bottom: 30px;
-  }
-}
-</style>
 <div class="col-md-6 col-sm-7 opening-text">
   <h1><strong>Blogs</strong></h1>
 </div>
 {% endblock %}
 
 {% block content %}
-<article class="container blog-post-card" style="margin-top:40px;">
+<div class="container" style="margin-top:40px;">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li class="active">{{post.title}}</li>
+    </ol>
+  </div>
+</div>
+<article class="container blog-post-card">
   <div class="blog-post-card-image" style='background-image:url({{post.image_url}})'></div>
   <h3>{{post.title}}</h3>
   <h3 class="blog-post-card-date"><small>{{post.created|date:"d M Y"}}</small></h3>
   <div class="blog-post-content">
     {{post.content | safe }}
     <div class="blog-post-app-promo container-fluid">
-      <div class="blog-post-app-promo-img row" style='background-image:url(https://cdn.feedmeeapp.com/images/fdme_bg_grey1.jpg)'>
-        <div class="col-sm-6 col-sm-offset-6">
+      <div class="blog-post-app-promo-img row" style='background-image:url(https://cdn.feedmeeapp.com/images/bg_wood_plain.jpg)'>
+        <div class="col-sm-6 hidden-xs">
+          <img src="https://cdn.feedmeeapp.com/images/fdme_phone170705.png"
+               class="img-responsive">
+        </div>
+        <div class="col-sm-6">
           <p>What if every time you eat out,<br>
             you could help someone in need eat, too
           </p>
