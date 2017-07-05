@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^dish/(?P<dish_id>[0-9]+)/$', views.dish_detail),
     # url(r'^saved-items/'),
     # url(r'^feed/', )
+    url(r'^blog/', include('blog.urls')),
     url(r'^',  include('webapp.flatpages.urls')),
 ]

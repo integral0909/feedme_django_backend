@@ -143,10 +143,14 @@ class RecipeForm(forms.ModelForm):
             pass
 
     def save(self, commit=True):
-        recipe = super(RecipeForm, self).save(commit=commit)
-        if self.cleaned_data.get('dish'):
-            dish.recipe = recipe
-            dish.save()
+        recipe = super(RecipeForm, self).save(commit=False)
+        recipe.image_url = _get_cdn_image(self.cleaned_data)
+        if commit:
+            recipe.save()
+            self.save_m2m()
+            if self.cleaned_data.get('dish'):
+                dish.recipe = recipe
+                dish.save()
         return recipe
 
     class Meta:

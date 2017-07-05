@@ -53,3 +53,14 @@ def validate_dish_integrity(request):
         [d.check_integrity() for d in items]
     run_chunked_iter(dishes, func, num_threads=24)
     return HttpResponse('OK')
+
+
+@csrf_exempt
+@worker
+def validate_recipe_integrity(request):
+    recipes = Recipe.objects.all()
+
+    def func(items):
+        [d.check_integrity() for d in items]
+    run_chunked_iter(recipes, func, num_threads=24)
+    return HttpResponse('OK')

@@ -68,10 +68,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
     'webapp',
+    'blog',
     'crispy_forms',
     'main',
     'api',
     'data_entry',
+    'django_social_share',
     'hijack',
     'hijack_admin',
     'compat',
@@ -87,6 +89,7 @@ INSTALLED_APPS = [
     's3direct',
     'raven.contrib.django.raven_compat',
     'better_filter_widget',
+    'ckeditor',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

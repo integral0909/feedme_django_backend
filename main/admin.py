@@ -234,7 +234,7 @@ class RecipeIngredientInline(admin.TabularInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     inlines = (RecipeIngredientInline, )
-    list_display = ('__str__', 'description', 'ingredient_text', 'created')
+    list_display = ('__str__', 'description', 'ingredient_text', 'image_url', 'created')
     readonly_fields = ('views_count', 'total_time_seconds', 'likes_count', 'random')
 
 
