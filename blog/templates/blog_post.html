@@ -29,34 +29,32 @@
   <h3 class="blog-post-card-date"><small>{{post.created|date:"d M Y"}}</small></h3>
   <div class="blog-post-content">
     {{post.content | safe }}
+    <strong class="visible-xs text-center">Share article</strong>
+    <ul class="list-inline share-block">
+      <li class="title hidden-xs"><strong>Share article</strong></li>
+      <li>{% post_to_facebook '' %}</li>
+      <li>{% post_to_gplus '' %}</li>
+      <li>{% post_to_twitter post.title '' %}</li>
+      <li>{% post_to_linkedin post.title '' %}</li>
+      <li class="hidden-xs">
+        {% send_email post.title post.content|truncatewords_html:30|striptags '' %}
+      </li>
+    </ul>
     <div class="blog-post-app-promo container-fluid">
       <div class="blog-post-app-promo-img row" style='background-image:url(https://cdn.feedmeeapp.com/images/bg_wood_plain.jpg)'>
-        <div class="col-sm-6 hidden-xs">
+        <div class="col-sm-push-6 col-sm-6">
+          <p class="lead"><strong>All-in-one food app</strong></p>
+          <p>Recipes | Restaurants | On-demand Delivery</p>
+        </div>
+        <div class="col-sm-pull-6 col-sm-6">
           <img src="https://cdn.feedmeeapp.com/images/fdme_phone170705.png"
                class="img-responsive">
-        </div>
-        <div class="col-sm-6">
-          <p>What if every time you eat out,<br>
-            you could help someone in need eat, too
-          </p>
-          <p class="lead"><strong>Join us &mdash; eat out, give back</strong></p>
-          <p>All-in-one food app powered by AI<br>
-            <small style="font-weight:200;">Recipes | Restaurants | On-demand Delivery</small>
-          </p>
         </div>
       </div>
       <a class="button-outline" href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8">
         <i class="fa fa-apple" aria-hidden="true"></i> AppStore</a>
       <a class="button-outline" href="http://eepurl.com/cPK-Ab"><i class="fa fa-android" aria-hidden="true"></i> PlayStore</a>
-    </div>
-    <ul class="list-inline share-block">
-      <li class="title"><strong>Share article</strong></li>
-      <li>{% post_to_facebook '' %}</li>
-      <li>{% post_to_gplus '' %}</li>
-      <li>{% post_to_twitter post.title '' %}</li>
-      <li>{% post_to_linkedin post.title '' %}</li>
-      <li>{% send_email post.title post.content|truncatewords_html:30|striptags '' %}</li>
-    </ul>
+    </div
   </div>
 </article>
 {% endblock %}
