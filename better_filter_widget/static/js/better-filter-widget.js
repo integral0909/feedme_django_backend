@@ -46,7 +46,7 @@ function BetterFilterWidget(field_name){
     // Layout
     // Hide built-in widget stuff
     orig_input.parent().children().hide();
-    $('#add_id_tags').show();
+    $('#add_id_'+field_name).show()
     // but show label
     $('label[for=id_'+field_name+']').show();
     bfw_wrap = $('<div/>');

@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="We want to stop world hunger with one simple idea: What if every time you eat out, you could help someone in need eat, too." />
+  <meta name="keywords" content="" />
+  <meta property="og:image" content="{% static 'images/og-image.jpg' %}" />
+  <meta property="og:image:height" content="312" />
+  <meta property="og:image:width" content="596" />
+  <meta property="og:title" content="Feedmee app | Eat out, give back">
+  <meta property="og:description" content="The food app that helps you give back.  Every time you book a table or order food delivery through the app, we donate a meal to someone in need.">
+  <meta property="og:url" content="www.feedmeeapp.com">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+  <link rel="manifest" href="/static/favicon/manifest.json">
+  <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <title>Feedmee - Meet The Team</title>
+  <script src="{% static 'js/fdme.min.js' %}"></script>
+  <link href="https://fonts.googleapis.com/css?family=Muli:400,700" rel="stylesheet">
+  <link href="{% static 'css/fdme.min.css' %}" rel="stylesheet" />
+</head>
+<body class="team">
+  <div class="root">
+    <div class="wrapper ">
+<header class="section-header">
+  <div class="container">
+    <div class="logo">
+      <a href="/"><img src="{% static 'images/logo.svg' %}" alt="Feedmee"></a>
+    </div>
+    <button type="button" class="navbar-toggle burger visible-sm visible-xs">
+        <div class="burger-wrapper">
+            <div class="x"></div>
+            <div class="y"></div>
+            <div class="z"></div>
+        </div>
+        <p>Menu</p>
+    </button>
+    <div class="main-menu">
+      <ul class="list-unstyled list-inline">
+        <li><a href="/impact/">Impact</a></li>
+        <li><a href="/events/">Events</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li class="button-download"><a href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8" target="_blank">Download</a></li>
+      </ul>
+    </div>
+    <div class="menu-bg visible-sm visible-xs"></div>
+  </div>
+</header>
+<!-- end: .section-header -->
+      <!-- end: .section-header -->
+      <main id="main">
+        <div class="section-opening">
+          <div class="container">
+            <div class="col-md-6 col-sm-7 opening-text">
+              <h1>The team behind Feedmee</h1>
+              <p>See more about why we started the company and the story behind the driving force of Feedmee.</p>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-opening -->
+        <div class="section-about">
+          <div class="container">
+           <div class="col-md-9">
+              <h3>Why did we start Feedmee</h3>
+              <br>
+              <p>We want to stop world hunger with one simple idea: What if every time you eat out,
+              you could help someone in need eat, too. Many people are unaware that the world produces
+              enough food to feed everyone, but one in nine people in the world still goes hungry.
+              <br><br>
+              Here at Feedmee we say enough is enough. We have taken a stand against hunger by teaming up with local restaurants and cafes that care about the community and those in need.</p>
+              <br><br>
+              <h3>The idea didn’t come from nowhere</h3>
+              <br>
+              <p>Tyler Spooner, age 26, is the Co-founder of Feedmee. Tyler became an orphan at the age of 10 and grew up in foster homes. In his early years he spent some time on the streets and relied heavily
+              on charities for food and support.
+              <br><br>
+              &ldquo;I wanted to find away to help people that are in the hard situation that I faced growing up, so I came up with the idea of Feedmee.&rdquo; said Tyler.
+              <br><br>
+              Tyler is very passionate about fighting the hunger problems that many children face every year. He recalls numerous times in his youth, going to school hungry without food and wishing he had a packed lunch like the other kids in the class.
+              <br><br>
+              Before the app was even launched, the company has already started to donate meals to people in need. More than 1,500 meals have been delivered to date with the help of OzHarvest.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-about -->
+        <div class="section-team">
+          <div class="container">
+            <div class="team-wrapper">
+              <h3>Management Team</h3>
+              <div class="team-management">
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/tyler.jpg' %}" alt="Tyler Spooner">
+  </div>
+  <div class="team-desc">
+    <h3>Tyler Spooner</h3>
+    <p>Co-Founder &amp; CEO</p>
+    <a href="https://www.linkedin.com/in/tyler-spooner-44ba1792/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/brenda.jpg' %}" alt="Brenda Lai">
+  </div>
+  <div class="team-desc">
+    <h3>Brenda Lai</h3>
+    <p>Co-Founder &amp; COO</p>
+    <a href="https://www.linkedin.com/in/brenda-lai-a24925123/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/anthony.jpg' %}" alt="Anthony Manning Franklin">
+  </div>
+  <div class="team-desc">
+    <h3>Anthony Manning Franklin</h3>
+    <p>CTO</p>
+    <a href="https://www.linkedin.com/in/anthonymanningfranklin/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/jose.jpg' %}" alt="Jose Saavedra-Rosas">
+  </div>
+  <div class="team-desc">
+    <h3>Jose Saavedra-Rosas</h3>
+    <p>CIO</p>
+    <a href="https://www.linkedin.com/in/jose-saavedra-rosas-91a08414/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+              </div>
+            </div>
+            <div class="team-wrapper">
+              <h3>Advisors</h3>
+              <div class="team-advisors">
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/tim.jpg' %}" alt="Tim Brewer">
+  </div>
+  <div class="team-desc">
+    <h3>Tim Brewer</h3>
+    <p>Growth Strategy</p>
+    <a href="https://www.linkedin.com/in/timdbrewer/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/juan.jpg' %}" alt="Juan Otero">
+  </div>
+  <div class="team-desc">
+    <h3>Juan Otero</h3>
+    <p>Restaurant Industry</p>
+    <a href="https://www.linkedin.com/in/joterovila/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/emilio.jpg' %}" alt="Emilio Marchena">
+  </div>
+  <div class="team-desc">
+    <h3>Emilio Marchena</h3>
+    <p>Data Science</p>
+    <a href="https://www.linkedin.com/in/emilio-carnicero-marchena-5090732/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+<div class="team-list">
+  <div class="team-image">
+    <img src="{% static 'images/marcus.jpg' %}" alt="Marcus Holmes">
+  </div>
+  <div class="team-desc">
+    <h3>Marcus Holmes</h3>
+    <p>Public Relations</p>
+    <a href="https://www.linkedin.com/in/gentlemantech/"target="_blank"><img src="{% static 'images/linkedin-color.svg' %}" alt="linkedin"></a>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-team -->
+      </main>
+      <!-- end: #main -->
+<footer class="section-footer">
+  <div class="footer-links">
+    <div class="container">
+      <div class="list-links">
+        <h4>What we do</h4>
+        <ul>
+          <li><a href="/impact/">Impact</a></li>
+          <li><a href="/events/">Events</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8">Download</a></li>
+        </ul>
+      </div>
+      <div class="list-links">
+        <h4>About us</h4>
+        <ul>
+          <li><a href="/team/">Team</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- end: .footer-links -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="social-links">
+        <div class="logo-icon">
+          <img src="/static/images/feedmee-heart.svg" alt="Feedmee Heart">
+        </div>
+        <ul class="list-unstyled">
+          <li><a href="https://www.instagram.com/feedmeeapp_au/"><img src="{% static 'images/instagram.svg' %}" alt=""></a></li>
+          <li><a href="https://www.facebook.com/Feedmeeapp/"><img src="{% static 'images/facebook.svg' %}" alt=""></a></li>
+          <li><a href="https://twitter.com/FeedmeeA"><img src="{% static 'images/twitter.svg' %}" alt=""></a></li>
+          <li><a href="https://www.linkedin.com/company-beta/13179226/"><img src="{% static 'images/linkedin.svg' %}" alt=""></a></li>
+          <li><a href="https://medium.com/feedmee-app"><img src="{% static 'images/medium.svg' %}" alt=""></a></li>
+        </ul>
+      </div>
+      <div class="term-links">
+        <ul class="list-unstyled">
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/terms/">Term of Use</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- end: .footer-bottom -->
+</footer>
+    </div>
+    <!-- end: .wrapper -->
+  </div>
+  <!-- end: .root -->
+</body>
+</html>

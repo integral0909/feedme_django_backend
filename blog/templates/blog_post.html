@@ -1,0 +1,60 @@
+{% extends "flatpages/fp_base.html" %}
+
+{% load static %}
+{% load social_share %}
+
+{% block title %} | {{post.title}}{% endblock %}
+{% block extra_headers %}
+  <link href="{% static 'css/blog.css' %}" rel="stylesheet" />
+{% endblock %}
+{% block opening %}
+<div class="col-md-6 col-sm-7 opening-text">
+  <h1><strong>Blogs</strong></h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top:40px;">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li class="active">{{post.title}}</li>
+    </ol>
+  </div>
+</div>
+<article class="container blog-post-card">
+  <div class="blog-post-card-image" style='background-image:url({{post.image_url}})'></div>
+  <h3>{{post.title}}</h3>
+  <h3 class="blog-post-card-date"><small>{{post.created|date:"d M Y"}}</small></h3>
+  <div class="blog-post-content">
+    {{post.content | safe }}
+    <strong class="visible-xs text-center">Share article</strong>
+    <ul class="list-inline share-block">
+      <li class="title hidden-xs"><strong>Share article</strong></li>
+      <li>{% post_to_facebook '' %}</li>
+      <li>{% post_to_gplus '' %}</li>
+      <li>{% post_to_twitter post.title '' %}</li>
+      <li>{% post_to_linkedin post.title '' %}</li>
+      <li class="hidden-xs">
+        {% send_email post.title post.content|truncatewords_html:30|striptags '' %}
+      </li>
+    </ul>
+    <div class="blog-post-app-promo container-fluid">
+      <div class="blog-post-app-promo-img row" style='background-image:url(https://cdn.feedmeeapp.com/images/bg_wood_plain.jpg)'>
+        <div class="col-sm-push-6 col-sm-6">
+          <p class="lead"><strong>All-in-one food app</strong></p>
+          <p>Recipes | Restaurants | On-demand Delivery</p>
+        </div>
+        <div class="col-sm-pull-6 col-sm-6">
+          <img src="https://cdn.feedmeeapp.com/images/fdme_phone170705.png"
+               class="img-responsive">
+        </div>
+      </div>
+      <a class="button-outline" href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8">
+        <i class="fa fa-apple" aria-hidden="true"></i> AppStore</a>
+      <a class="button-outline" href="http://eepurl.com/cPK-Ab"><i class="fa fa-android" aria-hidden="true"></i> PlayStore</a>
+    </div
+  </div>
+</article>
+{% endblock %}

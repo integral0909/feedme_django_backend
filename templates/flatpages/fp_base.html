@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include 'flatpages/head_meta.html' %}
+  {% block extra_headers %}{% endblock %}
+</head>
+<body>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId: '269167116764908',
+      autoLogAppEvents: true, xfbml: true, version: 'v2.9'
+    });FB.AppEvents.logPageView();
+  };
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+  <div class="root">
+    <div class="wrapper ">
+      {% include 'flatpages/header.html' %}
+      <main id="main">
+        <div class="section-opening">
+          <div class="container">
+            {% block opening %}{% endblock %}
+          </div>
+        </div>
+        {% block content %}{% endblock %}
+      </main>
+      {% include 'flatpages/footer.html' %}
+    </div>
+  </div>
+<script>
+  $(document).ready(function () {
+    $('.fb-share-btn').click(function () {
+      FB.ui({method:'share',href: $(this).data('shareUrl')},function(response){});
+    })
+  })
+</script>
+</body>
+</html>

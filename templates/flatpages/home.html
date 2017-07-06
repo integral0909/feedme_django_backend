@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% include 'flatpages/head_meta.html' %}
+<body class="home">
+  <div class="root">
+    <div class="wrapper ">
+      {% include 'flatpages/header.html' %}
+      <main id="main">
+        <div class="section-opening">
+          <div class="container">
+            <div class="col-md-6 col-sm-7 opening-text">
+              <h1>The food app that helps you give back</h1>
+              <p>Feedmee is a social enterprise. We believe together
+                we can end world hunger. Every time you book a
+                table or order food delivery through the app, we
+                donate a meal to someone in need.</p>
+
+<a class="button-outline" href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8"><img src="{% static 'images/apple-logo@2x.png' %}" alt="">AppStore</a>
+<a class="button-outline" href="http://eepurl.com/cPK-Ab"><img src="{% static 'images/android-logo@2x.png' %}" alt="">PlayStore</a>
+              <div class="featured-image">
+                <p>FEATURED IN</p>
+                <img src="{% static 'images/yahoo-logo@2x.png' %}" alt="Yahoo">
+                <img src="{% static 'images/startupdaily-logo@2x.png' %}" alt="Startup Daily">
+                <img src="{% static 'images/bn-logo@2x.png' %}" alt="Business News">
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-5 opening-image">
+              <img src="{% static 'images/phone@2x.png' %}" alt="">
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-opening -->
+<div class="section-help">
+  <div class="container">
+    <img src="{% static 'images/box-hearth@2x.png' %}" alt="">
+    <p>Together, we’ve helped to feed</p>
+    <h2><span class="fed-counter">1,890</span> people in need.</h2>
+      <a class="button-pink" href="/donation/">See More</a>
+  </div>
+</div>
+<!-- end: .section-help -->
+<script>
+$(document).ready(function(){
+  $.getJSON("https://use.feedmeeapp.com/api/donations/", function(d) {
+    var c = d.count.toString().split('').reverse().join('')
+                   .replace(/(\d{3}(?!.*\.|$))/g,'$1,')
+                   .split('').reverse().join('');
+    $(".fed-counter").text(c);
+  })
+});
+</script>
+          <div class="section-benefits">
+            <div class="container">
+              <div class="benefit-wrapper">
+                <h2>Things you can do on Feedmee</h2>
+                <div class="benefit-list">
+                  <img src="{% static 'images/book@2x.png' %}" alt="Book a table">
+                  <div class="benefit-desc">
+                    <h4>Table booking</h4>
+                    <p>You can book a table online through 3 simple steps
+                      and get instant confirmation. We partner with
+                      different booking providers around the world so you
+                      can keep collecting the royalty points.</p>
+                  </div>
+                </div>
+                <div class="benefit-list">
+                  <img src="{% static 'images/deliver@2x.png' %}" alt="Order delivery">
+                  <div class="benefit-desc">
+                     <h4>Order food delivery</h4>
+                     <p>You can order meals on Feedmee through the services
+                        provided by our on-demand delivery partners. Once
+                        you have found the food you want, ordering and
+                        getting it delivered is just a click away.</p>
+                   </div>
+                </div>
+                <div class="benefit-list">
+                  <img src="{% static 'images/find-recipe@2x.png' %}" alt="Find recipes">
+                  <div class="benefit-desc">
+                    <h4>Find recipe inspirations</h4>
+                    <p>If you don’t feel like eating out, Feedmee also shows
+                      you recipes of the dishes that you like so you can cook
+                      at home. All recipes are crafted by recipe specialists.
+                      It’s all free, too!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- end: .section-benefits -->
+        <div class="section-featured">
+          <div class="container">
+            <h3>Featured in</h3>
+            <div class="featured-list hidden-sm hidden-xs">
+              <ul>
+                <li><img src="{% static 'images/startupdaily-black@2x.png' %}" alt="Startup Daily"></li>
+                <li><img src="{% static 'images/yahoo-purple@2x.png' %}" alt="Yahoo News"></li>
+                <li><img src="{% static 'images/hit-92.9@2x.png' %}" alt="Hit 92.9"></li>
+                <li><img src="{% static 'images/watoday@2x.png' %}" alt="WA Today"></li>
+                <li><img src="{% static 'images/bn-color@2x.png' %}" alt="Business News"></li>
+                <li><img src="{% static 'images/ozawards@2x.png' %}" alt="OzApp Awards"></li>
+                <li><img src="{% static 'images/business-wire@2x.png' %}" alt="Business Wire"></li>
+              </ul>
+            </div>
+            <div class="featured-list-mobile visible-sm visible-xs">
+              <div class="featured-list-image"><img src="{% static 'images/startupdaily-black@2x.png' %}" alt="Startup Daily"></div>
+              <div class="featured-list-image"><img src="{% static 'images/yahoo-purple@2x.png' %}" alt="Yahoo News"></div>
+              <div class="featured-list-image"><img src="{% static 'images/hit-92.9@2x.png' %}" alt="Hit 92.9"></div>
+              <div class="featured-list-image"><img src="{% static 'images/watoday@2x.png' %}" alt="WA Today"></div>
+              <div class="featured-list-image"><img src="{% static 'images/bn-color@2x.png' %}" alt="Business News"></div>
+              <div class="featured-list-image"><img src="{% static 'images/ozawards@2x.png' %}" alt="OzApp Awards"></div>
+              <div class="featured-list-image"><img src="{% static 'images/business-wire@2x.png' %}" alt="Business Wire"></div>
+            </div>
+          </div>
+        </div>
+        <!-- end: .section-featured -->
+<div class="section-download">
+  <div class="container">
+    <h3>Download Now</h3>
+    <ul class="list-unstyled">
+      <li>
+        <a href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8">
+          <img src="{% static 'images/apple-logo@2x.png' %}" alt="AppStore icon">
+          <p>AppStore</p>
+        </a>
+      </li>
+      <li>
+        <a href="http://eepurl.com/cPK-Ab">
+          <img src="{% static 'images/android-logo@2x.png' %}" alt="PlayStore icon">
+          <p>PlayStore</p>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- end: .section-store -->
+      </main>
+{% include 'flatpages/footer.html' %}
+    </div>
+    <!-- end: .wrapper -->
+  </div>
+  <!-- end: .root -->
+</body>
+</html>
