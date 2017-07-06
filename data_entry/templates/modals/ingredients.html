@@ -1,0 +1,30 @@
+{% load bootstrap3 %}
+<form action="{{request.path}}?{{request.GET.urlencode}}" method="post">
+  {% bootstrap_messages %}
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  <input type="submit" class="btn btn-success" value="SUBMIT" />
+</form>
+<script id="modal-data">
+  console.log();
+    DE.FormModal.activeForm = {
+        "url": "{{request.path}}",
+        "success": function () {
+            var $res = DE.FormModal.modalBody.find('div.return-data');
+            if ($res.data('success')) {
+                var id = $res.data('id');
+                var name = $res.data('name');
+                $('[name$={{class_name.lower}}').append('<option value="'+id+'">'+name+'</option>');
+                setTimeout(function(){
+                    $('select[name$="{{ request.GET.i }}-{{class_name.lower}}"]').val(id)
+                }, 500);
+                setTimeout(function() {
+                    DE.FormModal.hideModal()
+                }, 2200)
+            }
+        },
+        "failure": function () {
+            console.log("Uh oh")
+        }
+    }
+</script>

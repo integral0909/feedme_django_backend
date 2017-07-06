@@ -63,7 +63,6 @@ class Recipe(django_filters.rest_framework.FilterSet):
     ingredients = django_filters.CharFilter(lookup_expr='icontains',
                                             name='ingredients__ingredient__name')
 
-
     class Meta:
         model = models.Recipe
         fields = ['min_total_time', 'max_total_time', 'keywords', 'tags', 'difficulty']

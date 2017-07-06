@@ -8,11 +8,12 @@ DE = {
   pageManagers: {
     Restaurant: require('./modules/pagemanagers/restaurant.js').Restaurant,
     Blog: require('./modules/pagemanagers/blog.js').Blog,
-    Dish: require('./modules/pagemanagers/dish.js').Dish
+    Dish: require('./modules/pagemanagers/dish.js').Dish,
+    Recipe: require('./modules/pagemanagers/recipe.js').Recipe
   }
-}
+};
 
-},{"./modules/formModal.js":3,"./modules/pagemanagers/blog.js":5,"./modules/pagemanagers/dish.js":6,"./modules/pagemanagers/restaurant.js":7}],2:[function(require,module,exports){
+},{"./modules/formModal.js":3,"./modules/pagemanagers/blog.js":5,"./modules/pagemanagers/dish.js":6,"./modules/pagemanagers/recipe.js":7,"./modules/pagemanagers/restaurant.js":8}],2:[function(require,module,exports){
 "use strict";
 /// <reference path="./../../node_modules/@types/jquery/index.d.ts" />
 exports.__esModule = true;
@@ -160,7 +161,11 @@ var FormsetManager = (function () {
             var $total_forms = $('#id_' + formName + '-TOTAL_FORMS', $form);
             var $empty = $('#empty-form', $form);
             var form_idx = $total_forms.val();
-            $('.formset-rows', $form).append($empty.html().replace(/__prefix__/g, form_idx));
+            var avail_vars = { "formName": formName, "form_idx": form_idx };
+            $('.formset-rows', $form).append($empty.html().replace(/__prefix__/g, form_idx)
+                .replace(/\{(.*?)\}/g, function (g0, replacing) {
+                return avail_vars[replacing];
+            }));
             $total_forms.val(parseInt(form_idx) + 1);
         };
         if (options !== undefined) {
@@ -171,8 +176,9 @@ var FormsetManager = (function () {
                 this.delCheckWrapperSelector = options.delCheckWrapperSelector;
             }
         }
-        $('body').on('click', this.delClickSelector, this.deleteForm);
-        $('body').on('click', this.addClickSelector, this.addForm);
+        var $bdy = $('body');
+        $bdy.on('click', this.delClickSelector, this.deleteForm);
+        $bdy.on('click', this.addClickSelector, this.addForm);
     }
     return FormsetManager;
 }());
@@ -205,6 +211,24 @@ var Dish = (function () {
 exports.Dish = Dish;
 
 },{"./../FormManager":2}],7:[function(require,module,exports){
+"use strict";
+/**
+ * Created by anthonymanning-franklin on 4/7/17.
+ */
+exports.__esModule = true;
+/// <reference path="./../../../node_modules/@types/jquery/index.d.ts" />
+var FormManager_1 = require("./../FormManager");
+var formsetManager_1 = require("./../formsetManager");
+var Recipe = (function () {
+    function Recipe() {
+        this.formManager = new FormManager_1.FormManager();
+        this.formset = new formsetManager_1.FormsetManager();
+    }
+    return Recipe;
+}());
+exports.Recipe = Recipe;
+
+},{"./../FormManager":2,"./../formsetManager":4}],8:[function(require,module,exports){
 "use strict";
 /// <reference path="./../../../node_modules/@types/jquery/index.d.ts" />
 exports.__esModule = true;

@@ -2,9 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from .forms import (RestaurantForm, BlogForm, DishForm, RecipeForm, RecipeIngredientForm,
-                    HighlightForm, TagForm, CuisineForm, RestaurantOpeningTimeForm)
+                    HighlightForm, TagForm, CuisineForm, RestaurantOpeningTimeForm,
+                    IngredientForm)
 from main.models import (Restaurant, Blog, Dish, Recipe, RecipeIngredient,
-                         Highlight, Tag, Cuisine, OpeningTime)
+                         Highlight, Tag, Cuisine, OpeningTime, Ingredient)
 from django.forms import modelformset_factory, formset_factory, inlineformset_factory
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
@@ -23,6 +24,7 @@ def list_items(request, item_type):
 @staff_member_required
 def change_item(request, item_type, item_id=None, tab=False):
     class_name, ObjClass, FormClass = _get_class_objects(item_type)
+    defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}
     if item_id:
         obj = get_object_or_404(ObjClass, pk=item_id)
         context = merge_dicts({'action': 'Change', 'form': FormClass(instance=obj),
@@ -32,29 +34,38 @@ def change_item(request, item_type, item_id=None, tab=False):
         context = _extra_processing(item_type)
 
     if request.method == 'POST':
-        return _change_item_post(request, item_id, FormClass, context, item_type, obj=obj)
+        return _change_item_post(
+            request, item_id, merge_dicts(defaults, context), item_type, obj=obj,
+            class_name=class_name, FormClass=FormClass)
 
-    defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}
     context = merge_dicts(defaults, context)
     return render(request, 'de_%s.html' % class_name.lower(), context)
 
 
-def _change_item_post(request, item_id, FormClass, context, item_type, obj=None):
+def _change_item_post(request, item_id, context, item_type, obj=None,
+                      class_name=None, FormClass=None):
     """All logic unique to handling a POST request for change_item."""
-    form, FLAG = _update_or_insert(item_id, FormClass, obj, request.POST)
+    form, flag = _update_or_insert(item_id, FormClass, obj, request.POST)
     if form.is_valid():
         obj = form.save(commit=False)
         try:
-            formset = context['OTFormset'](request.POST, instance=obj)
+            formset = context['FormsetClass'](request.POST, instance=obj)
         except KeyError:
             obj.save()
         else:
             if formset.is_valid():
                 obj.save()
                 formset.save()
-        finally:
-            form.save_m2m()
-            return _change_item_post_success(request, obj, FLAG, item_type)
+            else:
+                context['form'] = form
+                if item_type == 'restaurants':
+                    context['otfset'] = formset
+                else:
+                    context['formset'] = formset
+
+                return render(request, 'de_%s.html' % class_name.lower(), context)
+        form.save_m2m()
+        return _change_item_post_success(request, obj, flag, item_type)
     else:
         context['form'] = form
         return render(request, 'de_%s.html' % class_name.lower(), context)
@@ -90,7 +101,7 @@ def modal(request, modal):
             return render(request, template, {'obj': obj})
     else:
         form = FormClass()
-    return render(request, template, {'form': form, 'modal': modal})
+    return render(request, template, {'form': form, 'modal': modal, 'class_name': class_name})
 
 
 @staff_member_required
@@ -155,35 +166,39 @@ def _extra_processing(item_type, obj=None):
     """Extra model-specific processing such as formsets for recipes."""
     ctx = {}
     if item_type == 'recipes' or (item_type == 'restaurants' and obj):
-        RecipeFormSet = modelformset_factory(RecipeIngredient, form=RecipeIngredientForm,
-                                             can_delete=True)
-    if item_type == 'recipes':
-        ctx['formset'] = RecipeFormSet(
-            queryset=RecipeIngredient.objects.filter(recipe=obj))
+        RecipeFormsetClass = inlineformset_factory(Recipe, RecipeIngredient, can_delete=True,
+                                             form=RecipeIngredientForm, extra=3)
+        ctx['FormsetClass'] = RecipeFormsetClass
+        ctx['RecipeFormsetClass'] = RecipeFormsetClass
+        ctx['formset'] = RecipeFormsetClass()
+    if item_type == 'recipes' and isinstance(obj, Recipe):
+        ctx['formset'] = RecipeFormsetClass(instance=obj)
+    elif item_type == 'recipes':
+        ctx['formset'] = RecipeFormsetClass()
     if item_type == 'restaurants':
-        OTFormset = inlineformset_factory(Restaurant, OpeningTime, extra=7,
-                                          form=RestaurantOpeningTimeForm)
-        otfset = OTFormset(initial=[
+        FormsetClass = inlineformset_factory(Restaurant, OpeningTime, extra=7,
+                                             form=RestaurantOpeningTimeForm)
+        otfset = FormsetClass(initial=[
             {'day_of_week': 'sun'}, {'day_of_week': 'mon'}, {'day_of_week': 'tue'},
             {'day_of_week': 'wed'}, {'day_of_week': 'thu'}, {'day_of_week': 'fri'},
             {'day_of_week': 'sat'}])
-        ctx = {'otfset': otfset, 'OTFormset': OTFormset}
+        ctx = merge_dicts(ctx, {'otfset': otfset, 'FormsetClass': FormsetClass})
     if item_type == 'restaurants' and obj:
-        OTFormset = inlineformset_factory(Restaurant, OpeningTime, extra=2,
-                                          form=RestaurantOpeningTimeForm)
-        otfset = OTFormset(instance=obj)
+        ctx['recipeformset'] = ctx['formset']
+        FormsetClass = inlineformset_factory(Restaurant, OpeningTime, extra=2,
+                                             form=RestaurantOpeningTimeForm)
+        otfset = FormsetClass(instance=obj)
         dishes = Dish.objects.filter(restaurant=obj)
-        ctx = {
+        ctx = merge_dicts(ctx, {
             'blogs': Blog.objects.filter(restaurant=obj),
             'dishes': dishes,
             'blogform': BlogForm(initial={'restaurant_id': obj.id}),
             'dishform': DishForm(initial={'restaurant': obj}),
-            'recipeformset': RecipeFormSet(queryset=Recipe.objects.none()),
             'recipeform': RecipeForm(dish_opts=dishes.filter(recipe__isnull=True)),
             'recipes': Recipe.objects.filter(dishes__restaurant=obj),
             'otfset': otfset,
-            'OTFormset': OTFormset
-        }
+            'FormsetClass': FormsetClass
+        })
     return ctx
 
 

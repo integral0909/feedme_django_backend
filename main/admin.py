@@ -7,6 +7,7 @@ from better_filter_widget import BetterFilterWidget
 from hijack_admin.admin import HijackUserAdminMixin
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.forms.widgets import BaseGeometryWidget
+from s3direct.widgets import S3DirectWidget
 from main.actions import export_as_csv_action
 
 # Widgets
@@ -32,6 +33,15 @@ class DishAdminForm(forms.ModelForm):
         widgets = {
             'keywords': forms.CheckboxSelectMultiple,
             'tags': BetterFilterWidget,
+        }
+
+
+class RecipeAdminForm(forms.ModelForm):
+    class Meta:
+        fields = '__all__'
+        model = Recipe
+        widgets = {
+            'image_url': S3DirectWidget(dest='raw-img')
         }
 
 
@@ -233,6 +243,7 @@ class RecipeIngredientInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
+    form = RecipeAdminForm
     inlines = (RecipeIngredientInline, )
     list_display = ('__str__', 'description', 'ingredient_text', 'image_url', 'created')
     readonly_fields = ('views_count', 'total_time_seconds', 'likes_count', 'random')

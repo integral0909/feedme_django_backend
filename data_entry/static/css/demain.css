@@ -156,7 +156,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 50%;
-  height: 50%;
+  min-height: 50%;
   background-color: #FFF;
   border-radius: 5px;
   box-shadow: 25px 25px 45px rgba(0,0,0,0.2);
