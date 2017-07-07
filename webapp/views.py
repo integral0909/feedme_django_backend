@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from main.models import Restaurant, Dish
+from main.models import Restaurant, Dish, Recipe
 from django.conf import settings
 
 
@@ -16,6 +16,11 @@ def restaurant_detail(request, restaurant_slug):
 def deeplink_dish(request, dish_id):
     dish = Dish.objects.get(pk=dish_id)
     return render(request, 'deeplink_dish.html', {'dish': dish})
+
+
+def deeplink_recipe(request, recipe_id):
+    recipe = Recipe.objects.get(pk=recipe_id)
+    return render(request, 'deeplink_recipe.html', {'recipe': recipe})
 
 
 def dish_detail(request, dish_id):

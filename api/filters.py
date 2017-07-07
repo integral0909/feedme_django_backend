@@ -1,7 +1,11 @@
+import operator
 import django_filters
 # import rest_framework_filters as filters
+from past.builtins import reduce
+
 import main.models as models
-# https://github.com/philipn/django-rest-framework-filters
+from django.db.models.query import QuerySet
+from django.db.models import Q
 
 
 class Dish(django_filters.rest_framework.FilterSet):
@@ -55,13 +59,22 @@ class Recipe(django_filters.rest_framework.FilterSet):
     difficulty = django_filters.MultipleChoiceFilter(
         choices=models.Recipe.DIFFICULTY_CHOICES
     )
-    # ingredients = django_filters.ModelMultipleChoiceFilter(
-    #     name='ingredients__ingredient__name',
-    #     to_field_name='name', conjoined=True,
-    #     queryset=models.Ingredient.objects.all()
-    # )
-    ingredients = django_filters.CharFilter(lookup_expr='icontains',
-                                            name='ingredients__ingredient__name')
+    ingredients = django_filters.ModelMultipleChoiceFilter(
+        name='ingredients__ingredient__name',
+        to_field_name='name', conjoined=True,
+        queryset=models.Ingredient.objects.all(),
+        method='ingredient_search'
+    )
+
+    def ingredient_search(self, qs, name, value):
+        if isinstance(value, QuerySet) and value.count():
+            query = reduce(operator.or_, (Q(ingredients__ingredient__name__icontains=v.name) for v in value))
+            return qs.filter(query)
+        elif value:
+            kwargs = {'%s__icontains' % name: value}
+            return qs.filter(**kwargs)
+        else:
+            return qs
 
     class Meta:
         model = models.Recipe
