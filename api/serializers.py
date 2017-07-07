@@ -118,12 +118,26 @@ class RecipeStep(serializers.ModelSerializer):
 
 
 class RecipeIngredient(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField('get_ingredient_display')
     description = NullCharField()
     unit_type = NullCharField()
     ingredient_type = serializers.SerializerMethodField('get_type_display')
 
     def get_type_display(self, obj):
         return obj.get_ingredient_type_display()
+
+    def get_ingredient_display(self, obj):
+        if obj.uses_fractions and obj.fraction:
+            qty = obj.fraction
+        elif obj.fraction != 'N/A':
+            qty = '{:f}{}'.format(obj.quantity.normalize(), obj.fraction)
+        else:
+            qty = '{:f}'.format(obj.quantity.normalize())
+        ut = ' %s  of' % obj.unit_type if obj.unit_type else ''
+        prep = ', %s' % obj.preparation if obj.preparation else ''
+        kwargs = {'quantity': qty, 'unit_type': ut, 'preparation': prep,
+                  'ingredient': obj.ingredient.name}
+        return '{quantity}{unit_type} {ingredient}{preparation}'.format(**kwargs)
 
     class Meta:
         model = models.RecipeIngredient
