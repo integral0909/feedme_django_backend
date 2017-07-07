@@ -67,13 +67,15 @@ class Recipe(django_filters.rest_framework.FilterSet):
     )
 
     def ingredient_search(self, qs, name, value):
-        if isinstance(value, QuerySet):
+        if isinstance(value, QuerySet) and value.count():
             query = reduce(operator.or_, (Q(ingredients__ingredient__name__icontains=v.name) for v in value))
             return qs.filter(query)
-        else:
+        elif value:
             kwargs = {'%s__icontains' % name: value}
-        return qs.filter(**kwargs)
-    
+            return qs.filter(**kwargs)
+        else:
+            return qs
+
     class Meta:
         model = models.Recipe
         fields = ['min_total_time', 'max_total_time', 'keywords', 'tags', 'difficulty']
