@@ -133,11 +133,11 @@ class RecipeIngredient(serializers.ModelSerializer):
             qty = '{:f}{}'.format(obj.quantity.normalize(), obj.fraction)
         else:
             qty = '{:f}'.format(obj.quantity.normalize())
-        ut = ' %s  of' % obj.unit_type if obj.unit_type else ''
+        ut = ' %s of' % obj.unit_type if obj.unit_type else ''
         prep = ', %s' % obj.preparation if obj.preparation else ''
         kwargs = {'quantity': qty, 'unit_type': ut, 'preparation': prep,
                   'ingredient': obj.ingredient.name}
-        return '{quantity}{unit_type} {ingredient}{preparation}'.format(**kwargs)
+        return '{quantity}{unit_type} {ingredient}{preparation}'.format(**kwargs).lower()
 
     class Meta:
         model = models.RecipeIngredient
