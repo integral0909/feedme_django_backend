@@ -83,6 +83,6 @@ class RecentEngagementViewset(APIView):
                                      for n in data['swipes']['count']]
         data['recipe_swipes']['percent'] = [
             '{:.2f}'.format(divide_or_zero(n, new_users) * 100)
-            for n in data['swipes']['count']
+            for n in data['recipe_swipes']['count']
         ]
         return Response(data)
