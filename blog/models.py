@@ -17,7 +17,7 @@ class Author(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, default='')
+    slug = models.SlugField(unique=True, default='', max_length=255)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts')
     content = RichTextField()
     image_url = models.URLField(max_length=600)
