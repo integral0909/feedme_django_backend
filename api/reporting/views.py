@@ -2,13 +2,11 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import Count
-from django.contrib.admin.views.decorators import staff_member_required
-from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from common.utils import divide_or_zero
-from main.models import DishQuery, Like
+from main.models import DishQuery, Like, RecipeLike
 
 
 class UsersViewset(APIView):
@@ -53,7 +51,9 @@ class RecentEngagementViewset(APIView):
         new_users = qs.count()
         new_queries = DishQuery.objects.filter(created__gte=day_ago).count()
         new_swipes = Like.objects.filter(created__gte=day_ago).count()
+        new_rswipes = RecipeLike.objects.filter(created__gte=day_ago).count()
         qs = qs.annotate(likes_count=Count('likes'))
+        qsr = qs.annotate(likes_count=Count('recipe_likes'))
         data = {
             'swipes': {
                 'count': [
@@ -64,11 +64,25 @@ class RecentEngagementViewset(APIView):
                     qs.filter(likes_count=0).count()
                 ]
             },
+            'recipe_swipes': {
+                'count': [
+                    qsr.filter(likes_count__gte=100).count(),
+                    qsr.filter(likes_count__gte=50, likes_count__lte=99).count(),
+                    qsr.filter(likes_count__gte=20, likes_count__lte=49).count(),
+                    qsr.filter(likes_count__gte=1, likes_count__lte=19).count(),
+                    qsr.filter(likes_count=0).count()
+                ]
+            },
             'new_signups': new_users,
             'recent_users': recent_users,
             'new_queries': new_queries,
-            'new_swipes': new_swipes
+            'new_swipes': new_swipes,
+            'new_rswipes': new_rswipes,
         }
         data['swipes']['percent'] = ['{:.2f}'.format(divide_or_zero(n, new_users) * 100)
                                      for n in data['swipes']['count']]
+        data['recipe_swipes']['percent'] = [
+            '{:.2f}'.format(divide_or_zero(n, new_users) * 100)
+            for n in data['swipes']['count']
+        ]
         return Response(data)
