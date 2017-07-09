@@ -8,12 +8,10 @@ body {
   padding-right: 25px;
 }
 #restaurant-header-img {
-  width: 100%;
-  width: 100vw;
   padding-bottom: 65%;
   background-size: cover;
   background-position: center center;
-  margin-bottom: 25px;
+  margin-bottom: 0;
 }
 .TA_selfserveprop {
     display: inline-block;
@@ -69,14 +67,32 @@ table.opening-times > tbody > tr > td:first-child {
   padding-right: 13px;
 }
 h3.fm-typog {
-  font-size: 17px;
+  /*font-size: 20px;*/
   font-weight: 900;
 }
+h1.fm-typog, h2.fm-typog, h3.fm-typog,
+h4.fm-typog, h5.fm-typog, h6.fm-typog {
+  font-weight: 900;
+}
+h1.fm-typog.fm-typog-red, h2.fm-typog.fm-typog-red, h3.fm-typog.fm-typog-red,
+h4.fm-typog.fm-typog-red h5.fm-typog.fm-typog-red, h6.fm-typog.fm-typog-red {
+  color: #E73D57;
+}
+
 .text-danger {
   color: #E73D57;
 }
 .bg-grey {
   background-color: #f8f8f8;
+}
+.card-margin {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.card {
+  -webkit-border-radius:0;
+  -moz-border-radius:0;
+  border-radius:0;
 }
 footer {
   padding: 30px;
@@ -84,4 +100,13 @@ footer {
 }
 footer > ul > li > a {
   color: #9B9B9B;
+}
+a {
+  color: #E73D57;
+}
+hr.gutter {
+  background-color: #eee;
+  height: 8px;
+  margin-bottom: 0;
+  margin-top: 0;
 }

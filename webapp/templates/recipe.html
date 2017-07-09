@@ -1,0 +1,76 @@
+{% extends "app_base.html" %}
+
+{% load static %}
+{% load social_share %}
+
+{% block title %} | {{recipe.name}}{% endblock %}
+
+{% block content %}
+  <style>
+  body {
+    background-color: #eee;
+  }
+  </style>
+  {% if deeplink.useragent_is_target %}
+    <script>
+      window.location = 'feedmee://recipe/{{recipe.id}}';
+      setTimeout(function () {
+        window.location = 'https://itunes.apple.com/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992';
+      }, 1000);
+    </script>
+  {% endif %}
+  <div id="restaurant-header-img" class="visible-xs container"
+       style="background-image: url({{recipe.image_url}})"></div>
+  <div class="container text-center card">
+    <div class="card-block">
+      <h3 class="fm-typog fm-typog-red">{{recipe.name}}</h3>
+      <p class="text-muted">{{recipe.description}}</p>
+      <p>Recipe from <a href="{{ recipe.source_url }}" target="_blank">{{ recipe.source_url }}</a></p>
+      <ul class="list-inline share-block">
+        <li class="title hidden-xs"><strong>Share recipe</strong></li>
+        <li class="list-inline-item">{% post_to_facebook '' %}</li>
+        <li class="list-inline-item">{% post_to_gplus '' %}</li>
+        <li class="list-inline-item">{% post_to_twitter recipe.name '' %}</li>
+        <li class="list-inline-item">{% post_to_linkedin recipe.name '' %}</li>
+        <li class="hidden-xs list-inline-item">
+          {% send_email recipe.name recipe.description|truncatewords_html:30|striptags '' %}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="card-margin card container container-padded text-center">
+    <div class="card-block">
+      <div class="row"><br>
+        <div class="col-3">
+          <strong>Prep Time</strong><br>
+          <span>{% widthratio recipe.prep_time_seconds 60 1 %}</span>
+        </div>
+        <div class="col-3">
+          <strong>Cook Time</strong><br>
+          <span>{% widthratio recipe.cook_time_seconds 60 1 %}</span>
+        </div>
+        <div class="col-3">
+          <strong>Servings</strong><br>
+          <span>{{ recipe.servings }}</span>
+        </div>
+        <div class="col-3">
+          <strong>Difficulty</strong><br>
+          <span>{{ recipe.get_difficulty_display }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-margin card container">
+    <div class="card-block">
+      <h4 style="color:#000;" class="fm-typog">Ingredients</h4>
+      <ul class="list-group">
+        {% for ingredient in recipe.ingredients.all %}
+          {% include 'ingredient.html' %}
+        {% endfor %}
+      </ul>
+    <hr>
+    <h4 class="fm-typog">Directions</h4>
+    Directions from <a href="{{ recipe.source_url }}" target="_blank">{{ recipe.source_url }}</a>
+    </div>
+  </div>
+{% endblock %}

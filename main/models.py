@@ -797,6 +797,21 @@ class RecipeIngredient(Creatable):
         """Get ingredient description"""
         return self.ingredient.description
 
+    @property
+    def display(self):
+        if self.uses_fractions and self.fraction:
+            qty = self.fraction
+        elif self.fraction != 'N/A':
+            qty = '{:f}{}'.format(self.quantity.normalize(), self.fraction)
+        else:
+            qty = '{:f}'.format(self.quantity.normalize())
+        ut = ' %s of' % self.unit_type if self.unit_type else ''
+        prep = ', %s' % self.preparation if self.preparation else ''
+        kwargs = {'quantity': qty, 'unit_type': ut, 'preparation': prep,
+                  'ingredient': self.ingredient.name}
+        return '{quantity}{unit_type} {ingredient}{preparation}'.format(**kwargs).lower()
+
+
     class Meta:
         unique_together = (('recipe', 'ingredient', 'ingredient_type'), )
 
