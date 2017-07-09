@@ -69,13 +69,17 @@ class CustomUserAdmin(UserAdmin, HijackUserAdminMixin):
                     'get_swipes', 'date_joined', 'hijack_field')
     list_select_related = ('profile', )
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'id', 'email', 'first_name', 'last_name'
+    ]),)
 
     def get_likes(self, inst):
-        return inst.likes.filter(did_like=True).count()
+        return (inst.likes.filter(did_like=True).count()
+                + inst.recipe_likes.filter(did_like=True).count())
     get_likes.short_description = 'Likes'
 
     def get_swipes(self, inst):
-        return inst.likes.count()
+        return inst.likes.count() + inst.recipe_likes.count()
     get_swipes.short_description = 'Swipes'
 
     def get_provider(self, inst):
@@ -207,6 +211,16 @@ class LikeAdmin(admin.ModelAdmin):
                      'user__profile__last_name')
     actions = (export_as_csv_action(description="CSV Export", fields=[
         'user_id', 'dish_id', 'created', 'updated'
+    ]), )
+
+
+@admin.register(RecipeLike)
+class RecipeLikeAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'user', 'did_like', 'created', 'updated')
+    search_fields = ('recipe__name', 'user__profile__first_name',
+                     'user__profile__last_name')
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'user_id', 'recipe_id', 'created', 'updated'
     ]), )
 
 
