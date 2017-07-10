@@ -32,7 +32,7 @@
         <div class="col-md-6 text-xs-center text-left">
           <h3 class="fm-typog fm-typog-red">{{recipe.name}}</h3>
           <p class="text-muted">{{recipe.description}}</p>
-          <p>Recipe from <a href="{{ recipe.source_url }}" target="_blank">{{ recipe.source_url }}</a></p>
+          <p>Recipe from <a href="{{ recipe.source_url }}" target="_blank">{{ recipe.get_source_url_display }}</a></p>
         </div>
         <div class="col-md-6">
           <ul class="list-inline share-block text-xs-center text-left">
@@ -87,7 +87,7 @@
         </div>
         <div class="col-md-6">
           <h4 class="fm-typog">Directions</h4>
-          Directions from <a href="{{ recipe.source_url }}" target="_blank">{{ recipe.source_url }}</a>
+          Directions from <a href="{{ recipe.source_url }}" target="_blank">{{ recipe.get_source_url_display }}</a>
         </div>
       </div>
     </div>
