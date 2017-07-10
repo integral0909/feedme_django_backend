@@ -1,6 +1,7 @@
 import random
 import re
 from datetime import datetime, timedelta, timezone
+from urllib.parse import urlparse
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -709,6 +710,10 @@ class Recipe(Creatable):
                 txt += '%sx %s, ' % (int(ingr.quantity), ingr.name)
         return txt.rstrip(', ')
     ingredient_text.short_description = 'Ingredients'
+
+    def get_source_url_display(self):
+        url = urlparse(self.source_url)
+        return url.hostname.replace("www.", "")
 
     def keyword_list_html(self):
         return format_html_join(
