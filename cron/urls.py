@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^randomise/dishes/', views.randomise_dishes),
     url(r'^randomise/recipes/', views.randomise_recipes),
     url(r'^validate/dishes/', views.validate_dish_integrity),
+    url(r'^validate/recipes/', views.validate_recipe_integrity),
 ]

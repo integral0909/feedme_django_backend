@@ -25,42 +25,30 @@ def backup_db(request):
 @csrf_exempt
 @worker
 def randomise_dishes(request):
-    dishes = Dish.objects.all()
-
-    def func(items):
-        [d.randomise() for d in items]
-    run_chunked_iter(dishes, func, num_threads=24)
+    dsh = Dish.objects.all()
+    run_chunked_iter(dsh, lambda items: [d.randomise() for d in items], num_threads=24)
     return HttpResponse('OK')
 
 
 @csrf_exempt
 @worker
 def randomise_recipes(request):
-    recipes = Recipe.objects.all()
-
-    def func(items):
-        [d.randomise() for d in items]
-    run_chunked_iter(recipes, func, num_threads=24)
+    rec = Recipe.objects.all()
+    run_chunked_iter(rec, lambda items: [d.randomise() for d in items], num_threads=24)
     return HttpResponse('OK')
 
 
 @csrf_exempt
 @worker
 def validate_dish_integrity(request):
-    dishes = Dish.objects.all()
-
-    def func(items):
-        [d.check_integrity() for d in items]
-    run_chunked_iter(dishes, func, num_threads=24)
+    dsh = Dish.objects.all()
+    run_chunked_iter(dsh, lambda items: [d.check_integrity() for d in items], num_threads=24)
     return HttpResponse('OK')
 
 
 @csrf_exempt
 @worker
 def validate_recipe_integrity(request):
-    recipes = Recipe.objects.all()
-
-    def func(items):
-        [d.check_integrity() for d in items]
-    run_chunked_iter(recipes, func, num_threads=24)
+    rec = Recipe.objects.all()
+    run_chunked_iter(rec, lambda items: [d.check_integrity() for d in items], num_threads=24)
     return HttpResponse('OK')

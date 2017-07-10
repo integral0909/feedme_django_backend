@@ -12,3 +12,6 @@ cron:
  - name: "validatedishes"
    url: "/cron/validate/dishes/"
    schedule: "0 0 * * *"
+ - name: "validaterecipes"
+   url: "/cron/validate/recipes/"
+   schedule: "5 0 * * *"
