@@ -5,7 +5,8 @@
 {% block title %} | {{restaurant.name}}{% endblock %}
 
 {% block content %}
-<div id="restaurant-header-img" style="background-image: url({{restaurant.image_url}})"></div>
+<div id="restaurant-header-img" class="container"
+     style="background-image: url({{restaurant.image_url}})"></div>
 <div class="container-padded">
   <h3 class="fm-typog">About {{restaurant.name}}</h3>
   <p>{{restaurant.information}}</p>

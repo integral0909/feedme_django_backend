@@ -127,17 +127,7 @@ class RecipeIngredient(serializers.ModelSerializer):
         return obj.get_ingredient_type_display()
 
     def get_ingredient_display(self, obj):
-        if obj.uses_fractions and obj.fraction:
-            qty = obj.fraction
-        elif obj.fraction != 'N/A':
-            qty = '{:f}{}'.format(obj.quantity.normalize(), obj.fraction)
-        else:
-            qty = '{:f}'.format(obj.quantity.normalize())
-        ut = ' %s of' % obj.unit_type if obj.unit_type else ''
-        prep = ', %s' % obj.preparation if obj.preparation else ''
-        kwargs = {'quantity': qty, 'unit_type': ut, 'preparation': prep,
-                  'ingredient': obj.ingredient.name}
-        return '{quantity}{unit_type} {ingredient}{preparation}'.format(**kwargs).lower()
+        return obj.display
 
     class Meta:
         model = models.RecipeIngredient
