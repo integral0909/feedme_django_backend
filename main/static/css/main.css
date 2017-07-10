@@ -110,3 +110,35 @@ hr.gutter {
   margin-bottom: 0;
   margin-top: 0;
 }
+.share-block {
+  margin-top: 15px;
+}
+.share-block > li:not(.title) > div {
+  color: #FFF;
+  background: #E73D57;
+  border-radius: 5px;
+  padding: 0px;
+  width: 35px;
+  height: 35px;
+  text-align: center;
+  font-size: 18.5px;
+  line-height: 35px;
+}
+.share-block > li:not(.title) > div > a {
+  color: #FFF;
+}
+.btn-red-hollow {
+  color:#E73D57;
+  border: 1px solid #E73D57;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  height:35px;
+  line-height: 35px;
+  padding: 0 8px;
+  vertical-align: baseline;
+}
+.btn-red-hollow:hover,
+.btn-red-hollow:focus {
+  color:#be1e33;
+}
