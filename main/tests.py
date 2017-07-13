@@ -29,3 +29,9 @@ class TestRecipe(TestCase):
 
     def test_recipe(self):
         self.assertTrue(Recipe.objects.all().count())
+
+    def test_time_displays(self):
+        for recipe in Recipe.objects.all():
+            self.assertTrue(recipe.get_prep_time_display())
+            self.assertTrue(recipe.get_cook_time_display())
+

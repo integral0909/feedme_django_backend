@@ -648,12 +648,13 @@ class Dish(Creatable):
 
 class RecipesByUserQuerySet(models.QuerySet):
     def not_liked(self, user):
-        return self.exclude(likes__user=user, likes__did_like=True)
+        excl_qs = self.filter(likes__user=user, likes__did_like=True)
+        return self.exclude(id__in=excl_qs)
 
     def fresh(self, user):
         exclude_time = datetime.now(timezone.utc) - timedelta(hours=1)
-        return self.exclude(likes__user=user,
-                            likes__updated__gte=exclude_time)
+        excl_qs = self.filter(likes__user=user, likes__updated__gte=exclude_time)
+        return self.exclude(id__in=excl_qs)
 
     def saved(self, user):
         return self.filter(likes__user=user, likes__did_like=True)
@@ -714,6 +715,15 @@ class Recipe(Creatable):
     def get_source_url_display(self):
         url = urlparse(self.source_url)
         return url.hostname.replace("www.", "")
+
+    def get_prep_time_display(self):
+        return self._humanise_duration('prep_time_seconds')
+
+    def get_cook_time_display(self):
+        return self._humanise_duration('cook_time_seconds')
+
+    def _humanise_duration(self, attrname):
+        return '{} mins'.format(getattr(self, attrname) // 60)
 
     def keyword_list_html(self):
         return format_html_join(
