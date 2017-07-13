@@ -326,13 +326,17 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 if os.environ['DEPLOYMENT'] != 'LOCAL':
     STATICFILES_LOCATION = 'static'
     STATICFILES_STORAGE = 'custom_storages.StaticStorage'
-    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+    if os.environ['DEPLOYMENT'] == 'PRODUCTION':
+        STATIC_URL = 'https://cdn.feedmeeapp.com/%s/' % STATICFILES_LOCATION
+    else:
+        STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
     MEDIAFILES_LOCATION = 'media'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
     DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 else:
     STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     'common-static/',
 )
