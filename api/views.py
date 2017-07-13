@@ -244,9 +244,7 @@ class DonationList(APIView):
 
 class SearchTermList(APIView):
     def get(self, request, format=None):
-        """
-        List all possible search terms
-        """
+        """List all possible search terms."""
         seen_ing = []
         res = {
             'keywords': [kwd.word for kwd in models.Keyword.objects.all()],
@@ -263,9 +261,7 @@ class SearchTermList(APIView):
 
 class SuburbList(APIView):
     def get(self, request, format=None):
-        """
-        List all suburbs with restaurants
-        """
+        """List all suburbs with restaurants"""
         rests = models.Restaurant.objects.all().distinct('suburb')
         rests = [rest.suburb for rest in rests]
         return Response({'count': len(rests), 'results': rests})

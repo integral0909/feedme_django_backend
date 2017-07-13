@@ -210,17 +210,16 @@ class LikeAdmin(admin.ModelAdmin):
     search_fields = ('dish__name', 'user__profile__first_name',
                      'user__profile__last_name')
     actions = (export_as_csv_action(description="CSV Export", fields=[
-        'user_id', 'dish_id', 'created', 'updated'
+        'user_id', 'dish_id', 'did_like', 'created', 'updated'
     ]), )
 
 
 @admin.register(RecipeLike)
 class RecipeLikeAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'user', 'did_like', 'created', 'updated')
-    search_fields = ('recipe__name', 'user__profile__first_name',
-                     'user__profile__last_name')
+    search_fields = ('recipe__name', 'user__first_name', 'user__last_name')
     actions = (export_as_csv_action(description="CSV Export", fields=[
-        'user_id', 'recipe_id', 'created', 'updated'
+        'user_id', 'recipe_id', 'did_like', 'created', 'updated'
     ]), )
 
 
@@ -261,6 +260,7 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (RecipeIngredientInline, )
     list_display = ('__str__', 'description', 'ingredient_text', 'image_url', 'created')
     readonly_fields = ('views_count', 'total_time_seconds', 'likes_count', 'random')
+    search_fields = ('name', )
 
 
 @admin.register(RecipeRequest)
