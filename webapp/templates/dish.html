@@ -1,0 +1,102 @@
+{% extends "app_base.html" %}
+
+{% load static %}
+{% load social_share %}
+
+{% block title %} | {{dish.title}}{% endblock %}
+
+{% block content %}
+  <style>
+    body {
+      background-color: #eee;
+    }
+  </style>
+  {% if deeplink.useragent_is_target %}
+    <script>
+      window.location = 'feedmee://recipe/{{recipe.id}}';
+      setTimeout(function () {
+        window.location = 'https://itunes.apple.com/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992';
+      }, 1000);
+    </script>
+  {% endif %}
+  <div id="restaurant-header-img" class="d-lg-none container"
+        style="background-image: url({{dish.image_url}})"></div>
+  <div class="container text-center card d-none d-lg-block">
+    <div class="card-block">
+      <img class="d-inline text-center" src="{{ dish.image_url }}">
+    </div>
+  </div>
+  <div class="container text-center card">
+    <div class="card-block">
+      <div class="row">
+        <div class="col-md-6 text-xs-center text-left">
+          <h3 class="fm-typog fm-typog-red">{{dish.title}}</h3>
+          <p class="text-muted">{{dish.description}}</p>
+          <p><i class="fa fa-camera"></i> photo <a href="{{ dish.instagram_user }}" target="_blank">@{{ dish.instagram_user }}</a></p>
+        </div>
+        <div class="col-md-6">
+          <ul class="list-inline share-block text-xs-center text-left">
+            <li class="title"><strong>Share dish</strong></li>
+            <li class="list-inline-item">{% post_to_facebook '' %}</li>
+            <li class="list-inline-item">{% post_to_gplus '' %}</li>
+            <li class="list-inline-item">{% post_to_twitter dish.title '' %}</li>
+            <li class="list-inline-item">{% post_to_linkedin dish.title '' %}</li>
+            <li class="list-inline-item  d-none d-md-inline-block">
+              {% send_email dish.title dish.description|truncatewords_html:30|striptags '' %}
+            </li>
+            <li class="list-inline-item" style="margin-left: 15px;">
+              <a href="#" class="btn btn-red-hollow"><i class="fa fa-heart-o"></i><span class="hidden-md-down"> Save Dish</span></a></li>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container card card-margin">
+    <div class="card-block">
+      {% include 'partials/popular_from.html' with restaurant=dish.restaurant exclude_dish=dish %}
+    </div>
+  </div>
+  <div class="container card card-margin">
+    <div class="card-block">
+      <ul class="nav nav-pills nav-justified" id="content-tab"  role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" role="tab"
+             href="#restaurants">Restaurants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" role="tab"
+             href="#reviews">Reviews</a>
+        </li>
+      </ul>
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div class="tab-pane fade active" id="restaurants" role="tabpanel">
+          {% include 'partials/restaurant-detail.html' with restaurant=dish.restaurant %}
+        </div>
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+          <p>AMSQMQQW QWQ MWQW MQW MQWMMWQMMMQW MWQ </p>
+          <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+        </div>
+      </div>
+    </div>
+  </div>
+<footer class="bg-grey text-center">
+  <ul class="list-inline" style="margin-bottom:0">
+    <li class="list-inline-item"><a href="#">Report a closure</a></li>
+    <li class="list-inline-item">|</li>
+    <li class="list-inline-item"><a href="#">Report an error</a></li>
+  </ul>
+</footer>
+{% endblock %}
+
+{% block footer-scripts %}
+<script>
+  $('a', '#content-tab').click(function (e) {
+    e.preventDefault();
+    console.log(e);
+    console.log($(this));
+    $(this).tab('show')
+  })
+</script>
+{% endblock %}

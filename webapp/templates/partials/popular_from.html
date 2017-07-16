@@ -1,0 +1,15 @@
+<h5>Popular from {{restaurant.name}}</h5>
+{% for dish in restaurant.dishes.all %}
+  {% if exclude_dish and exclude_dish.id == dish.id %}
+  {% else %}
+    <div class="card dish-card" style="width: 15rem;">
+      <a href="/dish/{{ dish.id }}/">
+        <div class="card-img-top"title="{{ dish.title }}"
+             style="background-image: url({{dish.image_url}})"></div>
+        <div class="card-block">
+          <h7 class="card-title" title="{{ dish.title }}">{{dish.title}}</h7>
+        </div>
+      </a>
+    </div>
+  {% endif %}
+{% endfor %}
