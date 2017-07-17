@@ -1,10 +1,15 @@
 from django import forms
 from django.contrib import admin
+from django.urls import reverse
+from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
+from django.http.response import HttpResponseRedirect
 from s3direct.widgets import S3DirectWidget
 from data_entry.models import RecipeDraft, IngredientDraft
 
 
 class RecipeDraftAdminForm(forms.ModelForm):
+    checksum = forms.CharField(required=False)
+
     class Meta:
         fields = '__all__'
         model = RecipeDraft
@@ -15,51 +20,46 @@ class RecipeDraftAdminForm(forms.ModelForm):
 
 class IngredientDraftInline(admin.TabularInline):
     model = IngredientDraft
-    classes = ('collapse', )
     can_delete = False
     readonly_fields = ('raw_text', 'checksum')
-    fieldsets = (
-        (None, {'fields': ('raw_text', 'ingredient', 'quantity', 'unit_type',
-                           'ingredient_type', 'preparation', 'fraction', 'uses_fractions'),
-                }),
-        ('Advanced', {'fields': ('seen', 'processed', 'saved', 'recipe_ingredient'),
-                      'classes': ('collapse',)}))
+    extra = 0
+    fields = ('ingredient', 'quantity', 'unit_type', 'preparation', 'fraction',
+              'uses_fractions')
 
 
 @admin.register(RecipeDraft)
 class RecipeDraftAdmin(admin.ModelAdmin):
     change_form_template = 'publishable_change_form.html'
     form = RecipeDraftAdminForm
-    list_display = ('name', 'source_url', 'image_url')
-    search_fields = ('name', 'source_url')
+    list_display = ('__str__', 'seen', 'processed', 'published', 'source_url', 'image_url')
+    search_fields = ('name_raw', 'source_url')
     inlines = [IngredientDraftInline]
-    readonly_fields = ('checksum', 'prep_time_raw', 'cook_time_raw', 'difficulty_raw')
+    readonly_fields = ('checksum', 'created', 'updated') + RecipeDraft.RAW_FIELDS
     fieldsets = ((None, {'fields': (
-                         'name', 'description', ('prep_time_raw', 'cook_time_raw'),
-                         ('prep_time_seconds', 'cook_time_seconds'),
-                         ('difficulty_raw', 'difficulty'), 'servings', 'source_url',
-                         'image_url')
+                         ('name', 'name_raw'), ('description', 'description_raw'),
+                         ('prep_time_seconds', 'prep_time_raw'),
+                         ('cook_time_seconds', 'cook_time_raw'),
+                         ('difficulty', 'difficulty_raw'), ('servings', 'servings_raw'),
+                         ('image_url', 'image_url_raw'))
                         }),
-                 ('Advanced', {'fields': ('recipe', ('seen', 'processed', 'saved'),
-                                          'checksum'),
+                 ('Advanced', {'fields': ('recipe', ('seen', 'processed', 'published'),
+                                          'checksum', 'source_url', ('created', 'updated')),
                                'classes': ('collapse',)}))
 
     def response_change(self, request, obj):
-        opts = self.model._meta
-        pk_value = obj._get_pk_val()
-        preserved_filters = self.get_preserved_filters(request)
-
         if "_publish" in request.POST:
-            obj.publish()
-            redirect_url = reverse('admin:%s_%s_change' %
-                                   (opts.app_label, opts.model_name),
-                                   args=(pk_value,),
-                                   current_app=self.admin_site.name)
-            redirect_url = add_preserved_filters(
-                {'preserved_filters': preserved_filters, 'opts': opts}, redirect_url)
-            return HttpResponseRedirect(redirect_url)
-        else:
-            return super(RecipeDraftAdmin, self).response_change(request, obj)
+            form = self.form(request.POST)
+            if form.is_valid():
+                obj.publish()
+            else:
+                print(form.errors)
+        if ("_addanother" in request.POST
+           or '_continue' in request.POST
+           or '_save' in request.POST):
+            obj.processed = True
+            obj.seen = True
+            obj.save()
+        return super(RecipeDraftAdmin, self).response_change(request, obj)
 
 
 @admin.register(IngredientDraft)

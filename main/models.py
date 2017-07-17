@@ -704,11 +704,7 @@ class Recipe(Creatable):
     def ingredient_text(self):
         txt = ''
         for ingr in self.ingredients.all():
-            if ingr.unit_type:
-                txt += '%sx %s of %s, ' % (int(ingr.quantity), ingr.unit_type,
-                                           ingr.name)
-            else:
-                txt += '%sx %s, ' % (int(ingr.quantity), ingr.name)
+                txt += '%s, ' % ingr.display
         return txt.rstrip(', ')
     ingredient_text.short_description = 'Ingredients'
 
@@ -825,6 +821,16 @@ class RecipeIngredient(Creatable):
         kwargs = {'quantity': qty, 'unit_type': ut, 'preparation': prep,
                   'ingredient': self.ingredient.name}
         return '{quantity}{unit_type} {ingredient}{preparation}'.format(**kwargs).lower()
+
+    def match_ingredient_from(self, value):
+        """Set the ingredient to one matching the supplied value."""
+        try:
+            ing = Ingredient.objects.filter(name__iexact=value)[0]
+        except IndexError:
+            ing = Ingredient.objects.create(name=value)
+        finally:
+            self.ingredient = ing
+
 
 
     class Meta:
