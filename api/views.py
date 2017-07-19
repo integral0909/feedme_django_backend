@@ -11,6 +11,7 @@ import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
 import api.lib.custom_filters as custom_filters
+from api.authentication import CsrfExemptSessionAuthentication
 
 INIT_DONATIONS = 1834
 
@@ -177,13 +178,13 @@ class ViewsList(LikesList):
 
 class RecipeIngest(APIView):
     """Receives draft recipes as JSON."""
-    # permission_classes = []
+    authentication_classes = [CsrfExemptSessionAuthentication]
     def post(self, request):
         """Must update raw properties and check for checksum changes."""
         data = request.data
         source_url = data.get('source_url')
         kwargs = {'name_raw': data.get('name'), 'description_raw': data.get('description'),
-            'servings_raw': data.get('serves'), 'prep_time_raw': data.get('prep_time'),
+            'servings_raw': data.get('serves', 0), 'prep_time_raw': data.get('prep_time'),
             'cook_time_raw': data.get('cook_time'), 'difficulty_raw': data.get('difficulty'),
             'image_url_raw': data.get('image_url')}
         try:
