@@ -73,6 +73,10 @@ def merge_dicts(*dict_args):
     return result
 
 
+def filename_from_path(path):
+    return path.split('/')[-1:][0]
+
+
 def create_uuid_filename(filename):
     import uuid
     return '%s.%s' % (uuid.uuid4().hex, filename.split('.')[-1])

@@ -22,6 +22,11 @@ def list_items(request, item_type):
 
 
 @staff_member_required
+def publish_item(request, item_type, item_id=None):
+    pass
+
+
+@staff_member_required
 def change_item(request, item_type, item_id=None, tab=False):
     class_name, ObjClass, FormClass = _get_class_objects(item_type)
     defaults = {'form': FormClass(), 'action': 'Add', 'logs': [], 'tab': tab}

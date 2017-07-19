@@ -354,3 +354,5 @@ DBBACKUP_STORAGE_OPTIONS = {
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+TEST_RUNNER = 'root.test_runner.FastTestRunner'

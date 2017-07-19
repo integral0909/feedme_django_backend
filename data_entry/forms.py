@@ -6,6 +6,7 @@ from s3direct.widgets import S3DirectWidget
 from main.models import (Cuisine, Highlight, DeliveryProvider, Restaurant, Blog, Dish,
                          Recipe, RecipeIngredient, Cuisine, Highlight, Tag, OpeningTime,
                          Ingredient)
+from .models import RecipeDraft
 import uuid
 
 
@@ -222,3 +223,20 @@ class RestaurantOpeningTimeForm(forms.ModelForm):
         labels = {
             'day_of_week': 'Day of the week'
         }
+
+
+class RecipeDraftForm(forms.ModelForm):
+    class Meta:
+        model = RecipeDraft
+        fields = '__all__'
+        widgets = {
+            'recipe': forms.HiddenInput()
+        }
+
+    def save(self, commit=True):
+        obj = super(RecipeDraftForm, self).save(commit=False)
+        obj.name = obj.name.title()
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj

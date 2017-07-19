@@ -8,6 +8,7 @@ from rest_framework.renderers import JSONRenderer
 from django.conf import settings
 import api.serializers as serializers
 import main.models as models
+from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
 import api.lib.custom_filters as custom_filters
 
@@ -172,6 +173,40 @@ class ViewsList(LikesList):
         view = view_class(**{class_name: obj, 'user': user})
         view.save()
         return Response({"success": True})
+
+
+class RecipeIngest(APIView):
+    """Receives draft recipes as JSON."""
+    # permission_classes = []
+    def post(self, request):
+        """Must update raw properties and check for checksum changes."""
+        data = request.data
+        source_url = data.get('source_url')
+        kwargs = {'name_raw': data.get('name'), 'description_raw': data.get('description'),
+            'servings_raw': data.get('serves'), 'prep_time_raw': data.get('prep_time'),
+            'cook_time_raw': data.get('cook_time'), 'difficulty_raw': data.get('difficulty'),
+            'image_url_raw': data.get('image_url')}
+        try:
+            inst = RecipeDraft.objects.get(source_url=source_url)
+        except RecipeDraft.DoesNotExist:
+            kwargs['source_url'] = source_url
+            inst = RecipeDraft(**kwargs)
+            inst.prepopulate_with_raw()
+            inst.save()
+            for val in data.get('ingredients'):
+                IngredientDraft.objects.create(raw_text=val, recipe_draft=inst)
+        else:
+            for key, val in kwargs.items():
+                setattr(inst, key, val)
+            inst.source_url = source_url
+            if inst.checksum_has_changed():
+                inst.seen = False
+                inst.processed = False
+                inst.save()
+        return Response({'success': True})
+
+
+
 
 
 class FulfilmentEventList(APIView):

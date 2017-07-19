@@ -16,11 +16,21 @@ body {
 .TA_selfserveprop {
     display: inline-block;
 }
-.dish-card > .card-img-top {
+.dish-card .card-img-top {
   width: 100%;
   padding-bottom: 65%;
   background-size: cover;
   background-position: center center;
+}
+.card.dish-card {
+  display: inline-block;
+}
+.card.dish-card .card-title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 198px;
+  display: inline-block;
+  overflow: hidden;
 }
 a.share-link {
   color: #000;
@@ -141,4 +151,10 @@ hr.gutter {
 .btn-red-hollow:hover,
 .btn-red-hollow:focus {
   color:#be1e33;
+}
+.nav-pills .nav-item.show .nav-link, .nav-pills .nav-link.active {
+  background-color: #FFF;
+  border-bottom: 2px solid #E73D57;
+  border-radius: 0;
+  color:#E73D57;
 }
