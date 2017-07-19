@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from django.conf import settings
+from django.db import IntegrityError
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft

@@ -167,7 +167,7 @@ class RecipeDraft(Draft):
 
 
 class IngredientDraft(Draft):
-    RAW_FIELDS = ('raw_text', )
+    RAW_FIELDS = ('raw_text', 'recipe_draft')
     PUB_FIELDS = ('quantity', 'unit_type', 'ingredient_type',
                   'preparation', 'fraction', 'uses_fractions')
     PUBLISH_TO = (RecipeIngredient, 'recipe_ingredient')
