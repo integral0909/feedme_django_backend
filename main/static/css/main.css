@@ -152,3 +152,9 @@ hr.gutter {
 .btn-red-hollow:focus {
   color:#be1e33;
 }
+.nav-pills .nav-item.show .nav-link, .nav-pills .nav-link.active {
+  background-color: #FFF;
+  border-bottom: 2px solid #E73D57;
+  border-radius: 0;
+  color:#E73D57;
+}

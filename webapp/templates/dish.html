@@ -32,7 +32,7 @@
         <div class="col-md-6 text-xs-center text-left">
           <h3 class="fm-typog fm-typog-red">{{dish.title}}</h3>
           <p class="text-muted">{{dish.description}}</p>
-          <p><i class="fa fa-camera"></i> photo <a href="{{ dish.instagram_user }}" target="_blank">@{{ dish.instagram_user }}</a></p>
+          <p><i class="fa fa-camera"></i> photo <a href="https://instagram.com/{{ dish.instagram_user }}" target="_blank">@{{ dish.instagram_user }}</a></p>
         </div>
         <div class="col-md-6">
           <ul class="list-inline share-block text-xs-center text-left">
@@ -59,10 +59,10 @@
   </div>
   <div class="container card card-margin">
     <div class="card-block">
-      <ul class="nav nav-pills nav-justified" id="content-tab"  role="tablist">
+      <ul class="nav nav-pills nav-justified" id="content-tab"  role="tablist" style="margin-bottom: 10px;">
         <li class="nav-item">
           <a class="nav-link active" data-toggle="tab" role="tab"
-             href="#restaurants">Restaurants</a>
+             href="#restaurants">Restaurant</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" data-toggle="tab" role="tab"
@@ -71,12 +71,13 @@
       </ul>
       <!-- Tab panes -->
       <div class="tab-content">
-        <div class="tab-pane fade active" id="restaurants" role="tabpanel">
+        <div class="tab-pane active" id="restaurants" role="tabpanel">
           {% include 'partials/restaurant-detail.html' with restaurant=dish.restaurant %}
         </div>
         <div class="tab-pane fade" id="reviews" role="tabpanel">
-          <p>AMSQMQQW QWQ MWQW MQW MQWMMWQMMMQW MWQ </p>
-          <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+          {% for blog in dish.restaurant.blogs.all %}
+            {% include 'blog_cardb4.html' %}
+          {% endfor %}
         </div>
       </div>
     </div>
