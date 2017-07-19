@@ -184,10 +184,10 @@ class RecipeIngest(APIView):
         """Must update raw properties and check for checksum changes."""
         data = request.data
         source_url = data.get('source_url')
-        kwargs = {'name_raw': data.get('name'), 'description_raw': data.get('description'),
-            'servings_raw': data.get('serves', 0), 'prep_time_raw': data.get('prep_time'),
-            'cook_time_raw': data.get('cook_time'), 'difficulty_raw': data.get('difficulty'),
-            'image_url_raw': data.get('image_url')}
+        kwargs = {'name_raw': data.get('name'), 'description_raw': data.get('description', ''),
+            'servings_raw': data.get('serves', ''), 'prep_time_raw': data.get('prep_time', ''),
+            'cook_time_raw': data.get('cook_time', ''), 'difficulty_raw': data.get('difficulty', ''),
+            'image_url_raw': data.get('image_url', '')}
         try:
             inst = RecipeDraft.objects.get(source_url=source_url)
         except RecipeDraft.DoesNotExist:
