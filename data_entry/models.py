@@ -1,5 +1,9 @@
 from django.db import models
+from django.utils import timezone
+from django.conf import settings
 from main.models import Recipe, RecipeIngredient, Creatable
+from common.utils import create_uuid_filename, filename_from_path
+import wget
 import re
 import hashlib
 
@@ -44,15 +48,44 @@ class Draft(Creatable):
     class Meta:
         abstract = True
 
-    def publish(self):
-        inst = self._get_pub_inst() if self._get_pub_inst() else self.PUBLISH_TO[0]()
+    def publish(self, commit=True):
+        inst = self.publish_inst if self.publish_inst else self.PUBLISH_TO[0]()
         for field in self.PUB_FIELDS:
-            setattr(inst, field, getattr(self, field))
-        inst.save()
-        setattr(self, self.PUBLISH_TO[1], inst)
-        self.save()
+            setattr(inst, field, getattr(self, field))  # Copy publish fields
+        self.published, self.seen, self.processed = (True, True, True)
+        self.publish_date = timezone.now()
+        if commit:
+            inst.save()
+            self.publish_inst = inst  # Must be after inst.save()
+            self.save()
+            self.publish_m2m()
+        return inst
+
+    def get_related_fields(self):
+        klass = globals()[self.__class__.__name__]
+        return [
+            f for f in klass._meta.get_fields()
+            if (f.one_to_many or f.one_to_one)
+               and f.auto_created and not f.concrete
+        ]
+
+    def publish_m2m(self):
+        fields = self.get_related_fields()
+        print(fields)
+        for f in fields:
+            for inst in getattr(self, f.related_name).all():
+                print(inst)
+                inst.publish()
 
     def prepopulate_with_raw(self):
+        """"
+        Prepopulate pub fields as defined by AUTOPOP_FIELDS.
+
+        AUTOPOP_FIELDS is a tuple containing field pairs.
+        Field pairs contain a pub field at index 0 and raw field at index 1.
+        In the 3rd position may be the name of a method of self, which takes
+        the raw field as its argument and returns the result to the pub field.
+        """
         for field_pair in self.AUTOPOP_FIELDS:
             if len(field_pair) == 2:
                 setattr(self, field_pair[0], getattr(self, field_pair[1]))
@@ -65,10 +98,32 @@ class Draft(Creatable):
 
     def checksum_has_changed(self):
         values = ''.join([str(getattr(self, v)) for v in self.RAW_FIELDS])
-        return self.checksum == hashlib.md5(values.encode('utf-8')).hexdigest()
+        return self.checksum != hashlib.md5(values.encode('utf-8')).hexdigest()
 
-    def _get_pub_inst(self):
+    @property
+    def publish_inst(self):
         return getattr(self, self.PUBLISH_TO[1])
+
+    @publish_inst.setter
+    def publish_inst(self, inst=None):
+        """Saves the supplied instance and sets it as the publish instance in one step."""
+        if inst:
+            inst.save()
+            setattr(self, self.PUBLISH_TO[1], inst)
+        else:
+            self.publish_inst.save()
+
+    def prepopulate_image(self, s3):
+        fname = filename_from_path(self.image_url_raw)
+        new_fname = create_uuid_filename(fname)
+        fpath = wget.download(self.image_url_raw, '%s%s' % (settings.TMP_PATH, new_fname))
+        s3.meta.client.upload_file(fpath, 'fdme-raw-img', new_fname)
+        self.image_url = '{}{}'.format(settings.CDN_URL, new_fname)
+        self.save()
+
+    @property
+    def publish_class(self):
+        self.PUBLISH_TO[0]
 
     def __str__(self):
         return getattr(self, self.RAW_FIELDS[0])
@@ -127,7 +182,8 @@ class IngredientDraft(Draft):
     fraction = models.CharField(max_length=4, blank=True, default='N/A',
                                 choices=RecipeIngredient.FRACTION_CHOICES)
     uses_fractions = models.BooleanField(default=False, blank=True)
-    recipe_draft = models.ForeignKey(RecipeDraft, on_delete=models.CASCADE)
+    recipe_draft = models.ForeignKey(RecipeDraft, on_delete=models.CASCADE,
+                                     related_name='ingredients')
     recipe_ingredient = models.ForeignKey(RecipeIngredient, on_delete=models.CASCADE,
                                           null=True, blank=True)
 
@@ -139,7 +195,9 @@ class IngredientDraft(Draft):
         return self.raw_text
 
     def publish(self):
-        super(IngredientDraft, self).publish()
-        self.recipe_ingredient.match_ingredient_from(self.ingredient)
-        # Needs to resolve ingredient against ingredient objects
-        # Needs to
+        inst = super(IngredientDraft, self).publish(commit=False)
+        inst.recipe = self.recipe_draft.recipe
+        inst.match_ingredient_from(self.ingredient)
+        self.publish_inst = inst
+        self.save()
+        self.publish_m2m()

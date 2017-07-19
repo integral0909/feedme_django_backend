@@ -13,6 +13,7 @@ class RecipeDraftAdminForm(forms.ModelForm):
     class Meta:
         fields = '__all__'
         model = RecipeDraft
+        exclude = RecipeDraft.RAW_FIELDS
         widgets = {
             'image_url': S3DirectWidget(dest='raw-img')
         }
