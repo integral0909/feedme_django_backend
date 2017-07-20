@@ -131,7 +131,8 @@ class Draft(Creatable):
         return parse_time_str(value)
 
     def _parse_str_to_ints(self, value, first=True):
-        numbers = [int(s) for s in value.split() if s.isdigit()]
+        numbers = [0] if first else 0
+        numbers = [int(s) for s in value.split() if s.isdigit()] if value else numbers
         return numbers[0] if first else numbers
 
     def __str__(self):
