@@ -179,7 +179,7 @@ class ViewsList(LikesList):
 
 class RecipeIngest(APIView):
     """Receives draft recipes as JSON."""
-    authentication_classes = [CsrfExemptSessionAuthentication]
+    authentication_classes = [ScraperAuthentication]
     def post(self, request):
         """Must update raw properties and check for checksum changes."""
         data = request.data
