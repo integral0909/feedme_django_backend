@@ -90,7 +90,8 @@ class Draft(Creatable):
             if len(field_pair) == 2:
                 setattr(self, field_pair[0], getattr(self, field_pair[1]))
             elif len(field_pair) == 3:
-                setattr(self, field_pair[0], getattr(self, field_pair[2])(field_pair[1]))
+                setattr(self, field_pair[0],
+                        getattr(self, field_pair[2])(getattr(self, field_pair[1])))
 
     def generate_checksum(self):
         values = ''.join([str(getattr(self, v)) for v in self.RAW_FIELDS])
@@ -116,7 +117,8 @@ class Draft(Creatable):
     def prepopulate_image(self, s3):
         fname = filename_from_path(self.image_url_raw)
         new_fname = create_uuid_filename(fname)
-        fpath = wget.download(self.image_url_raw, '%s%s' % (settings.TMP_PATH, new_fname))
+        fpath = wget.download(self.image_url_raw,
+                              '%s%s' % (settings.TMP_PATH, new_fname), False)
         s3.meta.client.upload_file(fpath, 'fdme-raw-img', new_fname)
         self.image_url = '{}{}'.format(settings.CDN_URL, new_fname)
         self.save()
@@ -124,6 +126,13 @@ class Draft(Creatable):
     @property
     def publish_class(self):
         self.PUBLISH_TO[0]
+
+    def _parse_time_str(self, value):
+        return parse_time_str(value)
+
+    def _parse_str_to_ints(self, value, first=True):
+        numbers = [int(s) for s in value.split() if s.isdigit()]
+        return numbers[0] if first else numbers
 
     def __str__(self):
         return getattr(self, self.RAW_FIELDS[0])
@@ -136,7 +145,7 @@ class RecipeDraft(Draft):
     PUB_FIELDS = ('name', 'description', 'image_url', 'prep_time_seconds',
                   'cook_time_seconds', 'servings', 'difficulty', 'source_url')
     AUTOPOP_FIELDS = (('name', 'name_raw'), ('description', 'description_raw'),
-                      ('servings', 'servings_raw'),
+                      ('servings', 'servings_raw', '_parse_str_to_ints'),
                       ('prep_time_seconds', 'prep_time_raw', '_parse_time_str'),
                       ('cook_time_seconds', 'cook_time_raw', '_parse_time_str'))
     PUBLISH_TO = (Recipe, 'recipe')
@@ -158,16 +167,13 @@ class RecipeDraft(Draft):
     source_url = models.URLField(blank=True, default='', max_length=600, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True)
 
-    def _parse_time_str(self, field):
-        return parse_time_str(getattr(self, field))
-
     def save(self, *args, **kwargs):
         self.generate_checksum()
         return super(RecipeDraft, self).save(*args, **kwargs)
 
 
 class IngredientDraft(Draft):
-    RAW_FIELDS = ('raw_text', 'recipe_draft')
+    RAW_FIELDS = ('raw_text', 'recipe_draft_id')
     PUB_FIELDS = ('quantity', 'unit_type', 'ingredient_type',
                   'preparation', 'fraction', 'uses_fractions')
     PUBLISH_TO = (RecipeIngredient, 'recipe_ingredient')
