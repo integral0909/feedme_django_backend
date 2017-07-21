@@ -38,8 +38,8 @@ class JobMessageView(View):
     def execute_job(self):
         """Execute the Job specified in the request"""
         job = [j for j in Job.__subclasses__()
-               if j.__name__ == self.data['JOB']][0]()
-        job(*self.data['ARGS'], **self.data['KWARGS'])
+               if j.__name__ == self.data['JOB']][0](*self.data['ARGS'], **self.data['KWARGS'])
+        job()
         return HttpResponse('OK')
 
 

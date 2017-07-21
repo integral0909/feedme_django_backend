@@ -286,6 +286,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Worker jobs system
+SQS_JOBS = {
+    'access_key': '',
+    'secret_key': '',
+    'region_name': '',
+    'queue_name': '',
+}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

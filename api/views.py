@@ -11,8 +11,8 @@ import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
-import api.lib.custom_filters as custom_filters
-from api.authentication import CsrfExemptSessionAuthentication
+from django_sqs_jobs import queues
+from data_entry.jobs import PrepopulateImage
 
 INIT_DONATIONS = 1834
 
@@ -180,6 +180,8 @@ class ViewsList(LikesList):
 class RecipeIngest(APIView):
     """Receives draft recipes as JSON."""
     authentication_classes = [ScraperAuthentication]
+    queue = queues.SQSQueue()
+
     def post(self, request):
         """Must update raw properties and check for checksum changes."""
         data = request.data
@@ -195,6 +197,7 @@ class RecipeIngest(APIView):
             inst = RecipeDraft(**kwargs)
             inst.prepopulate_with_raw()
             inst.save()
+            self.queue.append(PrepopulateImage(inst))
             for val in data.get('ingredients'):
                 IngredientDraft.objects.create(raw_text=val, recipe_draft=inst)
         else:

@@ -1,6 +1,8 @@
 from django.conf import settings
+from django_sqs_jobs import jobs
 from abc import abstractmethod, ABCMeta
 from six import add_metaclass
+from common.utils.async import threaded
 import boto3
 import json
 
@@ -43,30 +45,35 @@ class SQSQueue(Queue):
     access_key = settings.SQS_JOBS.get('access_key')
     secret_key = settings.SQS_JOBS.get('secret_key')
     region_name = settings.SQS_JOBS.get('region_name')
-    queue_name = settings.SQS_JOBS.get('queue_name')
+    name = settings.SQS_JOBS.get('name')
 
-    def __init__(self, **kwargs):
+    def __init__(self, safe_jobs, **kwargs):
+        self.safe_jobs = safe_jobs
         self.access_key = kwargs.get('access_key', self.access_key)
         self.secret_key = kwargs.get('secret_key', self.secret_key)
         self.region_name = kwargs.get('region_name', self.region_name)
-        self.queue_name = kwargs.get('queue_name', self.queue_name)
+        self.name = kwargs.get('name', self.name)
         self.queue = self._connect()
 
+    @threaded
     def _queue(self, job):
         response = self.queue.send_message(MessageBody=self._parse_job(job))
         return True if response.get('MessageId') else False
 
     def __next__(self):
         """In an Elastic Beanstalk Worker environment this is not used."""
-        self.queue.receive_messages(MaxNumberOfMessages=1)
+        response = self.queue.receive_messages(MaxNumberOfMessages=1)
+        message = response['Messages'][0]
+        receipt_handle = message['ReceiptHandle']
+        job = jobs.Job.decode(message['Body'], **self.safe_jobs)
+        self.queue.delete_message(
+            ReceiptHandle=receipt_handle
+        )
+        return job
 
+    @threaded
     def extend(self, jobs):
-        self.queue.send_messages(Entries=[self._parse_job(j) for j in jobs])
-
-    def _parse_job(self, job):
-        return json.dumps({
-            'ARGS': job.ARGS, 'KWARGS': job.KWARGS, 'JOB': job.__class__.__name__
-        })
+        self.queue.send_messages(Entries=[j.encode() for j in jobs])
 
     def _connect(self):
         config = {
@@ -77,16 +84,16 @@ class SQSQueue(Queue):
         }
         if self.endpoint_url:
             config['endpoint_url'] = self.endpoint_url
-        return boto3.resource(**config).get_queue_by_name(QueueName=self.queue_name)
+        return boto3.resource(**config).get_queue_by_name(QueueName=self.name)
 
 
 class LocalQueue(Queue):
     """An in-memory queue useful for testing and local reuse of jobs."""
-    queue_name = 'local'
+    name = 'local'
 
     def __init__(self, **kwargs):
         self.queue = []
-        self.queue_name = kwargs.get('queue_name', self.queue_name)
+        self.name = kwargs.get('name', self.name)
 
     def _queue(self, job):
         self.queue.append(job)
@@ -98,7 +105,7 @@ class LocalQueue(Queue):
         self.queue.extend(jobs)
 
     def __iter__(self):
-        return self.queue
+        return iter(self.queue)
 
     def __contains__(self, job):
         return job in self.queue
