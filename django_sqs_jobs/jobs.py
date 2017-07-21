@@ -26,19 +26,11 @@ class Job(object):
     """
     ARGS = []
     KWARGS = {}
-    access_key = settings.SQS_JOBS.get('access_key')
-    secret_key = settings.SQS_JOBS.get('secret_key')
-    region_name = settings.SQS_JOBS.get('region_name')
-    endpoint_url = settings.SQS_JOBS.get('endpoint_url')
     queue_name = ''
 
     def __init__(self, *args, **kwargs):
         self.ARGS = self.ARGS + args
         self.KWARGS.update(kwargs)
-        SQS = boto3.resource('sqs', region_name=self.region_name)
-        self.queue = SQS.get_queue_by_name(QueueName=self.queue_name)
-
-
 
     def setup(self, *args, **kwargs):
         pass
@@ -56,8 +48,3 @@ class Job(object):
     def exec(self, *args, **kwargs):
         raise JobImplementationMissing("Job must implement 'execution' method")
 
-    def queue(self):
-        response = self.queue.send_message(MessageBody=json.dumps({
-            'ARGS': self.ARGS, 'KWARGS': self.KWARGS, 'JOB': self.__class__.__name__
-        }))
-        return True if response.get('MessageId') else False

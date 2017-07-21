@@ -4,10 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse, HttpResponseBadRequest
 import json
-# Need to define a single view that will receive messages.
-# It's up to consumer to route requests
-# Find consumer's jobs via
-# for job in Job.__subclasses__():
+
 
 class JobMessageException(Exception):
     pass
@@ -41,15 +38,13 @@ class JobMessageView(View):
     def execute_job(self):
         """Execute the Job specified in the request"""
         job = [j for j in Job.__subclasses__()
-               if j.__class__.__name__ == self.data['JOB']][0]()
+               if j.__name__ == self.data['JOB']][0]()
         job(*self.data['ARGS'], **self.data['KWARGS'])
         return HttpResponse('OK')
 
 
     def validate_post_body(self, request, content_type='application/json'):
-        """
-        Verifies that the request has a valid body and content type, default JSON.
-        """
+        """Verifies that request has a valid body and content type, default JSON."""
         if len(request.body) == 0:
             raise InvalidContentType('Empty request body')
         if content_type not in request.content_type:
@@ -57,11 +52,7 @@ class JobMessageView(View):
         return True
 
     def process_post_body(self, request):
-        """
-        Transforms JSON post body into dict and returns it.
-
-        Returns a 400 Response if invalid.
-        """
+        """Transforms JSON post body into dict."""
         try:
             return json.loads(request.body)
         except Exception as e:
