@@ -12,16 +12,6 @@ class JobExampleDivision(jobs.Job):
         return numerator / denominator
 
 
-class CompositeJobExample(jobs.Job):
-    def exec(self, *args, **kwargs):
-        results = []
-        for job_data_str in kwargs['jobs']:
-            job = jobs.Job.decode(job_data_str, JobExample=JobExample,
-                                  JobExampleDivision=JobExampleDivision)
-            results.append(job())
-        return results
-
-
 class TestLocalQueue(SimpleTestCase):
     def setUp(self):
         self.queue = queues.LocalQueue()
@@ -47,12 +37,42 @@ class TestLocalQueue(SimpleTestCase):
         self.assertEqual(self.queue[2](), 8)
 
     def test_composite_jobs(self):
-        cjob = CompositeJobExample(jobs=[
-            JobExample(3).encode(),
-            JobExampleDivision(9, 3).encode(),
-        ])
+        cjob = jobs.CompositeJob(JobExample(3), JobExampleDivision(9, 3),
+                                 allowed_jobs=['django_sqs_jobs.tests.JobExample',
+                                               'django_sqs_jobs.tests.JobExampleDivision'])
         self.queue.append(cjob)
         results = self.queue[0]()
+        self.assertEqual(results[0], 6)
+        self.assertEqual(results[1], 3)
+
+    def test_composite_jobs_encoded_jobs(self):
+        cjob = jobs.CompositeJob(JobExample(3), JobExampleDivision(9, 3),
+                                 allowed_jobs=['django_sqs_jobs.tests.JobExample',
+                                               'django_sqs_jobs.tests.JobExampleDivision'])
+        cjob.args_parser()
+        self.queue.append(cjob)
+        results = self.queue[0]()
+        self.assertEqual(results[0], 6)
+        self.assertEqual(results[1], 3)
+
+    def test_composite_jobs_encode_decode(self):
+        cjob = jobs.CompositeJob(JobExample(3), JobExampleDivision(9, 3),
+                                 allowed_jobs=['django_sqs_jobs.tests.JobExample',
+                                               'django_sqs_jobs.tests.JobExampleDivision'])
+        cjob_raw = cjob.encode()
+        decoded = jobs.Job.decode(cjob_raw, {'CompositeJob': jobs.CompositeJob})
+        results = decoded()
+        self.assertEqual(results[0], 6)
+        self.assertEqual(results[1], 3)
+
+    def test_composite_jobs_double_encode(self):
+        cjob = jobs.CompositeJob(JobExample(3), JobExampleDivision(9, 3),
+                                 allowed_jobs=['django_sqs_jobs.tests.JobExample',
+                                               'django_sqs_jobs.tests.JobExampleDivision'])
+        cjob.args_parser()
+        cjob_raw = cjob.encode()
+        decoded = jobs.Job.decode(cjob_raw, {'CompositeJob': jobs.CompositeJob})
+        results = decoded()
         self.assertEqual(results[0], 6)
         self.assertEqual(results[1], 3)
 

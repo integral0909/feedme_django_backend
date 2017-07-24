@@ -1,8 +1,8 @@
 from django.views import View
-from django_sqs_jobs.jobs import Job
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError
+from django_sqs_jobs.jobs import Job
 import json
 
 
@@ -24,22 +24,30 @@ class PostBodyParseError(JobMessageException):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class JobMessageView(View):
+    """
+    Class based view for executing POSTed jobs as in Elastic Beanstalk Worker environments.
+
+    Either subclass and add allowed_jobs as either a list of pkg.module.JobClass paths
+    or a dict of ClassName: Class pairs, or set allowed_jobs when instantiating with as_view()
+    """
     allowed_methods = ['post', 'options']
+    allowed_jobs = {}
 
     def post(self, request):
         try:
             self.validate_post_body(request)
-            self.data = self.process_post_body(request)
         except JobMessageException as e:
             return HttpResponseBadRequest(str(e))
         else:
-            return self.execute_job(data)
+            return self.execute_job(request)
 
-    def execute_job(self):
-        """Execute the Job specified in the request"""
-        job = [j for j in Job.__subclasses__()
-               if j.__name__ == self.data['JOB']][0](*self.data['ARGS'], **self.data['KWARGS'])
-        job()
+    def execute_job(self, request):
+        """Execute the Job specified in the request."""
+        job = Job.decode(request.body, allowed_jobs=self.allowed_jobs)
+        try:
+            job()
+        except Exception as e:
+            return HttpResponseServerError({'error': '{0}'.format(str(e))})
         return HttpResponse('OK')
 
 
@@ -50,11 +58,3 @@ class JobMessageView(View):
         if content_type not in request.content_type:
             raise EmptyRequestBody('Invalid Content-Type: %s only' % content_type)
         return True
-
-    def process_post_body(self, request):
-        """Transforms JSON post body into dict."""
-        try:
-            return json.loads(request.body)
-        except Exception as e:
-            json_data = {'error': '{0}'.format(str(e))}
-            raise PostBodyParseError(json.dumps(json_data))

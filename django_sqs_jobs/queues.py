@@ -61,7 +61,7 @@ class SQSQueue(Queue):
         return True if response.get('MessageId') else False
 
     def __next__(self):
-        """In an Elastic Beanstalk Worker environment this is not used."""
+        """Elastic Beanstalk Worker environments use JobMessageView instead."""
         response = self.queue.receive_messages(MaxNumberOfMessages=1)
         message = response['Messages'][0]
         receipt_handle = message['ReceiptHandle']
