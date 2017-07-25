@@ -45,10 +45,11 @@ class SQSQueue(Queue):
     access_key = settings.SQS_JOBS.get('access_key')
     secret_key = settings.SQS_JOBS.get('secret_key')
     region_name = settings.SQS_JOBS.get('region_name')
-    name = settings.SQS_JOBS.get('name')
+    name = settings.SQS_JOBS.get('queue_name')
+    endpoint_url = None
 
-    def __init__(self, safe_jobs, **kwargs):
-        self.safe_jobs = safe_jobs
+    def __init__(self, allowed_jobs, **kwargs):
+        self.allowed_jobs = allowed_jobs
         self.access_key = kwargs.get('access_key', self.access_key)
         self.secret_key = kwargs.get('secret_key', self.secret_key)
         self.region_name = kwargs.get('region_name', self.region_name)
@@ -57,7 +58,11 @@ class SQSQueue(Queue):
 
     @threaded
     def _queue(self, job):
-        response = self.queue.send_message(MessageBody=self._parse_job(job))
+        """
+        Asynchronously send job to SQS.
+
+        @TODO resolve why this is still slowing down server 200 response"""
+        response = self.queue.send_message(MessageBody=job.encode())
         return True if response.get('MessageId') else False
 
     def __next__(self):
@@ -65,7 +70,7 @@ class SQSQueue(Queue):
         response = self.queue.receive_messages(MaxNumberOfMessages=1)
         message = response['Messages'][0]
         receipt_handle = message['ReceiptHandle']
-        job = jobs.Job.decode(message['Body'], **self.safe_jobs)
+        job = jobs.Job.decode(message['Body'], allowed_jobs=self.allowed_jobs)
         self.queue.delete_message(
             ReceiptHandle=receipt_handle
         )

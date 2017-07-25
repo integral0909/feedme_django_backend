@@ -1,18 +1,13 @@
 from datetime import datetime, timedelta, timezone
-from django.contrib.auth.models import User, Group
-from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 from django.conf import settings
-from django.db import IntegrityError
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
-from django_sqs_jobs import queues
-from data_entry.jobs import PrepopulateImage
+from .authentication import ScraperAuthentication
 
 INIT_DONATIONS = 1834
 
@@ -180,7 +175,6 @@ class ViewsList(LikesList):
 class RecipeIngest(APIView):
     """Receives draft recipes as JSON."""
     authentication_classes = [ScraperAuthentication]
-    queue = queues.SQSQueue()
 
     def post(self, request):
         """Must update raw properties and check for checksum changes."""
@@ -195,9 +189,7 @@ class RecipeIngest(APIView):
         except RecipeDraft.DoesNotExist:
             kwargs['source_url'] = source_url
             inst = RecipeDraft(**kwargs)
-            inst.prepopulate_with_raw()
-            inst.save()
-            self.queue.append(PrepopulateImage(inst))
+            inst.save(prepopulate=True)
             for val in data.get('ingredients'):
                 IngredientDraft.objects.create(raw_text=val, recipe_draft=inst)
         else:

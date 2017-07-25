@@ -288,10 +288,11 @@ USE_TZ = True
 
 # Worker jobs system
 SQS_JOBS = {
-    'access_key': '',
-    'secret_key': '',
-    'region_name': '',
-    'queue_name': '',
+    'access_key': os.environ.get('AWS_S3_STATIC_ID', 'AKIAIUW5JZYOGAZBWA5Q'),
+    'secret_key': os.environ.get('AWS_S3_STATIC_KEY',
+                                 'kJGEvPxtm9aeQnrG0zyG6iJlL3FbTYBY5KpEJe2z'),
+    'region_name': 'us-west-2',
+    'queue_name': 'TestQueue',
 }
 
 

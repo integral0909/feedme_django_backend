@@ -3,6 +3,9 @@ from django.utils import timezone
 from django.conf import settings
 from main.models import Recipe, RecipeIngredient, Creatable
 from common.utils import create_uuid_filename, filename_from_path
+from .signals import pre_publish, post_publish
+from .jobs import PrepopulateImage
+from django_sqs_jobs.queues import SQSQueue
 import wget
 import re
 import hashlib
@@ -38,6 +41,8 @@ def time_unit(val):
         return 'minutes'
 
 
+
+
 class Draft(Creatable):
     checksum = models.CharField(max_length=32, db_index=True, unique=True)
     seen = models.BooleanField(default=False, help_text=SEEN_HELP)
@@ -50,6 +55,7 @@ class Draft(Creatable):
 
     def publish(self, commit=True):
         inst = self.publish_inst if self.publish_inst else self.PUBLISH_TO[0]()
+        pre_publish.send(sender=self.__class__, draft=self, final=inst)
         for field in self.PUB_FIELDS:
             setattr(inst, field, getattr(self, field))  # Copy publish fields
         self.published, self.seen, self.processed = (True, True, True)
@@ -59,6 +65,7 @@ class Draft(Creatable):
             self.publish_inst = inst  # Must be after inst.save()
             self.save()
             self.publish_m2m()
+        post_publish.send(sender=self.__class__, draft=self, final=inst, commit=commit)
         return inst
 
     def get_related_fields(self):
@@ -71,10 +78,8 @@ class Draft(Creatable):
 
     def publish_m2m(self):
         fields = self.get_related_fields()
-        print(fields)
         for f in fields:
             for inst in getattr(self, f.related_name).all():
-                print(inst)
                 inst.publish()
 
     def prepopulate_with_raw(self):
@@ -132,7 +137,8 @@ class Draft(Creatable):
 
     def _parse_str_to_ints(self, value, first=True):
         numbers = [0] if first else 0
-        numbers = [int(s) for s in value.split() if s.isdigit()] if value else numbers
+        numbers = [int(s) for s in value.split()
+                   if s.isdigit()] if value and hasattr(value, 'split') else numbers
         return numbers[0] if first else numbers
 
     def __str__(self):
@@ -168,9 +174,15 @@ class RecipeDraft(Draft):
     source_url = models.URLField(blank=True, default='', max_length=600, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, prepopulate=False, **kwargs):
         self.generate_checksum()
-        return super(RecipeDraft, self).save(*args, **kwargs)
+        if prepopulate:
+            self.prepopulate_with_raw()
+        super(RecipeDraft, self).save(*args, **kwargs)
+        if prepopulate:
+            queue = SQSQueue({'PrepopulateImage': PrepopulateImage})
+            queue.append(PrepopulateImage(self.id))
+        return self
 
 
 class IngredientDraft(Draft):
