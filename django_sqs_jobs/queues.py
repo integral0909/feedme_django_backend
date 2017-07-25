@@ -2,10 +2,9 @@ from django.conf import settings
 from django_sqs_jobs import jobs
 from abc import abstractmethod, ABCMeta
 from six import add_metaclass
-from common.utils.async import threaded
 from common.utils import merge_dicts
+from .daemons import SQSDaemon
 import boto3
-import json
 
 
 @add_metaclass(ABCMeta)
@@ -56,14 +55,16 @@ class SQSQueue(Queue):
         self.region_name = kwargs.get('region_name', self.region_name)
         self.name = kwargs.get('name', self.name)
         self.queue = self._connect()
+        self.daemon = SQSDaemon(sqs=self.queue, owner=self)
+        self.daemon.start()
 
     def add_allowed_jobs(self, allowed_jobs):
+        """Allows apps to register their allowed jobs."""
         self.allowed_jobs = merge_dicts(self.allowed_jobs, allowed_jobs)
 
-    @threaded(daemon=True)
     def _queue(self, job):
         """Asynchronously send job to SQS."""
-        self.queue.send_message(MessageBody=job.encode())
+        self.daemon.queue.put(job)
 
     def __next__(self):
         """Elastic Beanstalk Worker environments use JobMessageView instead."""
@@ -76,9 +77,8 @@ class SQSQueue(Queue):
         )
         return job
 
-    @threaded(daemon=True)
     def extend(self, jobs):
-        self.queue.send_messages(Entries=[j.encode() for j in jobs])
+        self.daemon.queue.put(jobs)
 
     def _connect(self):
         config = {
