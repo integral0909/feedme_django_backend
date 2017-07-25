@@ -9,5 +9,4 @@ class DataEntryConfig(AppConfig):
     name = 'data_entry'
 
     def ready(self):
-        WORKER_QUEUE.add_allowed_jobs({'PrepopulateDraft': PrepopulateDraft})
         post_save.connect(enqueue_prepopulation, sender='data_entry.RecipeDraft')

@@ -77,7 +77,6 @@ INSTALLED_APPS = [
     'hijack',
     'hijack_admin',
     'compat',
-    'cities',
     'fixture_magic',
     'bootstrap3',
     'phonenumber_field',
@@ -90,6 +89,7 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'better_filter_widget',
     'ckeditor',
+    'django_sqs_jobs',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -292,7 +292,7 @@ SQS_JOBS = {
     'secret_key': os.environ.get('AWS_S3_STATIC_KEY',
                                  'kJGEvPxtm9aeQnrG0zyG6iJlL3FbTYBY5KpEJe2z'),
     'region_name': 'us-west-2',
-    'queue_name': 'TestQueue',
+    'queue_name': os.environ.get('SQS_WORKER_QUEUE_NAME', 'TestQueue'),
 }
 
 

@@ -23,9 +23,10 @@ class JobSetupError(JobException):
 class JobTeardownError(JobException):
     """An exception occurred during teardown."""
 
+# compatible with Python 2 *and* 3:
+ABC = ABCMeta('ABC', (object,), {'__slots__': ()})
 
-@add_metaclass(ABCMeta)
-class Job(object):
+class Job(ABC):
     """
     A job defines a way of performing a task when required.
 

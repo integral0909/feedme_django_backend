@@ -21,9 +21,8 @@ class QueueDaemon(threading.Thread):
         while True:
             job = self.queue.get()
             if job is None:  # If you send `None`, the thread will exit.
-                print('Daemon exiting')
+                print('Daemon exiting...')
                 return
-            print(job)
             self.add(job)
 
     @abstractmethod
