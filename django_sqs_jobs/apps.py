@@ -1,4 +1,7 @@
 from django.apps import AppConfig
+from .queues import SQSQueue
+
+WORKER_QUEUE = SQSQueue()
 
 
 class DjangoSqsJobsConfig(AppConfig):

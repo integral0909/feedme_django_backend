@@ -52,7 +52,7 @@ class DishViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(convertedSet, many=True)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -81,7 +81,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(convertedSet, many=True)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -189,7 +189,7 @@ class RecipeIngest(APIView):
         except RecipeDraft.DoesNotExist:
             kwargs['source_url'] = source_url
             inst = RecipeDraft(**kwargs)
-            inst.save(prepopulate=True)
+            inst.save()
             for val in data.get('ingredients'):
                 IngredientDraft.objects.create(raw_text=val, recipe_draft=inst)
         else:

@@ -3,6 +3,7 @@ from django_sqs_jobs import jobs
 from abc import abstractmethod, ABCMeta
 from six import add_metaclass
 from common.utils.async import threaded
+from common.utils import merge_dicts
 import boto3
 import json
 
@@ -48,22 +49,21 @@ class SQSQueue(Queue):
     name = settings.SQS_JOBS.get('queue_name')
     endpoint_url = None
 
-    def __init__(self, allowed_jobs, **kwargs):
-        self.allowed_jobs = allowed_jobs
+    def __init__(self, allowed_jobs=None, **kwargs):
+        self.allowed_jobs = allowed_jobs or {}
         self.access_key = kwargs.get('access_key', self.access_key)
         self.secret_key = kwargs.get('secret_key', self.secret_key)
         self.region_name = kwargs.get('region_name', self.region_name)
         self.name = kwargs.get('name', self.name)
         self.queue = self._connect()
 
-    @threaded
-    def _queue(self, job):
-        """
-        Asynchronously send job to SQS.
+    def add_allowed_jobs(self, allowed_jobs):
+        self.allowed_jobs = merge_dicts(self.allowed_jobs, allowed_jobs)
 
-        @TODO resolve why this is still slowing down server 200 response"""
-        response = self.queue.send_message(MessageBody=job.encode())
-        return True if response.get('MessageId') else False
+    @threaded(daemon=True)
+    def _queue(self, job):
+        """Asynchronously send job to SQS."""
+        self.queue.send_message(MessageBody=job.encode())
 
     def __next__(self):
         """Elastic Beanstalk Worker environments use JobMessageView instead."""
@@ -76,7 +76,7 @@ class SQSQueue(Queue):
         )
         return job
 
-    @threaded
+    @threaded(daemon=True)
     def extend(self, jobs):
         self.queue.send_messages(Entries=[j.encode() for j in jobs])
 

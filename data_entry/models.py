@@ -4,8 +4,6 @@ from django.conf import settings
 from main.models import Recipe, RecipeIngredient, Creatable
 from common.utils import create_uuid_filename, filename_from_path
 from .signals import pre_publish, post_publish
-from .jobs import PrepopulateImage
-from django_sqs_jobs.queues import SQSQueue
 import wget
 import re
 import hashlib
@@ -65,7 +63,8 @@ class Draft(Creatable):
             self.publish_inst = inst  # Must be after inst.save()
             self.save()
             self.publish_m2m()
-        post_publish.send(sender=self.__class__, draft=self, final=inst, commit=commit)
+            post_publish.send(sender=self.__class__, draft=self, final=inst,
+            commit=commit)
         return inst
 
     def get_related_fields(self):
@@ -174,15 +173,9 @@ class RecipeDraft(Draft):
     source_url = models.URLField(blank=True, default='', max_length=600, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True)
 
-    def save(self, *args, prepopulate=False, **kwargs):
+    def save(self, *args, **kwargs):
         self.generate_checksum()
-        if prepopulate:
-            self.prepopulate_with_raw()
-        super(RecipeDraft, self).save(*args, **kwargs)
-        if prepopulate:
-            queue = SQSQueue({'PrepopulateImage': PrepopulateImage})
-            queue.append(PrepopulateImage(self.id))
-        return self
+        return super(RecipeDraft, self).save(*args, **kwargs)
 
 
 class IngredientDraft(Draft):
@@ -213,10 +206,12 @@ class IngredientDraft(Draft):
     def __str__(self):
         return self.raw_text
 
-    def publish(self):
+    def publish(self, commit=True):
         inst = super(IngredientDraft, self).publish(commit=False)
-        inst.recipe = self.recipe_draft.recipe
-        inst.match_ingredient_from(self.ingredient)
-        self.publish_inst = inst
-        self.save()
-        self.publish_m2m()
+        if commit:
+            inst.recipe = self.recipe_draft.recipe
+            inst.match_ingredient_from(self.ingredient)
+            self.publish_inst = inst
+            self.save()
+            self.publish_m2m()
+            post_publish.send(sender=self.__class__, draft=self, final=inst, commit=commit)
