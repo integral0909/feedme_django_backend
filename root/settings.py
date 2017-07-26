@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     'compat',
     'fixture_magic',
     'bootstrap3',
-    'phonenumber_field',
     'timezone_field',
     'dbbackup',
     'storages',
