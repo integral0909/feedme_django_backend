@@ -1,5 +1,5 @@
 from django.dispatch import Signal
-from django_sqs_jobs.apps import WORKER_QUEUE
+from django_sqs_jobs import WORKER_QUEUE
 from .jobs import PrepopulateDraft
 
 pre_publish = Signal(providing_args=['draft', 'final'])
