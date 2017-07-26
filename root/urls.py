@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.conf import settings
 # from django.contrib import admin
 from ratelimitbackend import admin
+from django_sqs_jobs.views import JobMessageView
 # from ratelimitbackend import views as auth_views
 
 admin.autodiscover()
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
     url(r'^cron/', include('cron.urls')),
+    url(r'^jobs/$', JobMessageView.as_view()),
     url(r'^hijack/', include('hijack.urls')),
     url(r'^data-entry/', include('data_entry.urls')),
     url(r'^s3direct/', include('s3direct.urls')),

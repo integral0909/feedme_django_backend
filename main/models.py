@@ -832,11 +832,6 @@ class RecipeIngredient(Creatable):
             self.ingredient = ing
 
 
-
-    class Meta:
-        unique_together = (('recipe', 'ingredient', 'ingredient_type'), )
-
-
 class RecipeRequest(Creatable):
     dish = models.ForeignKey('Dish', on_delete=models.CASCADE,
                              related_name='recipe_requests')

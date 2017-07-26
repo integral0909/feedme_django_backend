@@ -10,12 +10,16 @@ import requests
 from cachecontrol import CacheControl
 from cachecontrol.caches.file_cache import FileCache
 from main.models import Profile
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return  # To not perform the csrf check previously happening
+
+
+class ScraperAuthentication(BasicAuthentication):
+    pass
 
 
 class FirebaseAuthException(Exception):

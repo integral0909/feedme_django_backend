@@ -1,18 +1,13 @@
 from datetime import datetime, timedelta, timezone
-from django.contrib.auth.models import User, Group
-from django.db.models import Count, Sum
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 from django.conf import settings
-from django.db import IntegrityError
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
-import api.lib.custom_filters as custom_filters
-from api.authentication import CsrfExemptSessionAuthentication
+from .authentication import ScraperAuthentication
 
 INIT_DONATIONS = 1834
 
@@ -57,7 +52,7 @@ class DishViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(convertedSet, many=True)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -86,7 +81,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(convertedSet, many=True)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -179,7 +174,8 @@ class ViewsList(LikesList):
 
 class RecipeIngest(APIView):
     """Receives draft recipes as JSON."""
-    authentication_classes = [CsrfExemptSessionAuthentication]
+    authentication_classes = [ScraperAuthentication]
+
     def post(self, request):
         """Must update raw properties and check for checksum changes."""
         data = request.data
@@ -193,7 +189,6 @@ class RecipeIngest(APIView):
         except RecipeDraft.DoesNotExist:
             kwargs['source_url'] = source_url
             inst = RecipeDraft(**kwargs)
-            inst.prepopulate_with_raw()
             inst.save()
             for val in data.get('ingredients'):
                 IngredientDraft.objects.create(raw_text=val, recipe_draft=inst)
