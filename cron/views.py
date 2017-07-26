@@ -59,7 +59,4 @@ def validate_recipe_integrity(request):
 @csrf_exempt
 @worker
 def process_draft_recipes(request):
-    rcpds = RecipeDraft.objects.exclude(image_url_raw__isnull=True).filter(image_url='')
-    s3 = boto3.resource('s3')
-    run_chunked_iter(rcpds[:84], lambda itms: [r.prepopulate_image(s3) for r in itms], num_threads=12)
     return HttpResponse('OK')
