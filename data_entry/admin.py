@@ -9,7 +9,6 @@ from data_entry.models import RecipeDraft, IngredientDraft
 
 class RecipeDraftAdminForm(forms.ModelForm):
     checksum = forms.CharField(required=False)
-    image_url = forms.CharField(widget=S3DirectWidget(dest='raw-img'), required=False)
 
     class Meta:
         fields = '__all__'
