@@ -73,11 +73,17 @@ class Job(ABC):
             self.setup(*self.ARGS, **self.KWARGS)
         except Exception as e:
             raise JobSetupError("Error during setup of %s" % cls) from e
-        self.result = self.exec(*self.ARGS, **self.KWARGS)  # TODO Exception wrapping.
         try:
-            self.teardown(*self.ARGS, **self.KWARGS)
+            self.result = self.exec(*self.ARGS, **self.KWARGS)
         except Exception as e:
-            raise JobTeardownError("Error during teardown of %s" % cls) from e
+            # Weird issue here where `raise Execption from e` does not give full trace.
+            logger.exception('Error during execution of %s' % cls)
+            raise JobExecutionError('Error during execution of %s' % cls)
+        finally:
+            try:
+                self.teardown(*self.ARGS, **self.KWARGS)
+            except Exception as e:
+                raise JobTeardownError("Error during teardown of %s" % cls) from e
         return self.result
 
     @abstractmethod
