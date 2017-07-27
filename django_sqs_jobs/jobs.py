@@ -2,6 +2,9 @@ from abc import abstractmethod, ABCMeta
 from six import add_metaclass
 from importlib import import_module
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class JobException(Exception):
@@ -70,10 +73,7 @@ class Job(ABC):
             self.setup(*self.ARGS, **self.KWARGS)
         except Exception as e:
             raise JobSetupError("Error during setup of %s" % cls) from e
-        try:
-            self.result = self.exec(*self.ARGS, **self.KWARGS)
-        except Exception as e:
-            raise JobExecutionError("Error during execution of %s" % cls) from e
+        self.result = self.exec(*self.ARGS, **self.KWARGS)  # TODO Exception wrapping.
         try:
             self.teardown(*self.ARGS, **self.KWARGS)
         except Exception as e:
@@ -128,15 +128,18 @@ class CompositeJob(Job):
     """
     Provide a list of jobs to execute and a list of allowed_jobs with full absolute path.
     """
+    def _sub_exec(self, job):
+        try:
+            return job()
+        except Exception:
+            logger.exception("Sub-job execution failure")
+            return None
+
     def exec(self, *args, **kwargs):
-        results = []
-        for job_raw in args:
-            if isinstance(job_raw, str):
-                job = Job.decode(job_raw, allowed_jobs=kwargs['allowed_jobs'])
-            else:
-                job = job_raw
-            results.append(job())
-        return results
+        allowed_jobs = kwargs['allowed_jobs']
+        return [self._sub_exec(j) for j in [
+            Job.decode(jr, allowed_jobs=allowed_jobs) if isinstance(jr, str) else jr
+            for jr in args]]
 
     def args_parser(self):
         """Permanently encode args on instance and return."""

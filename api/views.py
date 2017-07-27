@@ -181,7 +181,7 @@ class RecipeIngest(APIView):
         data = request.data
         source_url = data.get('source_url')
         kwargs = {'name_raw': data.get('name'), 'description_raw': data.get('description', ''),
-            'servings_raw': data.get('serves', ''), 'prep_time_raw': data.get('prep_time', ''),
+            'servings_raw': str(data.get('serves', '')), 'prep_time_raw': data.get('prep_time', ''),
             'cook_time_raw': data.get('cook_time', ''), 'difficulty_raw': data.get('difficulty', ''),
             'image_url_raw': data.get('image_url', '')}
         try:
