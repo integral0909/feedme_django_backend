@@ -17,12 +17,13 @@ class OnboardUser(Job):
 
 class OnboardUserMailchimp(OnboardUser):
     def exec(self, *args, **kwargs):
-        data = {
-            'merge_fields': {
-                'FNAME': self.profile.user.first_name, 'LNAME': self.profile.user.last_name
-            }, 'email_address': self.profile.user.email, 'status': 'subscribed',
-        }
-        mc.lists.members.create(list_id='83d8f50620', data=data)
+        if self.profile.user.email:
+            data = {
+                'merge_fields': {
+                    'FNAME': self.profile.user.first_name, 'LNAME': self.profile.user.last_name
+                }, 'email_address': self.profile.user.email, 'status': 'subscribed',
+            }
+            mc.lists.members.create(list_id='83d8f50620', data=data)
 
 
 class OnboardUserFacebook(OnboardUser):
