@@ -6,7 +6,7 @@ import os
 mc = MailChimp(os.environ.get('MAILCHIMP_USERNAME', 'testusername'),
                os.environ.get('MAILCHIMP_KEY', 'testkey'))
 fb_api = 'https://graph.facebook.com/v2.10/'
-fb_fields = 'id,name,age_range,gender'
+fb_fields = 'id,name,age_range,gender,email'
 fb_token = os.environ.get('FB_TOKEN')
 
 
@@ -38,6 +38,7 @@ class OnboardUserFacebook(OnboardUser):
         self.profile.age_max = age_range.get('max')
         self.profile.age_min = age_range.get('min')
         self.profile.gender = data.get('gender', '')
+        self.profile.user.email = data.get('email', '')
         self.profile.save()
 
 
