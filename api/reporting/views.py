@@ -21,8 +21,9 @@ class EngagementViewset(APIView):
     permission_classes = (IsAdminUser, )
 
     def get(self, request, format=None):
-        qs = User.objects.annotate(likes_count=Count('likes'))
-        qsr = User.objects.annotate(likes_count=Count('recipe_likes'))
+        qs = User.objects.annotate(likes_count=Count('likes')).filter(likes_count__gte=1)
+        qsr = User.objects.annotate(likes_count=Count('recipe_likes'))\
+                          .filter(likes_count__gte=1)
         users_count = User.objects.count()
         data = {
             'swipes': {
@@ -30,8 +31,7 @@ class EngagementViewset(APIView):
                     qs.filter(likes_count__gte=100).count(),
                     qs.filter(likes_count__gte=50, likes_count__lte=99).count(),
                     qs.filter(likes_count__gte=20, likes_count__lte=49).count(),
-                    qs.filter(likes_count__gte=1, likes_count__lte=19).count(),
-                    qs.filter(likes_count=0).count()
+                    qs.filter(likes_count__gte=1, likes_count__lte=19).count()
                 ]
             },
             'recipe_swipes': {
@@ -39,8 +39,7 @@ class EngagementViewset(APIView):
                     qsr.filter(likes_count__gte=100).count(),
                     qsr.filter(likes_count__gte=50, likes_count__lte=99).count(),
                     qsr.filter(likes_count__gte=20, likes_count__lte=49).count(),
-                    qsr.filter(likes_count__gte=1, likes_count__lte=19).count(),
-                    qsr.filter(likes_count=0).count()
+                    qsr.filter(likes_count__gte=1, likes_count__lte=19).count()
                 ]
             }
         }
