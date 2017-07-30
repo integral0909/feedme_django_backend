@@ -259,6 +259,7 @@ class RecipeAdmin(admin.ModelAdmin):
     form = RecipeAdminForm
     inlines = (RecipeIngredientInline, )
     list_display = ('__str__', 'description', 'ingredient_text', 'image_url', 'created')
+    list_filter = ('keywords', )
     readonly_fields = ('views_count', 'total_time_seconds', 'likes_count', 'random')
     search_fields = ('name', )
 
