@@ -40,6 +40,7 @@ class OnboardUserFacebook(OnboardUser):
         self.profile.gender = data.get('gender', '')
         self.profile.user.email = data.get('email', '')
         self.profile.save()
+        self.profile.user.save()
 
 
 class OnboardingComposite(CompositeJob):
