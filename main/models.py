@@ -213,6 +213,9 @@ class RecipeQuery(models.Model):
             else:
                 getattr(self, mtm_name).add(obj)
 
+    class Meta:
+        verbose_name_plural = 'Recipe Queries'
+
 
 class DishQuery(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
@@ -299,6 +302,9 @@ class DishQuery(models.Model):
         self.latitude = self.from_location.y
         self.longitude = self.from_location.x
         return super(DishQuery, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = 'Dish Queries'
 
 
 class Restaurant(Creatable):
@@ -647,6 +653,9 @@ class Dish(Creatable):
                 self.keywords.remove(kwd)
             except Keyword.DoesNotExist:
                 pass
+
+    class Meta:
+        verbose_name_plural = 'Dishes'
 
 
 class RecipesByUserQuerySet(models.QuerySet):

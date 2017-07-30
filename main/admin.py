@@ -67,6 +67,7 @@ class CustomUserAdmin(UserAdmin, HijackUserAdminMixin):
     inlines = (ProfileInline, )
     list_display = ('__str__', 'is_staff', 'get_provider', 'get_likes',
                     'get_swipes', 'date_joined', 'hijack_field')
+    ordering = ('-date_joined', )
     list_select_related = ('profile', )
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'profile__provider')
     actions = (export_as_csv_action(description="CSV Export", fields=[

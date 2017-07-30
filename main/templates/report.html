@@ -25,6 +25,23 @@
     </div>
   </div>
   <div class="row">
+    <div class="col-sm-12">
+      <h3>Recipe Swipes <br><small>All time</small></h3>
+      <table class="table table-striped table-bordered table-rounded">
+        <thead>
+        <th>Over 100 Swipes</th>
+        <th>50 - 99 Swipes</th>
+        <th>20 - 49 Swipes</th>
+        <th>1 - 19 Swipes</th>
+        <th>0 Swipes</th>
+        </thead>
+        <tbody id='rswipes-body'>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-sm-12 text-center">
       <h2><small>Total Users</small></h2>
       <h2 id='total-users'></h2>
@@ -133,7 +150,8 @@ function get_recent() {
   })
 }
 $(document).ready(function () {
-  get_engagement('engagement', ['swipes'], ['#swipes-body']);
+  get_engagement('engagement', ['swipes', 'recipe_swipes'],
+        ['#swipes-body', '#rswipes-body']);
   get_recent();
   get_users();
   setInterval(get_users, 45000);
