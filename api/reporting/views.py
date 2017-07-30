@@ -24,7 +24,11 @@ class EngagementViewset(APIView):
         qs = User.objects.annotate(likes_count=Count('likes')).filter(likes_count__gte=1)
         qsr = User.objects.annotate(likes_count=Count('recipe_likes'))\
                           .filter(likes_count__gte=1)
+        dish_swipers_count = qs.count()
+        recipe_swipers_count = qsr.count()
         users_count = User.objects.count()
+        non_swipers_count = User.objects.annotate(likes_cnt=Count('likes', 'recipe_likes'))\
+                                        .filter(likes_cnt=0).count()
         data = {
             'swipes': {
                 'count': [
@@ -41,14 +45,15 @@ class EngagementViewset(APIView):
                     qsr.filter(likes_count__gte=20, likes_count__lte=49).count(),
                     qsr.filter(likes_count__gte=1, likes_count__lte=19).count()
                 ]
-            }
+            },
+            'non_swipers': non_swipers_count
         }
-        data['swipes']['percent'] = ['{:.2f}'.format(divide_or_zero(n, users_count) * 100)
-                                     for n in data['swipes']['count']]
+        data['swipes']['percent'] = [
+            '{:.2f}'.format(divide_or_zero(n, dish_swipers_count) * 100)
+            for n in data['swipes']['count']]
         data['recipe_swipes']['percent'] = [
-            '{:.2f}'.format(divide_or_zero(n, users_count) * 100)
-            for n in data['recipe_swipes']['count']
-        ]
+            '{:.2f}'.format(divide_or_zero(n, recipe_swipers_count) * 100)
+            for n in data['recipe_swipes']['count']]
         return Response(data)
 
 

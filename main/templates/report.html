@@ -40,9 +40,13 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-12 text-center">
+    <div class="col-sm-6 text-center">
       <h2><small>Total Users</small></h2>
       <h2 id='total-users'></h2>
+    </div>
+    <div class="col-sm-6 text-center">
+      <h2><small>Total Users who never swiped</small></h2>
+      <h2 id="non-swipers"></h2>
     </div>
   </div>
   <br><br><br>
@@ -133,6 +137,7 @@ function get_engagement(endpoint, prop_names, targets,callback) {
     for (var i=0; i<prop_names.length; i++) {
       build_table(prop_names[i], targets[i], data)
     }
+    if (endpoint === 'engagement') $('#non-swipers').text(data.non_swipers)
     if (typeof callback === 'function') callback(data)
   })
 }
