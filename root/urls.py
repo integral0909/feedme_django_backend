@@ -19,7 +19,8 @@ from django.conf import settings
 from ratelimitbackend import admin
 from django_sqs_jobs.views import JobMessageView
 from django.contrib.sitemaps.views import sitemap
-from .sitemaps import RecipeSitemap, RestaurantSitemap, DishSitemap, StaticViewSitemap
+from .sitemaps import (RecipeSitemap, RestaurantSitemap, DishSitemap, StaticViewSitemap,
+                       BlogPostSitemap)
 # from ratelimitbackend import views as auth_views
 
 admin.autodiscover()
@@ -34,7 +35,8 @@ sitemaps = {
     'dishes': DishSitemap,
     'recipes': RecipeSitemap,
     'restaurants': RestaurantSitemap,
-    'static': StaticViewSitemap
+    'static': StaticViewSitemap,
+    'blogs': BlogPostSitemap
 }
 
 urlpatterns = [
