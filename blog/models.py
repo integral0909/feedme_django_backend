@@ -25,6 +25,9 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def get_absolute_url(self):
+        return '/blog/{0}/'.format(self.slug)
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
