@@ -26,8 +26,10 @@ class EngagementViewset(APIView):
                           .filter(likes_count__gte=1)
         dish_swipers_count = qs.count()
         recipe_swipers_count = qsr.count()
-        non_swipers_count = User.objects.annotate(rlikes_cnt=Count('likes', 'recipe_likes'),
-                                                  likes_cnt=Count('recipe_likes'))\
+        non_swipers_count = User.objects.annotate(rlikes_cnt=Count('likes',
+                                                                   distinct=True),
+                                                  likes_cnt=Count('recipe_likes',
+                                                                  distinct=True))\
                                         .filter(rlikes_cnt=0, likes_cnt=0).count()
         data = {
             'swipes': {
