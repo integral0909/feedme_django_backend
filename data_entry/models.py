@@ -189,8 +189,8 @@ class RecipeDraft(Draft):
                                   max_length=3)
     source_url = models.URLField(blank=True, default='', max_length=600, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True)
-    keywords = models.ManyToManyField('main.Keyword')
-    tags = models.ManyToManyField('main.Tag')
+    keywords = models.ManyToManyField('main.Keyword', blank=True)
+    tags = models.ManyToManyField('main.Tag', blank=True)
 
     def save(self, *args, **kwargs):
         self.generate_checksum()
