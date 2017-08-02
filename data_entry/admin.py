@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.http.response import HttpResponseRedirect
 from s3direct.widgets import S3DirectWidget
+from better_filter_widget import BetterFilterWidget
 from data_entry.models import RecipeDraft, IngredientDraft
 
 
@@ -15,7 +16,9 @@ class RecipeDraftAdminForm(forms.ModelForm):
         model = RecipeDraft
         exclude = RecipeDraft.RAW_FIELDS
         widgets = {
-            'image_url': S3DirectWidget(dest='raw-img')
+            'image_url': S3DirectWidget(dest='raw-img'),
+            'keywords': forms.CheckboxSelectMultiple,
+            'tags': BetterFilterWidget,
         }
 
 
@@ -41,7 +44,8 @@ class RecipeDraftAdmin(admin.ModelAdmin):
                          ('prep_time_seconds', 'prep_time_raw'),
                          ('cook_time_seconds', 'cook_time_raw'),
                          ('difficulty', 'difficulty_raw'), ('servings', 'servings_raw'),
-                         ('image_url', 'image_url_raw'))
+                         ('image_url', 'image_url_raw'),
+                         ('keywords', 'tags'))
                         }),
                  ('Advanced', {'fields': ('recipe', ('seen', 'processed', 'published'),
                                           'checksum', 'source_url', ('created', 'updated')),
