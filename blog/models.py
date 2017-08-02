@@ -2,7 +2,7 @@ from django.db import models
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.utils.text import slugify
-from subdomains.utils import reverse
+from django.shortcuts import reverse
 
 
 class Author(models.Model):
@@ -27,8 +27,7 @@ class Post(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse('blog.views.display_post', subdomain='www',
-                       scheme='https', args=(self.slug, ))
+        return reverse('blog-post', args=(self.slug, ))
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
