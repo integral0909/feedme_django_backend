@@ -13,6 +13,7 @@ from django.utils.text import slugify
 from django.utils.html import format_html_join
 from timezone_field import TimeZoneField
 from main.lib import weekdays
+from subdomains.utils import reverse
 import logging
 logger = logging.getLogger(__name__)
 
