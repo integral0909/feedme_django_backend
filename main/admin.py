@@ -41,7 +41,9 @@ class RecipeAdminForm(forms.ModelForm):
         fields = '__all__'
         model = Recipe
         widgets = {
-            'image_url': S3DirectWidget(dest='raw-img')
+            'image_url': S3DirectWidget(dest='raw-img'),
+            'keywords': forms.CheckboxSelectMultiple,
+            'tags': BetterFilterWidget,
         }
 
 

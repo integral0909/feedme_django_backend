@@ -4,10 +4,12 @@ from django.conf import settings
 from main.models import Recipe, RecipeIngredient, Creatable
 from common.utils import create_uuid_filename, filename_from_path
 from .signals import pre_publish, post_publish
+from decimal import Decimal
 import wget
 import re
 import hashlib
-
+import logging
+logger = logging.getLogger(__name__)
 
 SEEN_HELP = "Has this item been seen by a human?"
 PROCESSED_HELP = "Has this item had its values validated and adjusted by a human?"
@@ -55,7 +57,7 @@ class Draft(Creatable):
         inst = self.publish_inst if self.publish_inst else self.PUBLISH_TO[0]()
         pre_publish.send(sender=self.__class__, draft=self, final=inst)
         for field in self.PUB_FIELDS:
-            setattr(inst, field, getattr(self, field))  # Copy publish fields
+            self.publish_field(inst, field)
         self.published, self.seen, self.processed = (True, True, True)
         self.publish_date = timezone.now()
         if commit:
@@ -63,9 +65,20 @@ class Draft(Creatable):
             self.publish_inst = inst  # Must be after inst.save()
             self.save()
             self.publish_m2m()
-            post_publish.send(sender=self.__class__, draft=self, final=inst,
-            commit=commit)
+            post_publish.send(sender=self.__class__, draft=self, final=inst, commit=commit)
         return inst
+
+    def publish_field(self, inst, field_name):
+        f = getattr(self, field_name)
+        try:
+            for obj in f.all():
+                try:
+                    getattr(inst, field_name).add(obj)
+                except Exception:
+                    logger.exception('Publishing related field %s failed' % field_name)
+        except AttributeError:
+            setattr(inst, field_name, f)  # Copy publish fields
+
 
     def get_related_fields(self):
         klass = globals()[self.__class__.__name__]
@@ -76,10 +89,13 @@ class Draft(Creatable):
         ]
 
     def publish_m2m(self):
+        """Will publish related models containing the word draft."""
         fields = self.get_related_fields()
         for f in fields:
-            for inst in getattr(self, f.related_name).all():
-                inst.publish()
+            klass_name = f.related_model().__class__.__name__
+            if 'draft' in klass_name.lower():
+                for inst in getattr(self, f.related_name).all():
+                    inst.publish()
 
     def prepopulate_with_raw(self):
         """"
@@ -149,7 +165,8 @@ class RecipeDraft(Draft):
     RAW_FIELDS = ('name_raw', 'description_raw', 'prep_time_raw', 'source_url',
                   'servings_raw','cook_time_raw', 'difficulty_raw', 'image_url_raw')
     PUB_FIELDS = ('name', 'description', 'image_url', 'prep_time_seconds',
-                  'cook_time_seconds', 'servings', 'difficulty', 'source_url')
+                  'cook_time_seconds', 'servings', 'difficulty', 'source_url',
+                  'keywords', 'tags')
     AUTOPOP_FIELDS = (('name', 'name_raw'), ('description', 'description_raw'),
                       ('servings', 'servings_raw', '_parse_str_to_ints'),
                       ('prep_time_seconds', 'prep_time_raw', '_parse_time_str'),
@@ -172,6 +189,8 @@ class RecipeDraft(Draft):
                                   max_length=3)
     source_url = models.URLField(blank=True, default='', max_length=600, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True)
+    keywords = models.ManyToManyField('main.Keyword', blank=True)
+    tags = models.ManyToManyField('main.Tag', blank=True)
 
     def save(self, *args, **kwargs):
         self.generate_checksum()
