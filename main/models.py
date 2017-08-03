@@ -13,6 +13,7 @@ from django.utils.text import slugify
 from django.utils.html import format_html_join
 from timezone_field import TimeZoneField
 from main.lib import weekdays
+from subdomains.utils import reverse
 import logging
 logger = logging.getLogger(__name__)
 
@@ -335,6 +336,9 @@ class Restaurant(Creatable):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return '/restaurants/{0}/'.format(self.slug)
+
     def location_to_latlong(self):
         self.latitude = self.location.y
         self.longitude = self.location.x
@@ -588,6 +592,9 @@ class Dish(Creatable):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return '/dish/{0}/'.format(self.id)
+
     def price_format(self):
         return "${0:.2f}".format(self.price/100)
 
@@ -701,6 +708,9 @@ class Recipe(Creatable):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return '/recipe/{0}/'.format(self.id)
 
     def save(self, *args, **kwargs):
         if self.prep_time_seconds is None:

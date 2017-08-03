@@ -2,6 +2,7 @@ from django.db import models
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.shortcuts import reverse
 
 
 class Author(models.Model):
@@ -24,6 +25,9 @@ class Post(models.Model):
     metatags = models.ManyToManyField('Metatag', related_name='posts')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self):
+        return reverse('blog-post', args=(self.slug, ))
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

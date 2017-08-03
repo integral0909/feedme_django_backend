@@ -18,6 +18,9 @@ from django.conf import settings
 # from django.contrib import admin
 from ratelimitbackend import admin
 from django_sqs_jobs.views import JobMessageView
+from django.contrib.sitemaps.views import sitemap
+from sitemaps.maps import (RecipeSitemap, RestaurantSitemap, DishSitemap, StaticViewSitemap,
+                           BlogPostSitemap)
 # from ratelimitbackend import views as auth_views
 
 admin.autodiscover()
@@ -28,6 +31,14 @@ admin.site.site_header = '%s Admin' % settings.PROJECT_TITLE_ABBR
 # Text to put at the top of the admin index page.
 # admin.site.index_title = settings.
 
+sitemaps = {
+    'dishes': DishSitemap,
+    'recipes': RecipeSitemap,
+    'restaurants': RestaurantSitemap,
+    'static': StaticViewSitemap,
+    'blogs': BlogPostSitemap
+}
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
@@ -36,5 +47,7 @@ urlpatterns = [
     url(r'^hijack/', include('hijack.urls')),
     url(r'^data-entry/', include('data_entry.urls')),
     url(r'^s3direct/', include('s3direct.urls')),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+        name='django.contrib.sitemaps.views.sitemap'),
     url(r'^', include('main.urls'))
 ]

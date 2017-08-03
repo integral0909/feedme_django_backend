@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.flatpages',
 ]
 
