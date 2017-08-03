@@ -1,5 +1,8 @@
 version: 1
 cron:
+ - name: "backupdb"
+   url: "/cron/db/backup/"
+   schedule: "0 16 * * *"
  - name: "randomisedishes"
    url: "/cron/randomise/dishes/"
    schedule: "20 * * * *"
