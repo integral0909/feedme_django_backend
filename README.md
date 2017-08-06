@@ -54,7 +54,7 @@ Install [virtualenv](https://www.dabapps.com/blog/introduction-to-pip-and-virtua
 ```bash
 $ cd ~/django-backend
 $ pip install virtualenv
-$ virtualenv env -p python34
+$ virtualenv env -p python3.4
 $ source env/bin/activate
 (env) $ pip install -r requirements.txt
 ```
