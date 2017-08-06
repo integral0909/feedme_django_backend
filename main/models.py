@@ -160,7 +160,7 @@ class RecipeQuery(models.Model):
     max_total_time = models.PositiveIntegerField(default=0, null=True)
     keywords = models.ManyToManyField('Keyword')
     tags = models.ManyToManyField('Tag')
-    difficulty = models.CharField(max_length=5, default='')
+    difficulty = models.CharField(max_length=25, default='')
     page = models.PositiveIntegerField(default=1)
     query_string = models.TextField(default='')
     created = models.DateTimeField(auto_now_add=True)

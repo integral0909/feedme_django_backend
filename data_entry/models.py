@@ -69,33 +69,37 @@ class Draft(Creatable):
         return inst
 
     def publish_field(self, inst, field_name):
-        f = getattr(self, field_name)
-        try:
-            for obj in f.all():
-                try:
-                    getattr(inst, field_name).add(obj)
-                except Exception:
-                    logger.exception('Publishing related field %s failed' % field_name)
-        except AttributeError:
-            setattr(inst, field_name, f)  # Copy publish fields
+        setattr(inst, field_name, getattr(self, field_name))  # Copy publish fields
 
+    def publish_m2m_field(self, field):
+        for obj in getattr(self, field.name).all():
+            try:
+                getattr(self.publish_inst, field.name).add(obj)
+            except Exception:
+                logger.exception('Publishing related field %s failed' % field.name)
+
+    def publish_related_field(self, field):
+        klass_name = field.related_model().__class__.__name__
+        if 'draft' in klass_name.lower():
+            for inst in getattr(self, field.related_name).all():
+                inst.publish()
 
     def get_related_fields(self):
         klass = globals()[self.__class__.__name__]
-        return [
-            f for f in klass._meta.get_fields()
-            if (f.one_to_many or f.one_to_one)
-               and f.auto_created and not f.concrete
-        ]
+        return [f for f in klass._meta.get_fields()
+                if (f.one_to_many or f.one_to_one) and f.auto_created and not f.concrete]
+
+    def get_m2m_fields(self):
+        klass = globals()[self.__class__.__name__]
+        return [f for f in klass._meta.get_fields()
+                if f.many_to_many and not f.auto_created]
 
     def publish_m2m(self):
-        """Will publish related models containing the word draft."""
-        fields = self.get_related_fields()
-        for f in fields:
-            klass_name = f.related_model().__class__.__name__
-            if 'draft' in klass_name.lower():
-                for inst in getattr(self, f.related_name).all():
-                    inst.publish()
+        """Will publish related models containing the word draft and m2m fields"""
+        for f in self.get_related_fields():
+            self.publish_related_field(f)
+        for f in self.get_m2m_fields():
+            self.publish_m2m_field(f)
 
     def prepopulate_with_raw(self):
         """"
@@ -165,8 +169,7 @@ class RecipeDraft(Draft):
     RAW_FIELDS = ('name_raw', 'description_raw', 'prep_time_raw', 'source_url',
                   'servings_raw','cook_time_raw', 'difficulty_raw', 'image_url_raw')
     PUB_FIELDS = ('name', 'description', 'image_url', 'prep_time_seconds',
-                  'cook_time_seconds', 'servings', 'difficulty', 'source_url',
-                  'keywords', 'tags')
+                  'cook_time_seconds', 'servings', 'difficulty', 'source_url')
     AUTOPOP_FIELDS = (('name', 'name_raw'), ('description', 'description_raw'),
                       ('servings', 'servings_raw', '_parse_str_to_ints'),
                       ('prep_time_seconds', 'prep_time_raw', '_parse_time_str'),
