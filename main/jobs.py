@@ -1,4 +1,4 @@
-from django_sqs_jobs import Job, CompositeJob
+from django_sqs_jobs import Job, CompositeJob, JobExecutionError
 from mailchimp3 import MailChimp
 import requests
 import os
@@ -33,6 +33,9 @@ class OnboardUserFacebook(OnboardUser):
         r = requests.get('{fb_api}{fb_id}?fields={fb_fields}&access_token={fb_token}'.format(
             fb_id=self.profile.fb_id, fb_token=fb_token, fb_api=fb_api, fb_fields=fb_fields
         ))
+        if r.status_code != 200:
+            raise JobExecutionError('{0} execution error: {1}'.format(
+                self.__class__.__name__, r.text))
         data = r.json()
         age_range = data.get('age_range', {})
         self.profile.age_max = age_range.get('max')

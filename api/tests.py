@@ -268,3 +268,71 @@ class TestApiEndpoints(TestCase):
         res = self.c.post('/api/views/', {'dish_id': dish_id})
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, '"success":true', count=1)
+
+
+class TestRecipeApi(TestCase):
+    fixtures = ['fixtures/recipes.json', ]
+
+    def setUp(self):
+        users = [
+            User.objects.create(email='test@test.test', username='test',
+                                first_name='tob')
+        ]
+        self.c = Client()
+        self.c.force_login(users[0])
+
+    def test_recipe_get(self):
+        res = self.c.get('/api/recipes/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":11', count=1)
+
+    def test_recipe_keywords(self):
+        res = self.c.get('/api/recipes/', {'keywords': 'vegetarian'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":1', count=1)
+        res = self.c.get('/api/recipes/', {'keywords': 'vegan'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":0', count=1)
+
+    def test_recipe_tags(self):
+        res = self.c.get('/api/recipes/', {'tags': 'Bacon'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":1', count=1)
+
+    def test_recipe_difficulty(self):
+        res = self.c.get('/api/recipes/', {'difficulty': 'dt'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":1', count=1)
+
+    def test_recipe_ingredient(self):
+        res = self.c.get('/api/recipes/', {'ingredients': 'Chimichangas'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":3', count=1)
+
+    def test_like_recipe(self):
+        recipe_id = list(Recipe.objects.all().values())[0]['id']
+        res = self.c.post('/api/likes/recipes/', {'did_like': True, 'recipe_id': recipe_id})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"created":true', count=1)
+        self.assertContains(res, '"success":true', count=1)
+        res2 = self.c.get('/api/recipes/')
+        self.assertEqual(res2.status_code, 200)
+        self.assertContains(res2, '"count":10', count=1)
+
+    def test_view_recipe(self):
+        recipe_id = list(Recipe.objects.all().values())[0]['id']
+        res = self.c.post('/api/views/recipes/', {'recipe_id': recipe_id})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+
+    def test_saved_recipes(self):
+        recipe_id = list(Recipe.objects.all().values())[3]['id']
+        res = self.c.post('/api/likes/recipes/', {'did_like': True, 'recipe_id': recipe_id})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"created":true', count=1)
+        self.assertContains(res, '"success":true', count=1)
+        res2 = self.c.get('/api/recipes/', {'saved': True})
+        self.assertEqual(res2.status_code, 200)
+        self.assertContains(res2, '"count":1', count=1)
+
+
