@@ -36,6 +36,7 @@ class RecipeDraftAdmin(admin.ModelAdmin):
     change_form_template = 'publishable_change_form.html'
     form = RecipeDraftAdminForm
     list_display = ('__str__', 'seen', 'processed', 'published', 'source_url', 'image_url')
+    list_filter = ('keywords', )
     search_fields = ('name_raw', 'source_url')
     inlines = [IngredientDraftInline]
     readonly_fields = ('checksum', 'created', 'updated') + RecipeDraft.RAW_FIELDS
