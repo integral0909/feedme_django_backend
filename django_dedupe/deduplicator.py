@@ -1,6 +1,7 @@
-from django.db.models import Count, Max, Q
-from django.db.models.functions import Lower
+from django.db.models import Count
+from django.db import IntegrityError
 from django.contrib.postgres.aggregates.general import ArrayAgg
+from common.utils.async import run_chunked_iter
 
 
 class Deduplicator(object):
@@ -9,8 +10,10 @@ class Deduplicator(object):
     model = None
     fieldname = None
     field_func = None
+    exclude_relations = []
 
-    def __init__(self, queryset=None, fieldname=None, field_func=None, model=None):
+    def __init__(self, queryset=None, fieldname=None, field_func=None, model=None,
+                 exclude_relations=None):
         self.queryset = queryset or self.queryset
         self.model = model or self.model
         self.fieldname = fieldname or self.fieldname
@@ -21,12 +24,17 @@ class Deduplicator(object):
                                and f.auto_created and not f.concrete]
         self.m2m_fields = [f for f in self.model._meta.get_fields()
                                if f.many_to_many and not f.auto_created]
+        self.exclude_relations = exclude_relations or self.exclude_relations
 
     def get_aware_queryset(self):
-        return self.queryset.values(self.fieldname).annotate(_field=self.field)\
-                   .values('_field').annotate(_duplicate_count=Count('_field')-1,
-                                              _ids=ArrayAgg('id'))\
-                   .filter(_duplicate_count__gte=1)
+        _field = self.fieldname
+        qs = self.queryset.values(self.fieldname)
+        if self.field_func:
+            qs = qs.annotate(_field=self.field).values('_field')
+            _field = '_field'
+
+        return qs.annotate(_duplicate_count=Count(_field)-1, _ids=ArrayAgg('id'))\
+                 .filter(_duplicate_count__gte=1)
 
     def get_naive_queryset(self):
         return self.queryset
@@ -58,28 +66,43 @@ class Deduplicator(object):
         self.dedupe()
 
     def dedupe(self):
-        duped = self.get_aware_list()
-        for item in duped:
-            self.dedupe_item(item)
+        run_chunked_iter(self.get_aware_list(), lambda ims: [self.dedupe_item(i) for i in ims])
 
     def _add_related_counters(self, obj):
-        obj.related_count = 0
-        for field in self.m2m_fields:
-            obj.related_count += len(getattr(obj, field.name))
-        for field in self.related_fields:
-            getattr(obj, field.name)
-            obj.related_count += len(getattr(obj, field.name).all())
-        print(obj, obj.related_count)
+        obj._related_ref_count = 0
+        for field in (self.m2m_fields + self.related_fields):
+            try:
+                obj._related_ref_count += getattr(obj, field.name).count()
+            except AttributeError:
+                pass
         return obj
 
     def dedupe_item(self, item):
         qs = self.model.objects.filter(id__in=item['_ids'])
-        objs = [self._add_related_counters(obj) for obj in qs]
-        print(objs)
+        objs = sorted([self._add_related_counters(obj) for obj in qs],
+                      key=lambda obj: obj._related_ref_count)
+        master = objs.pop()
+        for replica in objs:
+            self.disconnect_replica(master, replica)
+        master.save()
 
-
-
-
-
+    def disconnect_replica(self, master, replica):
+        for field in (self.related_fields + self.m2m_fields):
+            if field.name in self.exclude_relations:
+                continue
+            try:
+                for rel in getattr(replica, field.name).all():
+                    try:
+                        f = getattr(master, field.name)
+                    except AttributeError:
+                        pass
+                    else:
+                        try:
+                            f.add(rel)
+                        except IntegrityError as e:
+                            print(e)
+            except AttributeError:
+                pass
+        replica.delete()
 
 
