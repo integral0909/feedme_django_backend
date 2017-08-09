@@ -25,7 +25,7 @@ class TestDeduplicator(TransactionTestCase):
         recipe_ingr_count = RecipeIngredient.objects.all().count()
         ingr_count = Ingredient.objects.all().count()
         dd = Deduplicator(Ingredient.objects.all(),
-                          'name', Lower, Ingredient)
+                          'name', Ingredient, Lower)
         dd()
         # Assert it removed ingredients
         ingr_count2 = Ingredient.objects.all().count()
@@ -35,7 +35,7 @@ class TestDeduplicator(TransactionTestCase):
 
         print('rerunning dedupe...')
         dd2 = Deduplicator(Ingredient.objects.all(),
-                          'name', Lower, Ingredient)
+                          'name', Ingredient, Lower)
         dd2()
         self.assertEqual(ingr_count2, Ingredient.objects.all().count())
         self.assertEqual(recipe_ingr_count, RecipeIngredient.objects.all().count())

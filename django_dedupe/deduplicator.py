@@ -12,7 +12,7 @@ class Deduplicator(object):
     field_func = None
     exclude_relations = []
 
-    def __init__(self, queryset=None, fieldname=None, field_func=None, model=None,
+    def __init__(self, queryset=None, fieldname=None, model=None, field_func=None,
                  exclude_relations=None):
         self.queryset = queryset or self.queryset
         self.model = model or self.model
@@ -27,6 +27,7 @@ class Deduplicator(object):
         self.exclude_relations = exclude_relations or self.exclude_relations
 
     def get_aware_queryset(self):
+        """Returns a queryset consisting of a count of duplicates and associated id's"""
         _field = self.fieldname
         qs = self.queryset.values(self.fieldname)
         if self.field_func:
@@ -37,15 +38,21 @@ class Deduplicator(object):
                  .filter(_duplicate_count__gte=1)
 
     def get_naive_queryset(self):
+        """Returns the deduplicator's unmodified queryset"""
         return self.queryset
 
     def get_aware_list(self):
+        """Returns a list of objects with the unique value, duplicate count, and list of ids"""
         if not hasattr(self, 'process_item'):
             return list(self.get_aware_queryset())
 
         return self._build_aware_list()
 
     def _build_aware_list(self):
+        """
+        If a callable named `process_item` is declared on the deduplicator then
+        this method is called to build a list of duplicate aware dictionaries.
+        """
         aware_list = []
         value_hash = {}
         for item in self.get_naive_queryset():
@@ -73,6 +80,7 @@ class Deduplicator(object):
         run_chunked_iter(self.get_aware_list(), worker)
 
     def _add_related_counters(self, obj):
+        """Adds a count of related references, used to determine the master"""
         obj._related_ref_count = 0
         for field in (self.m2m_fields + self.related_fields):
             try:
@@ -82,6 +90,7 @@ class Deduplicator(object):
         return obj
 
     def dedupe_item(self, item):
+        """Deduplicate a set of duplicate rows as listed in item"""
         qs = self.model.objects.filter(id__in=item['_ids'])
         objs = sorted([self._add_related_counters(obj) for obj in qs],
                       key=lambda obj: obj._related_ref_count)
@@ -91,6 +100,7 @@ class Deduplicator(object):
         master.save()
 
     def disconnect_replica(self, master, replica):
+        """Disconnects a replica from its related fields and re-attaches them to the master"""
         for field in (self.related_fields + self.m2m_fields):
             if field.name in self.exclude_relations:
                 continue
