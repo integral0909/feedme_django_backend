@@ -6,7 +6,7 @@ from django.db.models.functions import Lower
 from time import sleep
 
 class TestDeduplicator(TransactionTestCase):
-    fixtures = ['fixtures/recipes_with_duplicates.json']
+    fixtures = ['fixtures/recipes_with_duplicates2.json']
     needs_cooldown = True
 
     def tearDown(self):
@@ -21,11 +21,10 @@ class TestDeduplicator(TransactionTestCase):
         u2.recipe_likes.add(RecipeLike.objects.create(user=u2, did_like=True, recipe=rcps[0]))
 
     def test_deduplicator_ingredients(self):
-        print('dedupe test starting...')
         recipe_ingr_count = RecipeIngredient.objects.all().count()
         ingr_count = Ingredient.objects.all().count()
         dd = Deduplicator(Ingredient.objects.all(),
-                          'name', Ingredient, Lower)
+                          'description', Ingredient, Lower)
         dd()
         # Assert it removed ingredients
         ingr_count2 = Ingredient.objects.all().count()
@@ -33,9 +32,8 @@ class TestDeduplicator(TransactionTestCase):
         # Assert it didn't remove related objects
         self.assertEqual(recipe_ingr_count, RecipeIngredient.objects.all().count())
 
-        print('rerunning dedupe...')
         dd2 = Deduplicator(Ingredient.objects.all(),
-                          'name', Ingredient, Lower)
+                          'description', Ingredient, Lower)
         dd2()
         self.assertEqual(ingr_count2, Ingredient.objects.all().count())
         self.assertEqual(recipe_ingr_count, RecipeIngredient.objects.all().count())
@@ -47,7 +45,7 @@ class TestDeduplicator(TransactionTestCase):
         rcp_cnt = queryset.count()
         class RecipeDeduplicator(Deduplicator):
             queryset = Recipe.objects.all()
-            fieldname = 'source_url'
+            fieldname = 'name'
             model = Recipe
             exclude_relations = ['ingredients', 'keywords', 'tags']
 
