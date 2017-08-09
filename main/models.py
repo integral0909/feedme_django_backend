@@ -697,7 +697,7 @@ class Recipe(Creatable):
     servings = models.PositiveIntegerField(default=0)
     difficulty = models.CharField(default=EASY, choices=DIFFICULTY_CHOICES, max_length=3)
     notes = models.TextField(default='', blank=True)
-    source_url = models.URLField(blank=True, default='', max_length=600)
+    source_url = models.URLField(blank=True, default='', max_length=600, unique=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
     likes_count = models.PositiveIntegerField(default=0)
@@ -789,6 +789,9 @@ class Ingredient(Creatable):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = (('name', 'description'), )
 
 
 class RecipeIngredient(Creatable):
