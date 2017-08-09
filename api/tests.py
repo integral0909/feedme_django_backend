@@ -271,7 +271,7 @@ class TestApiEndpoints(TestCase):
 
 
 class TestRecipeApi(TestCase):
-    fixtures = ['fixtures/recipes.json', ]
+    fixtures = ['fixtures/recipes_with_duplicates2.json', ]
 
     def setUp(self):
         users = [
@@ -284,7 +284,7 @@ class TestRecipeApi(TestCase):
     def test_recipe_get(self):
         res = self.c.get('/api/recipes/')
         self.assertEqual(res.status_code, 200)
-        self.assertContains(res, '"count":11', count=1)
+        self.assertContains(res, '"count":10', count=1)
 
     def test_recipe_keywords(self):
         res = self.c.get('/api/recipes/', {'keywords': 'vegetarian'})
@@ -307,7 +307,7 @@ class TestRecipeApi(TestCase):
     def test_recipe_ingredient(self):
         res = self.c.get('/api/recipes/', {'ingredients': 'Chimichangas'})
         self.assertEqual(res.status_code, 200)
-        self.assertContains(res, '"count":3', count=1)
+        self.assertContains(res, '"count":1', count=1)
 
     def test_like_recipe(self):
         recipe_id = list(Recipe.objects.all().values())[0]['id']
@@ -317,7 +317,7 @@ class TestRecipeApi(TestCase):
         self.assertContains(res, '"success":true', count=1)
         res2 = self.c.get('/api/recipes/')
         self.assertEqual(res2.status_code, 200)
-        self.assertContains(res2, '"count":10', count=1)
+        self.assertContains(res2, '"count":9', count=1)
 
     def test_view_recipe(self):
         recipe_id = list(Recipe.objects.all().values())[0]['id']
@@ -331,7 +331,7 @@ class TestRecipeApi(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, '"created":true', count=1)
         self.assertContains(res, '"success":true', count=1)
-        res2 = self.c.get('/api/recipes/', {'saved': True})
+        res2 = self.c.get('/api/recipes/', {'saved': 'true'})
         self.assertEqual(res2.status_code, 200)
         self.assertContains(res2, '"count":1', count=1)
 
