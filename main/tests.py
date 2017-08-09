@@ -25,7 +25,7 @@ class TestRestaurant(TestCase):
 
 
 class TestRecipe(TestCase):
-    fixtures = ['main/fixtures/recipefixture.json']
+    fixtures = ['fixtures/recipes_with_duplicates2.json']
 
     def test_recipe(self):
         self.assertTrue(Recipe.objects.all().count())
