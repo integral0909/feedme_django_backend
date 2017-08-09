@@ -853,6 +853,9 @@ class RecipeIngredient(Creatable):
         finally:
             self.ingredient = ing
 
+    def __str__(self):
+        return self.display
+
 
 class RecipeRequest(Creatable):
     dish = models.ForeignKey('Dish', on_delete=models.CASCADE,
@@ -885,6 +888,10 @@ class Like(Creatable):
         LikeTransaction.objects.create(user=self.user, dish=self.dish,
                                        did_like=self.did_like)
 
+    def __str__(selfself):
+        return '{0} did{1} like {2}'.format(self.user, '' if self.did_like else ' not',
+                                            self.dish)
+
     class Meta:
         unique_together = (('user', 'dish'), )
 
@@ -893,6 +900,10 @@ class LikeTransaction(Creatable):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='like_history')
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='like_history')
     did_like = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '{0} did{1} like {2}'.format(self.user, '' if self.did_like else ' not',
+                                            self.dish)
 
 
 class RecipeView(Creatable):
@@ -916,6 +927,10 @@ class RecipeLike(Creatable):
         RecipeLikeTransaction.objects.create(user=self.user, recipe=self.recipe,
                                              did_like=self.did_like)
 
+    def __str__(self):
+        return '{0} did{1} like {2}'.format(self.user, '' if self.did_like else ' not',
+                                            self.recipe)
+
     class Meta:
         unique_together = (('user', 'recipe'), )
 
@@ -926,6 +941,10 @@ class RecipeLikeTransaction(Creatable):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
                                related_name='like_history')
     did_like = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '{0} did{1} like {2}'.format(self.user, '' if self.did_like else ' not',
+                                            self.recipe)
 
 
 class BookingProvider(models.Model):

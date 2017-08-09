@@ -21,6 +21,9 @@ class NoDatabaseMixin(object):
         """
         suite = super(NoDatabaseMixin, self).build_suite(*args, **kwargs)
         self._needs_db = any([isinstance(test, TransactionTestCase) for test in suite])
+        self._needs_cooldown = any([(hasattr(test, 'needs_cooldown')
+                                     and test.needs_cooldown)
+                                    for test in suite])
         return suite
 
     def setup_databases(self, *args, **kwargs):
@@ -42,6 +45,10 @@ class NoDatabaseMixin(object):
         Remove cursor patch.
         """
         if self._needs_db:
+            if self._needs_cooldown:
+                import time
+                print('Cooldown tests detected. Waiting 10s...')
+                time.sleep(10)
             return super(NoDatabaseMixin, self).teardown_databases(*args, **kwargs)
         self._db_patch.stop()
         return None

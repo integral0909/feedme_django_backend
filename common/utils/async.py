@@ -21,10 +21,10 @@ def run_chunked_iter(iterable_item, worker_func, args=None, num_threads=8):
     Split the provided iterable into chunks, process each chunk in a separate thread
     """
     threads = []
-    chunked_iterables = chunkify(iterable_item, num_threads)
+    chunked_iterables = chunkify(iterable_item, min(num_threads, len(iterable_item)))
     for chunk in chunked_iterables:
         main_args = [chunk]
-        if isinstance(args, (list, tuple, set)) is True:
+        if isinstance(args, (list, tuple, set)):
             main_args = main_args + list(args)
         t = threading.Thread(target=worker_func, args=main_args)
         threads.append(t)
