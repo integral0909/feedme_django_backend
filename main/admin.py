@@ -275,6 +275,7 @@ class RecipeRequestAdmin(admin.ModelAdmin):
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description')
+    search_fields = ('name', )
 
 
 admin.site.unregister(User)
