@@ -1,5 +1,5 @@
 from django.db.models import Count
-from django.db import IntegrityError
+from django.db import IntegrityError, connection
 from django.contrib.postgres.aggregates.general import ArrayAgg
 from common.utils.async import run_chunked_iter
 
@@ -66,7 +66,11 @@ class Deduplicator(object):
         self.dedupe()
 
     def dedupe(self):
-        run_chunked_iter(self.get_aware_list(), lambda ims: [self.dedupe_item(i) for i in ims])
+        def worker(items):
+            for i in items:
+                self.dedupe_item(i)
+            connection.close()
+        run_chunked_iter(self.get_aware_list(), worker)
 
     def _add_related_counters(self, obj):
         obj._related_ref_count = 0

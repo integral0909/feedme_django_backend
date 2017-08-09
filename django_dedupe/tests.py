@@ -3,9 +3,14 @@ from django.contrib.auth.models import User
 from .deduplicator import Deduplicator
 from main.models import Ingredient, RecipeIngredient, Recipe, RecipeLike
 from django.db.models.functions import Lower
+from time import sleep
 
 class TestDeduplicator(TransactionTestCase):
     fixtures = ['fixtures/recipes_with_duplicates.json']
+    needs_cooldown = True
+
+    def tearDown(self):
+        sleep(2)
 
     def setup_user_recipe_likes(self):
         u = User.objects.create(username='bob', email='bob@bob.co')
@@ -48,6 +53,5 @@ class TestDeduplicator(TransactionTestCase):
 
         rdd = RecipeDeduplicator()
         rdd()
-
         self.assertLess(queryset.count(), rcp_cnt)
 
