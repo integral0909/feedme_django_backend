@@ -11,14 +11,6 @@
       background-color: #eee;
     }
   </style>
-  {% if deeplink.useragent_is_target %}
-    <script>
-      window.location = 'feedmee://recipe/{{recipe.id}}';
-      setTimeout(function () {
-        window.location = 'https://itunes.apple.com/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992';
-      }, 1000);
-    </script>
-  {% endif %}
   <div id="restaurant-header-img" class="d-lg-none container"
         style="background-image: url({{dish.image_url}})"></div>
   <div class="container text-center card d-none d-lg-block">
@@ -100,4 +92,12 @@
     $(this).tab('show')
   })
 </script>
+{% if deeplink.useragent_is_target %}
+  <script>
+    window.location = 'feedmee://recipe/{{recipe.id}}';
+    setTimeout(function () {
+      window.location = 'https://itunes.apple.com/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992';
+    }, 1000);
+  </script>
+{% endif %}
 {% endblock %}
