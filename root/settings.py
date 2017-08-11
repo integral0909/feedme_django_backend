@@ -144,7 +144,8 @@ if os.environ['DEPLOYMENT'] != 'LOCAL':
         'dsn': 'https://344e9f25ef874f9289508c808589fa29:b114a3d14ebc4e2b92eb1bafe0b0c76d@sentry.io/170522',
         'release': get_git_sha_from_sourcebundle(),
         'environment': os.environ['DEPLOYMENT'],
-        'ignore_exceptions': ['django.exceptions.http.Http404']
+        'ignore_exceptions': ['django.exceptions.http.Http404',
+                              'django.core.exceptions.DisallowedHost']
     }
 
     LOGGING = {
@@ -170,12 +171,20 @@ if os.environ['DEPLOYMENT'] != 'LOCAL':
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
                 'formatter': 'verbose'
-            }
+            },
+            'null': {
+                'class': 'logging.NullHandler',
+            },
         },
         'loggers': {
             'django.db.backends': {
                 'level': 'ERROR',
                 'handlers': ['console'],
+                'propagate': False,
+            },
+            'django.security.DisallowedHost': {
+                'handlers': ['console'],
+                'level': 'ERROR',
                 'propagate': False,
             },
             'raven': {
@@ -215,6 +224,7 @@ ROOT_URLCONF = 'root.urls'
 SUBDOMAIN_URLCONFS = {
     'www': 'webapp.urls',
     'api': 'api.urls',
+    # 'use': 'root.subdomains.use.urls',
 }
 
 TEMPLATES = [
