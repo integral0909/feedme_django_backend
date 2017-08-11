@@ -1,5 +1,16 @@
 [
 {
+    "model": "main.bookingprovider",
+    "pk": 1,
+    "fields": {
+        "name": "Quandoo",
+        "slug": "quandoo",
+        "title": "Let's go to Quandoo",
+        "description": "You will be redirected to Quandoo's website to begin your delivery order",
+        "logo_url": "https://cdn.feedmeeapp.com/ios/Quandoo_bag.png"
+    }
+},
+{
     "model": "main.deliveryprovider",
     "pk": 1,
     "fields": {

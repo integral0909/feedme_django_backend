@@ -48,6 +48,15 @@ def setupDishesAndRestaurants():
     }
     return res, dishes
 
+class LoggedInTestcase(object):
+    def setUp_session(self):
+        users = [
+            User.objects.create(email='test@test.test', username='test',
+                                first_name='tob')
+        ]
+        self.c = Client()
+        self.c.force_login(users[0])
+
 
 class TestDishViewSet(TestCase):
     fixtures = []
@@ -221,14 +230,9 @@ class TestAuthentication(TestCase):
         self.assertEqual(profile.photo_url, self.photo_url)
 
 
-class TestApiEndpoints(TestCase):
+class TestApiEndpoints(TestCase, LoggedInTestcase):
     def setUp(self):
-        users = [
-            User.objects.create(email='test@test.test', username='test',
-                                first_name='tob')
-        ]
-        self.c = Client()
-        self.c.force_login(users[0])
+        self.setUp_session()
         res, self.dishes = setupDishesAndRestaurants()
 
     def test_dish_feed(self):
@@ -270,16 +274,11 @@ class TestApiEndpoints(TestCase):
         self.assertContains(res, '"success":true', count=1)
 
 
-class TestRecipeApi(TestCase):
+class TestRecipeApi(TestCase, LoggedInTestcase):
     fixtures = ['fixtures/recipes_with_duplicates2.json', ]
 
     def setUp(self):
-        users = [
-            User.objects.create(email='test@test.test', username='test',
-                                first_name='tob')
-        ]
-        self.c = Client()
-        self.c.force_login(users[0])
+        self.setUp_session()
 
     def test_recipe_get(self):
         res = self.c.get('/api/recipes/')
@@ -336,3 +335,97 @@ class TestRecipeApi(TestCase):
         self.assertContains(res2, '"count":1', count=1)
 
 
+class TestSuburbList(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/cuisines.json', 'fixtures/blogs.json',
+                'fixtures/highlights.json', 'fixtures/keywords.json',
+                'fixtures/dishes_restaurants_subset.json']
+
+    def setUp(self):
+        self.setUp_session()
+
+    def test_suburb_list(self):
+        res = self.c.get('/api/suburbs/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":21', count=1)
+        self.assertContains(res, '"Northbridge"', count=1)
+        self.assertContains(res, '"Perth CBD"', count=1)
+        self.assertContains(res, '"Docklands"', count=1)
+        self.assertContains(res, '"Brunswick"', count=1)
+        self.assertContains(res, '"Southbank"', count=1)
+
+
+class TestSearchTerms(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/cuisines.json', 'fixtures/blogs.json',
+                'fixtures/highlights.json', 'fixtures/keywords.json',
+                'fixtures/dishes_restaurants_subset.json',
+                'fixtures/recipes_with_duplicates2.json']
+
+    def setUp(self):
+        self.setUp_session()
+
+    def test_search_terms(self):
+        res = self.c.get('/api/search-terms/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":168', count=1)
+        self.assertContains(res, '"keywords":[', count=1)
+        self.assertContains(res, '"highlights":[', count=1)
+        self.assertContains(res, '"tags":[', count=1)
+        self.assertContains(res, '"ingredients":[', count=1)
+
+
+class TestFulfilmentEventPost(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/cuisines.json', 'fixtures/blogs.json',
+                'fixtures/highlights.json', 'fixtures/keywords.json',
+                'fixtures/dishes_restaurants_subset.json']
+
+    def setUp(self):
+        self.setUp_session()
+
+    def test_fe_delivery(self):
+        pdata = {'delivery_type': 'ubereats', 'dish_id': 3340}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+        self.assertEqual(FulfilmentEvent.objects.all().count(), 1)
+        pdata = {'delivery_type': 'deliveroo', 'dish_id': 3340}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+        self.assertEqual(FulfilmentEvent.objects.all().count(), 2)
+
+    def test_fe_booking(self):
+        pdata = {'booking_type': 'quandoo', 'dish_id': 3340}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+        self.assertEqual(FulfilmentEvent.objects.all().count(), 1)
+        pdata = {'booking_type': 'quandoo', 'dish_id': 3340}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+        self.assertEqual(FulfilmentEvent.objects.all().count(), 2)
+
+    def test_fe_errors(self):
+        pdata = {'booking_type': 'quandoo', 'dish_id': 1}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 400)
+        self.assertContains(res, '"success":false', count=1, status_code=400)
+        self.assertContains(res, '"created":false', count=1, status_code=400)
+        self.assertContains(res, '"Error":"Dish not found"',
+                            count=1, status_code=400)
+
+        pdata = {'delivery_type': 'an invalid provider', 'dish_id': 3340}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 400)
+        self.assertContains(res, '"success":false', count=1, status_code=400)
+        self.assertContains(res, '"created":false', count=1, status_code=400)
+        self.assertContains(res, '"Error":"Delivery Provider not found"',
+                            count=1, status_code=400)
+
+        pdata = {'booking_type': 'an invalid provider', 'dish_id': 3340}
+        res = self.c.post('/api/fulfilment-events/', pdata)
+        self.assertEqual(res.status_code, 400)
+        self.assertContains(res, '"success":false', count=1, status_code=400)
+        self.assertContains(res, '"created":false', count=1, status_code=400)
+        self.assertContains(res, '"Error":"Booking Provider not found"',
+                            count=1, status_code=400)
