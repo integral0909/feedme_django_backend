@@ -265,6 +265,20 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('keywords', )
     readonly_fields = ('views_count', 'total_time_seconds', 'likes_count', 'random')
     search_fields = ('name', )
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'id', 'name', 'description', 'prep_time_seconds', 'cook_time_seconds', 'servings',
+        'difficulty', 'tag_list'
+    ]),)
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'recipe', 'quantity', 'unit_type', 'preparation', 'fraction')
+    search_fields = ('ingredient__name', )
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'id', 'recipe_id', 'ingredient', 'quantity', 'unit_type', 'ingredient_type',
+        'preparation', 'fraction', 'uses_fractions'
+    ]),)
 
 
 @admin.register(RecipeRequest)
@@ -276,6 +290,10 @@ class RecipeRequestAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description')
     search_fields = ('name', )
+
+    actions = (export_as_csv_action(description="CSV Export", fields=[
+        'id', 'name', 'description'
+    ]),)
 
 
 admin.site.unregister(User)
