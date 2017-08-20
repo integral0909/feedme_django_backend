@@ -23,10 +23,10 @@ coverage:
     project: true
   ignore:
   - manage.py
-  - auth/admin.py
-  - auth/models.py
-  - auth/views.py
+  - auth/*
   - main/management/*
+  - s3direct/*
+  - better_filter_widget/*
 parsers:
   gcov:
     branch_detection:
