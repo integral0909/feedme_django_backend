@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from django.contrib.postgres.search import TrigramDistance, TrigramSimilarity
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,6 +22,12 @@ class LargeResultsSetPagination(pagination.PageNumberPagination):
 class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = models.Restaurant.objects.all()
     serializer_class = serializers.Restaurant
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Ingredient.objects.all()
+    serializer_class = serializers.Ingredient
+    filter_class = filters.Ingredient
 
 
 class DishViewSet(viewsets.ModelViewSet):

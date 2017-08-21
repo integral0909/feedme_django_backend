@@ -175,3 +175,9 @@ class Dish(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'pg_id', 'recipe', 'restaurant', 'image_url', 'price', 'title',
                   'description', 'instagram_user', 'keywords', 'likes_count',
                   'views_count', 'firebase_id')
+
+
+class Ingredient(serializers.ModelSerializer):
+    class Meta:
+        model = models.Ingredient
+        fields = ('name', 'description')

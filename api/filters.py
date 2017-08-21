@@ -6,6 +6,13 @@ from past.builtins import reduce
 import main.models as models
 from django.db.models.query import QuerySet
 from django.db.models import Q
+from django.contrib.postgres.search import TrigramSimilarity
+
+
+def fuzzy_string_match(queryset, name, value):
+    return queryset.annotate(
+        similarity=TrigramSimilarity(name, value)
+    ).filter(similarity__gte=0.1).order_by('-similarity')
 
 
 class Dish(django_filters.rest_framework.FilterSet):
@@ -79,3 +86,14 @@ class Recipe(django_filters.rest_framework.FilterSet):
     class Meta:
         model = models.Recipe
         fields = ['min_total_time', 'max_total_time', 'keywords', 'tags', 'difficulty']
+
+
+class Ingredient(django_filters.rest_framework.FilterSet):
+    search = django_filters.CharFilter(
+        name='name', method=fuzzy_string_match
+    )
+    name = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = models.Ingredient
+        fields = ['name', 'description']
