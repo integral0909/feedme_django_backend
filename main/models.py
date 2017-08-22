@@ -950,6 +950,17 @@ class RecipeLikeTransaction(Creatable):
                                             self.recipe)
 
 
+class RecipeRating(Creatable):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='recipe_ratings')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               related_name='ratings')
+    rating = models.PositiveSmallIntegerField(default=0, null=True)
+
+    class Meta:
+        unique_together = (('user', 'recipe'), )
+
+
 class BookingProvider(models.Model):
     """
     A provider of restaurant booking services

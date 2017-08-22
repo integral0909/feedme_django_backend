@@ -4,6 +4,7 @@ from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.conf import settings
+from django.db.models.aggregates import Avg
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
@@ -19,7 +20,7 @@ class LargeResultsSetPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
 
-class RestaurantViewSet(viewsets.ModelViewSet):
+class RestaurantViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Restaurant.objects.all()
     serializer_class = serializers.Restaurant
 
@@ -30,7 +31,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = filters.Ingredient
 
 
-class DishViewSet(viewsets.ModelViewSet):
+class DishViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Dish.objects.all()
     serializer_class = serializers.Dish
     filter_class = filters.Dish
@@ -63,7 +64,7 @@ class DishViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class RecipeViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Recipe.objects.all()
     serializer_class = serializers.Recipe
     filter_class = filters.Recipe
@@ -90,6 +91,44 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            like = models.RecipeLike.objects.get(user=request.user, recipe=instance)
+            instance.saved = like.did_like
+        except AttributeError:
+            instance.saved = False
+        except models.RecipeLike.DoesNotExist:
+            instance.saved = False
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+class RecipeRatingViewSet(APIView):
+    def get(self, request, format=None, recipe_pk=None):
+        queryset = models.RecipeRating.objects.filter(recipe__pk=recipe_pk)
+        rating = queryset.aggregate(rating=Avg('rating')).get('rating', 0) or 0
+        ratings_count = queryset.count()
+        try:
+            user_rating = queryset.get(user=request.user).rating
+        except models.RecipeRating.DoesNotExist:
+            user_rating = 0
+        return Response({'rating': '{:.1f}'.format(rating), 'user_rating': user_rating,
+                         'ratings_count': ratings_count})
+
+    def post(self, request, recipe_pk=None):
+        try:
+            recipe = models.Recipe.objects.get(pk=recipe_pk)
+        except models.Recipe.DoesNotExist:
+            return Response({'success': False})
+        else:
+            models.RecipeRating.objects.update_or_create(
+                recipe=recipe, user=request.user,
+                defaults={'rating': request.data.get('rating')}
+            )
+            return Response({'success': True})
+
 
 
 class RestaurantDishesViewSet(generics.ListAPIView):
@@ -120,7 +159,7 @@ class DishRecipesViewSet(APIView):
             return Response({'recipe': serializer.data})
 
 
-class DeliveryProviderViewSet(viewsets.ModelViewSet):
+class DeliveryProviderViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.DeliveryProvider.objects.all()
     serializer_class = serializers.DeliveryProvider
 

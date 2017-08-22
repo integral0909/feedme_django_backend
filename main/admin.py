@@ -296,6 +296,12 @@ class IngredientAdmin(admin.ModelAdmin):
     ]),)
 
 
+@admin.register(RecipeRating)
+class RecipeRatingAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'user', 'rating')
+    list_filter = ('rating', )
+
+
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Highlight, SlugNameAdmin)
