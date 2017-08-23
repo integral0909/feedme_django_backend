@@ -145,6 +145,7 @@ class Recipe(serializers.ModelSerializer):
     source_url = NullCharField()
     image_url = NullCharField()
     keywords = Keyword(many=True)
+    saved = serializers.SerializerMethodField()
 
     def get_difficulty_display(self, obj):
         return obj.get_difficulty_display()
@@ -152,12 +153,18 @@ class Recipe(serializers.ModelSerializer):
     def get_namespaced_id(self, obj):
         return obj.id
 
+    def get_saved(self, obj):
+        try:
+            return obj.saved
+        except AttributeError:
+            return None
+
     class Meta:
         model = models.Recipe
         fields = ('pg_id', 'name', 'description', 'ingredients', 'steps', 'source_url',
                   'prep_time_seconds', 'cook_time_seconds', 'total_time_seconds',
                   'servings', 'difficulty', 'notes', 'image_url', 'likes_count',
-                  'keywords')
+                  'keywords', 'saved')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):

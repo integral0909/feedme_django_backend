@@ -3,6 +3,7 @@ from django.contrib.postgres.search import TrigramDistance, TrigramSimilarity
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 from django.db.models.aggregates import Avg
 import api.serializers as serializers
@@ -106,6 +107,8 @@ class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeRatingViewSet(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, format=None, recipe_pk=None):
         queryset = models.RecipeRating.objects.filter(recipe__pk=recipe_pk)
         rating = queryset.aggregate(rating=Avg('rating')).get('rating', 0) or 0
@@ -113,6 +116,8 @@ class RecipeRatingViewSet(APIView):
         try:
             user_rating = queryset.get(user=request.user).rating
         except models.RecipeRating.DoesNotExist:
+            user_rating = 0
+        except TypeError:
             user_rating = 0
         return Response({'rating': '{:.1f}'.format(rating), 'user_rating': user_rating,
                          'ratings_count': ratings_count})

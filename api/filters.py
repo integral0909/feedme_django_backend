@@ -74,6 +74,7 @@ class Recipe(django_filters.rest_framework.FilterSet):
     )
 
     def ingredient_search(self, qs, name, value):
+        """Allows recipes to be looked up by the name of their constituent ingredients."""
         if isinstance(value, QuerySet) and value.count():
             query = reduce(operator.or_, (Q(ingredients__ingredient__name__icontains=v.name) for v in value))
             return qs.filter(query)
@@ -89,9 +90,7 @@ class Recipe(django_filters.rest_framework.FilterSet):
 
 
 class Ingredient(django_filters.rest_framework.FilterSet):
-    search = django_filters.CharFilter(
-        name='name', method=fuzzy_string_match
-    )
+    search = django_filters.CharFilter(name='name', method=fuzzy_string_match)
     name = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
