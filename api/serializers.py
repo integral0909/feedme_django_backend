@@ -167,6 +167,43 @@ class Recipe(serializers.ModelSerializer):
                   'keywords', 'saved')
 
 
+class RecipeLight(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.Recipe
+        fields = ('pg_id', 'name')
+
+
+class RecipeCollectionLight(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    description = NullCharField()
+    recipes = RecipeLight(many=True, read_only=True)
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.RecipeCollection
+        fields = ('pg_id', 'name', 'slug', 'description', 'recipes')
+
+
+class RecipeCollection(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    description = NullCharField()
+    recipes = Recipe(many=True, read_only=True)
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.RecipeCollection
+        fields = ('pg_id', 'name', 'slug', 'description', 'recipes')
+
+
 class Dish(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='dish-detail')
     pg_id = serializers.SerializerMethodField('get_namespaced_id')

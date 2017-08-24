@@ -961,6 +961,20 @@ class RecipeRating(Creatable):
         unique_together = (('user', 'recipe'), )
 
 
+class RecipeCollection(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True)
+    description = models.TextField(default='', blank=True)
+    image_url = models.URLField(blank=True, default='', max_length=600)
+    recipes = models.ManyToManyField(Recipe, related_name='collections', blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return '/recipes/browse/%s/' % self.slug
+
+
 class BookingProvider(models.Model):
     """
     A provider of restaurant booking services
