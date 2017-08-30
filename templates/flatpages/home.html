@@ -11,11 +11,10 @@
         <div class="section-opening">
           <div class="container">
             <div class="col-md-6 col-sm-7 opening-text">
-              <h1>The food app that helps you give back</h1>
-              <p>Feedmee is a social enterprise. We believe together
-                we can end world hunger. Every time you book a
-                table or order food delivery through the app, we
-                donate a meal to someone in need.</p>
+              <h1>Feed yourself, feed the world</h1>
+              <p>Feedmee is your all-in-one food app that learns and recommends the food you love, so you can spend more time eating, less time thinking.
+                Best of all every time you book a table or order food delivery through the app, we donate a meal to someone in need.
+              </p>
 
 <a class="button-outline" href="https://itunes.apple.com/au/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992?mt=8"><img src="{% static 'images/apple-logo@2x.png' %}" alt="">AppStore</a>
 <a class="button-outline" href="http://eepurl.com/cPK-Ab"><img src="{% static 'images/android-logo@2x.png' %}" alt="">PlayStore</a>
@@ -32,63 +31,63 @@
           </div>
         </div>
         <!-- end: .section-opening -->
-<div class="section-help">
-  <div class="container">
-    <img src="{% static 'images/box-hearth@2x.png' %}" alt="">
-    <p>Together, we’ve helped to feed</p>
-    <h2><span class="fed-counter">1,890</span> people in need.</h2>
-      <a class="button-pink" href="/donation/">See More</a>
-  </div>
-</div>
-<!-- end: .section-help -->
-<script>
-$(document).ready(function(){
-  $.getJSON("https://use.feedmeeapp.com/api/donations/", function(d) {
-    var c = d.count.toString().split('').reverse().join('')
-                   .replace(/(\d{3}(?!.*\.|$))/g,'$1,')
-                   .split('').reverse().join('');
-    $(".fed-counter").text(c);
-  })
-});
-</script>
-          <div class="section-benefits">
-            <div class="container">
-              <div class="benefit-wrapper">
-                <h2>Things you can do on Feedmee</h2>
-                <div class="benefit-list">
-                  <img src="{% static 'images/book@2x.png' %}" alt="Book a table">
-                  <div class="benefit-desc">
-                    <h4>Table booking</h4>
-                    <p>You can book a table online through 3 simple steps
-                      and get instant confirmation. We partner with
-                      different booking providers around the world so you
-                      can keep collecting the royalty points.</p>
-                  </div>
+        <div class="section-help" style="margin: 55px 0;">
+          <div class="container">
+            <h2>We are taking the decision making out of eating for you</h2>
+            <p style="font-size: 18px;">So that you can spend <strong>more time eating, less time thinking.</strong> Eating in or out, Feedmee learns and recommends the food you love.</p>
+          </div>
+        </div>
+        <!-- end: .section-help -->
+        <div class="section-benefits">
+          <div class="container">
+            <div class="benefit-wrapper">
+              <h2>Things you can do on Feedmee</h2>
+              <div class="benefit-list">
+                <img src="{% static 'images/find-recipe@2x.png' %}" alt="RECIPES & MEAL PLANNER">
+                <div class="benefit-desc">
+                  <h4>RECIPES & MEAL PLANNER</h4>
+                  <p><strong>We help you decide WHAT to eat and HOW you get it.</strong> Feedmee has over {{num_recipes}} recipes for your to choose from. It also has a meal planner that automatically plans your weekly meals based on what you like and your dietary needs.</p>
                 </div>
-                <div class="benefit-list">
-                  <img src="{% static 'images/deliver@2x.png' %}" alt="Order delivery">
-                  <div class="benefit-desc">
-                     <h4>Order food delivery</h4>
-                     <p>You can order meals on Feedmee through the services
-                        provided by our on-demand delivery partners. Once
-                        you have found the food you want, ordering and
-                        getting it delivered is just a click away.</p>
-                   </div>
-                </div>
-                <div class="benefit-list">
-                  <img src="{% static 'images/find-recipe@2x.png' %}" alt="Find recipes">
-                  <div class="benefit-desc">
-                    <h4>Find recipe inspirations</h4>
-                    <p>If you don’t feel like eating out, Feedmee also shows
-                      you recipes of the dishes that you like so you can cook
-                      at home. All recipes are crafted by recipe specialists.
-                      It’s all free, too!</p>
-                  </div>
+              </div>
+              <div class="benefit-list">
+                <img src="{% static 'images/book@2x.png' %}" alt="Book a table">
+                <div class="benefit-desc">
+                   <h4>RESTAURANTS</h4>
+                  <p>We also help you <strong>decide where to go</strong> on your special occasions. Once you’ve found the one, you can book a table, order on-demand delivery or call an Uber to take you there.</p>
+                 </div>
+              </div>
+              <div class="benefit-list">
+                <img src="{% static 'images/deliver@2x.png' %}" alt="Order delivery">
+                <div class="benefit-desc">
+                  <h4>IT LEARNS WHAT YOU LIKE</h4>
+                  <p>Feedmee’s recommendation engine is constantly <strong>learning what you love</strong> so it can show you the most relevant food, whether you’re eating in or eating out.</p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
         <!-- end: .section-benefits -->
+        <div class="section-help">
+          <div class="container">
+            <h2>Most importantly, we help you give back to the community</h2>
+            <p>Use Feedmee to feed yourself, and as you're eating you'll know you have fed someone in need, too.</p><br>
+            <img src="{% static 'images/box-hearth@2x.png' %}" alt="">
+            <p>Together, we’ve helped to feed</p>
+            <h2><span class="fed-counter">1,890</span> people in need.</h2>
+            <a class="button-pink" href="/donation/">See More</a>
+          </div>
+        </div>
+        <!-- end: .section-help -->
+        <script>
+          $(document).ready(function(){
+            $.getJSON("https://use.feedmeeapp.com/api/donations/", function(d) {
+              var c = d.count.toString().split('').reverse().join('')
+                  .replace(/(\d{3}(?!.*\.|$))/g,'$1,')
+                  .split('').reverse().join('');
+              $(".fed-counter").text(c);
+            })
+          });
+        </script>
         <div class="section-featured">
           <div class="container">
             <h3>Featured in</h3>

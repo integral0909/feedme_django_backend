@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta, timezone
+from django.contrib.postgres.search import TrigramDistance, TrigramSimilarity
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
+from django.db.models.aggregates import Avg, Count
+from django.db.models import Q
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
@@ -18,12 +22,18 @@ class LargeResultsSetPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
 
-class RestaurantViewSet(viewsets.ModelViewSet):
+class RestaurantViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Restaurant.objects.all()
     serializer_class = serializers.Restaurant
 
 
-class DishViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Ingredient.objects.all()
+    serializer_class = serializers.Ingredient
+    filter_class = filters.Ingredient
+
+
+class DishViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Dish.objects.all()
     serializer_class = serializers.Dish
     filter_class = filters.Dish
@@ -56,7 +66,68 @@ class DishViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class RecipeViewSet(viewsets.ModelViewSet):
+class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.RecipeCollection.objects.all()
+    serializer_class = serializers.RecipeCollection
+    lookup_field = 'slug'
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = serializers.RecipeCollectionLight(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = serializers.RecipeCollectionLight(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object(request)
+        recipes = []
+        for rcp in instance.recipes.all():
+            rcp.check_saved(request.user)
+            recipes.append(rcp)
+        rcp_serializer = serializers.Recipe(recipes, many=True)
+        return Response({
+            'name': instance.name,
+            'description': instance.description,
+            'image_url': instance.image_url,
+            'recipes': rcp_serializer.data
+        })
+
+    def get_object(self, request):
+        """
+        Returns the object the view is displaying.
+
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        filter_kwargs = {'slug': self.kwargs['slug']}
+        obj = generics.get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+class RecipeCollectionRetrieveView(generics.RetrieveAPIView):
+    queryset = models.RecipeCollection.objects.all()
+    serializer_class = serializers.RecipeCollection
+    lookup_field = 'slug'
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = serializers.RecipeCollectionLight(page, many=True)
+            print(serializer)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.RecipeCollectionLight(many=True)
+        return Response(serializer.data)
+
+
+
+class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Recipe.objects.all()
     serializer_class = serializers.Recipe
     filter_class = filters.Recipe
@@ -83,6 +154,42 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.check_saved(request.user)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+class RecipeRatingViewSet(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, format=None, recipe_pk=None):
+        queryset = models.RecipeRating.objects.filter(recipe__pk=recipe_pk)
+        rating = queryset.aggregate(rating=Avg('rating')).get('rating', 0) or 0
+        ratings_count = queryset.count()
+        try:
+            user_rating = queryset.get(user=request.user).rating
+        except models.RecipeRating.DoesNotExist:
+            user_rating = 0
+        except TypeError:
+            user_rating = 0
+        return Response({'rating': '{:.1f}'.format(rating), 'user_rating': user_rating,
+                         'ratings_count': ratings_count})
+
+    def post(self, request, recipe_pk=None):
+        try:
+            recipe = models.Recipe.objects.get(pk=recipe_pk)
+        except models.Recipe.DoesNotExist:
+            return Response({'success': False})
+        else:
+            models.RecipeRating.objects.update_or_create(
+                recipe=recipe, user=request.user,
+                defaults={'rating': request.data.get('rating')}
+            )
+            return Response({'success': True})
+
 
 
 class RestaurantDishesViewSet(generics.ListAPIView):
@@ -113,7 +220,7 @@ class DishRecipesViewSet(APIView):
             return Response({'recipe': serializer.data})
 
 
-class DeliveryProviderViewSet(viewsets.ModelViewSet):
+class DeliveryProviderViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.DeliveryProvider.objects.all()
     serializer_class = serializers.DeliveryProvider
 

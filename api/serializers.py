@@ -145,6 +145,7 @@ class Recipe(serializers.ModelSerializer):
     source_url = NullCharField()
     image_url = NullCharField()
     keywords = Keyword(many=True)
+    saved = serializers.SerializerMethodField()
 
     def get_difficulty_display(self, obj):
         return obj.get_difficulty_display()
@@ -152,12 +153,55 @@ class Recipe(serializers.ModelSerializer):
     def get_namespaced_id(self, obj):
         return obj.id
 
+    def get_saved(self, obj):
+        try:
+            return obj.saved
+        except AttributeError:
+            return None
+
     class Meta:
         model = models.Recipe
         fields = ('pg_id', 'name', 'description', 'ingredients', 'steps', 'source_url',
                   'prep_time_seconds', 'cook_time_seconds', 'total_time_seconds',
                   'servings', 'difficulty', 'notes', 'image_url', 'likes_count',
-                  'keywords')
+                  'keywords', 'saved')
+
+
+class RecipeLight(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.Recipe
+        fields = ('pg_id', 'name')
+
+
+class RecipeCollectionLight(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    description = NullCharField()
+    recipes = RecipeLight(many=True, read_only=True)
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.RecipeCollection
+        fields = ('pg_id', 'name', 'slug', 'description', 'recipes', 'image_url')
+
+
+class RecipeCollection(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+    description = NullCharField()
+    recipes = Recipe(many=True, read_only=True)
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = models.RecipeCollection
+        fields = ('pg_id', 'name', 'slug', 'description', 'recipes', 'image_url')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):
@@ -175,3 +219,9 @@ class Dish(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'pg_id', 'recipe', 'restaurant', 'image_url', 'price', 'title',
                   'description', 'instagram_user', 'keywords', 'likes_count',
                   'views_count', 'firebase_id')
+
+
+class Ingredient(serializers.ModelSerializer):
+    class Meta:
+        model = models.Ingredient
+        fields = ('name', 'description')
