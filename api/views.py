@@ -77,13 +77,22 @@ class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
         if page is not None:
             serializer = serializers.RecipeCollectionLight(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = serializers.RecipeCollectionLight(many=True)
+        serializer = serializers.RecipeCollectionLight(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object(request)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        recipes = []
+        for rcp in instance.recipes.all():
+            rcp.check_saved(request.user)
+            recipes.append(rcp)
+        rcp_serializer = serializers.Recipe(recipes, many=True)
+        return Response({
+            'name': instance.name,
+            'description': instance.description,
+            'image_url': instance.image_url,
+            'recipes': rcp_serializer.data
+        })
 
     def get_object(self, request):
         """
@@ -94,16 +103,9 @@ class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
         keyword arguments in the url conf.
         """
         queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset.annotate(
-            saved=Count('recipes__recipe__likes__user=request.user')
-            # ADWRGRGRHHHHH!!!!!!!!!!!!!!!!!!!
-        )
-        print(queryset.query.__str__())
         filter_kwargs = {'slug': self.kwargs['slug']}
         obj = generics.get_object_or_404(queryset, **filter_kwargs)
-        # May raise a permission denied
         self.check_object_permissions(self.request, obj)
-
         return obj
 
 
@@ -155,13 +157,7 @@ class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        try:
-            like = models.RecipeLike.objects.get(user=request.user, recipe=instance)
-            instance.saved = like.did_like
-        except AttributeError:
-            instance.saved = False
-        except models.RecipeLike.DoesNotExist:
-            instance.saved = False
+        instance.check_saved(request.user)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

@@ -212,7 +212,7 @@ DEEPLINKER = {
 
 # CORS for select endpoints.
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/api/donations/$'
+CORS_URLS_REGEX = r'^/api/'
 
 # GOOGLE API
 GOOGLEMAPS_API = {

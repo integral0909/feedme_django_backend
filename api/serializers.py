@@ -188,7 +188,7 @@ class RecipeCollectionLight(serializers.ModelSerializer):
 
     class Meta:
         model = models.RecipeCollection
-        fields = ('pg_id', 'name', 'slug', 'description', 'recipes')
+        fields = ('pg_id', 'name', 'slug', 'description', 'recipes', 'image_url')
 
 
 class RecipeCollection(serializers.ModelSerializer):
@@ -201,7 +201,7 @@ class RecipeCollection(serializers.ModelSerializer):
 
     class Meta:
         model = models.RecipeCollection
-        fields = ('pg_id', 'name', 'slug', 'description', 'recipes')
+        fields = ('pg_id', 'name', 'slug', 'description', 'recipes', 'image_url')
 
 
 class Dish(serializers.HyperlinkedModelSerializer):

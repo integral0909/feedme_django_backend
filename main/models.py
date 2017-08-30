@@ -773,6 +773,16 @@ class Recipe(Creatable):
         self.random = random.randint(1, 1000000000)
         self.save()
 
+    def check_saved(self, user):
+        try:
+            like = self.likes.get(user=user)
+            self.saved = like.did_like
+        except AttributeError:
+            self.saved = False
+        except RecipeLike.DoesNotExist:
+            self.saved = False
+        return self.saved
+
 
 class RecipeStep(Creatable):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE, related_name='steps')
