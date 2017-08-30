@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
-from django.db.models.aggregates import Avg
+from django.db.models.aggregates import Avg, Count
+from django.db.models import Q
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
@@ -65,6 +66,67 @@ class DishViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.RecipeCollection.objects.all()
+    serializer_class = serializers.RecipeCollection
+    lookup_field = 'slug'
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = serializers.RecipeCollectionLight(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = serializers.RecipeCollectionLight(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object(request)
+        recipes = []
+        for rcp in instance.recipes.all():
+            rcp.check_saved(request.user)
+            recipes.append(rcp)
+        rcp_serializer = serializers.Recipe(recipes, many=True)
+        return Response({
+            'name': instance.name,
+            'description': instance.description,
+            'image_url': instance.image_url,
+            'recipes': rcp_serializer.data
+        })
+
+    def get_object(self, request):
+        """
+        Returns the object the view is displaying.
+
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        filter_kwargs = {'slug': self.kwargs['slug']}
+        obj = generics.get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+class RecipeCollectionRetrieveView(generics.RetrieveAPIView):
+    queryset = models.RecipeCollection.objects.all()
+    serializer_class = serializers.RecipeCollection
+    lookup_field = 'slug'
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = serializers.RecipeCollectionLight(page, many=True)
+            print(serializer)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.RecipeCollectionLight(many=True)
+        return Response(serializer.data)
+
+
+
 class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Recipe.objects.all()
     serializer_class = serializers.Recipe
@@ -95,13 +157,7 @@ class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        try:
-            like = models.RecipeLike.objects.get(user=request.user, recipe=instance)
-            instance.saved = like.did_like
-        except AttributeError:
-            instance.saved = False
-        except models.RecipeLike.DoesNotExist:
-            instance.saved = False
+        instance.check_saved(request.user)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

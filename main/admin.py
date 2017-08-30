@@ -47,7 +47,18 @@ class RecipeAdminForm(forms.ModelForm):
         }
 
 
-# Inlines
+class RecipeCollectionForm(forms.ModelForm):
+    class Meta:
+        fields = '__all__'
+        model = RecipeCollection
+        widgets = {
+            'image_url': S3DirectWidget(dest='raw-img'),
+            # 'keywords': forms.CheckboxSelectMultiple
+            'recipes': BetterFilterWidget
+        }
+
+
+# Inline classes
 
 class OpeningTimeInline(admin.TabularInline):
     model = OpeningTime
@@ -290,7 +301,6 @@ class RecipeRequestAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'description')
     search_fields = ('name', )
-
     actions = (export_as_csv_action(description="CSV Export", fields=[
         'id', 'name', 'description'
     ]),)
@@ -300,6 +310,20 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeRatingAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'user', 'rating')
     list_filter = ('rating', )
+    actions = (export_as_csv_action(description='CSV Export', fields=[
+        'recipe_id', 'user_id', 'rating'
+    ]),)
+
+
+@admin.register(RecipeCollection)
+class RecipeCollectionAdmin(admin.ModelAdmin):
+    form = RecipeCollectionForm
+    list_display = ('name', 'description', 'recipes_count')
+    search_fields = ('name', )
+    prepopulated_fields = {"slug": ("name",)}
+
+    def recipes_count(self, obj):
+        return obj.recipes.count()
 
 
 admin.site.unregister(User)

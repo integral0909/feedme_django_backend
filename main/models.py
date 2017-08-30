@@ -773,6 +773,16 @@ class Recipe(Creatable):
         self.random = random.randint(1, 1000000000)
         self.save()
 
+    def check_saved(self, user):
+        try:
+            like = self.likes.get(user=user)
+            self.saved = like.did_like
+        except AttributeError:
+            self.saved = False
+        except RecipeLike.DoesNotExist:
+            self.saved = False
+        return self.saved
+
 
 class RecipeStep(Creatable):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE, related_name='steps')
@@ -959,6 +969,20 @@ class RecipeRating(Creatable):
 
     class Meta:
         unique_together = (('user', 'recipe'), )
+
+
+class RecipeCollection(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True)
+    description = models.TextField(default='', blank=True)
+    image_url = models.URLField(blank=True, default='', max_length=600)
+    recipes = models.ManyToManyField(Recipe, related_name='collections', blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return '/recipes/browse/%s/' % self.slug
 
 
 class BookingProvider(models.Model):
