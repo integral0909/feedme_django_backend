@@ -222,6 +222,11 @@ class Dish(serializers.HyperlinkedModelSerializer):
 
 
 class Ingredient(serializers.ModelSerializer):
+    pg_id = serializers.SerializerMethodField('get_namespaced_id')
+
+    def get_namespaced_id(self, obj):
+        return obj.id
+
     class Meta:
         model = models.Ingredient
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'pg_id')

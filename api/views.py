@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from django.contrib.postgres.search import TrigramDistance, TrigramSimilarity
 from rest_framework import viewsets, generics, pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 from django.db.models.aggregates import Avg, Count
-from django.db.models import Q
+from django.db.models import Value, BooleanField
 import api.serializers as serializers
 import main.models as models
 from data_entry.models import RecipeDraft, IngredientDraft
@@ -28,6 +27,7 @@ class RestaurantViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = models.Ingredient.objects.all()
     serializer_class = serializers.Ingredient
     filter_class = filters.Ingredient
@@ -47,7 +47,7 @@ class DishViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = models.Dish.objects.saved(self.request.user)\
                              .order_by_distance(
                 location=request.query_params.get('from_location', '').split(',')
-            )
+            ).annotate(saved=Value(True, BooleanField()))
         else:
             queryset = self.filter_queryset(self.get_queryset().reduce_by_distance(
                 location=request.query_params.get('from_location', '').split(','),
@@ -138,7 +138,8 @@ class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response({
                     'count': models.Recipe.objects.saved(self.request.user).count()
                 })
-            queryset = models.Recipe.objects.saved(self.request.user)
+            queryset = models.Recipe.objects.saved(self.request.user)\
+                             .annotate(saved=Value(True, BooleanField()))
         else:
             queryset = self.filter_queryset(
                 self.get_queryset().not_liked(self.request.user).fresh(self.request.user)
