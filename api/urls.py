@@ -20,11 +20,8 @@ urlpatterns = [
     url(r'^likes/', views.LikesList.as_view()),
     url(r'^restaurants/(?P<restaurant_pk>.+)/dishes/$',
         views.RestaurantDishesViewSet.as_view()),
-    # url(r'^recipes/collections/(?P<slug>[\w]+)/$',
-    #     views.RecipeCollectionRetrieveView.as_view()),
-    # url(r'^recipes/collections/$', views.RecipeCollectionListView.as_view()),
-
     url(r'^recipes/(?P<recipe_pk>.+)/ratings/$', views.RecipeRatingViewSet.as_view()),
+    url(r'^shopping-lists/', views.ShoppingListView.as_view()),
     url(r'^views/(?P<subject>[\w]+)/', views.ViewsList.as_view()),
     url(r'^views/', views.ViewsList.as_view()),
     url(r'^fulfilment-events/', views.FulfilmentEventList.as_view()),

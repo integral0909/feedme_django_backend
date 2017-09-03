@@ -9,6 +9,7 @@ from django.db.models.aggregates import Avg, Count
 from django.db.models import Q
 import api.serializers as serializers
 import main.models as models
+import shopping_list.models
 from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
 from .authentication import ScraperAuthentication
@@ -310,6 +311,22 @@ class RecipeIngest(APIView):
         return Response({'success': True})
 
 
+class ShoppingListView(APIView):
+    def post(self, request):
+        """Receives the state of the users shopping list."""
+        shoplist = shopping_list.models.ShoppingList.objects.create(user=request.user)
+        print(request.data)
+        for item in request.data.get('shopping_list'):
+            if item.get('custom_item'):
+                shopping_list.models.CustomItem.objects.create(
+                    content=item['content'], ticked=item['ticked'], shopping_list=shoplist
+                )
+            else:
+                shopping_list.models.Item.objects.create(
+                    recipe_id=item['recipe_id'], ingredient=item['ingredient'],
+                    ticked=item['ticked'], shopping_list=shoplist
+                )
+        return Response({'success': True})
 
 
 
