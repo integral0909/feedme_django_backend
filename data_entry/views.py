@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, Http404
 from .forms import (RestaurantForm, BlogForm, DishForm, RecipeForm, RecipeIngredientForm,
                     HighlightForm, TagForm, CuisineForm, RestaurantOpeningTimeForm,
                     IngredientForm)
@@ -210,7 +210,10 @@ def _extra_processing(item_type, obj=None):
 def _get_class_objects(item_type):
     """Returns the class name, class, and form class for a given item_type."""
     class_name = _get_classname(item_type)
-    return class_name, globals()[class_name], globals()[class_name+'Form']
+    try:
+        return class_name, globals()[class_name], globals()[class_name+'Form']
+    except KeyError:
+        raise Http404('{} is not a valid object type.'.format(class_name))
 
 
 def _get_classname(item_type):
