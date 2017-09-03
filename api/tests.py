@@ -1,9 +1,11 @@
 import os
+import json
 from django.test import TestCase, Client
 from django.core import management
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from main.models import *
+from shopping_list.models import ShoppingList, Item, CustomItem
 from django.utils import timezone
 from api.authentication import FirebaseJWTBackend
 
@@ -371,6 +373,55 @@ class TestSearchTerms(TestCase, LoggedInTestcase):
         self.assertContains(res, '"highlights":[', count=1)
         self.assertContains(res, '"tags":[', count=1)
         self.assertContains(res, '"ingredients":[', count=1)
+
+
+class TestShoppingLists(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/keywords.json', 'fixtures/recipes_with_duplicates2.json']
+
+    def setUp(self):
+        self.setUp_session()
+
+    def test_send_shopping_list(self):
+        res = self.c.post('/api/shopping-lists/', json.dumps({
+            'shopping_list': (
+                {
+                    'recipe_id': 2,
+                    'ingredient': 'Sausages',
+                    'ticked': False
+                },
+                {
+                    'recipe_id': 2,
+                    'ingredient': 'Eschallots',
+                    'ticked': True
+                },
+                {
+                    'custom_item': True,
+                    'content': 'Toilet paper',
+                    'ticked': False
+                },
+                {
+                    'custom_item': True,
+                    'content': 'Tissues',
+                    'ticked': True
+                },
+            )
+        }), content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+        saus = Item.objects.get(ingredient='Sausages')
+        self.assertFalse(saus.ticked)
+        self.assertEqual(saus.recipe_id, 2)
+        esch = Item.objects.get(ingredient='Eschallots')
+        self.assertTrue(esch.ticked)
+        self.assertEqual(esch.recipe_id, 2)
+        tp = CustomItem.objects.get(content='Toilet paper')
+        self.assertFalse(tp.ticked)
+        tis = CustomItem.objects.get(content='Tissues')
+        self.assertTrue(tis.ticked)
+        sl = ShoppingList.objects.all()[0]
+        self.assertEqual(sl.items.count(), 2)
+        self.assertEqual(sl.custom_items.count(), 2)
+
 
 
 class TestFulfilmentEventPost(TestCase, LoggedInTestcase):
