@@ -7,13 +7,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from django.utils.text import slugify
 from django.utils.html import format_html_join
 from timezone_field import TimeZoneField
 from main.lib import weekdays
-from subdomains.utils import reverse
 import logging
 logger = logging.getLogger(__name__)
 
