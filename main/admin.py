@@ -116,6 +116,7 @@ class TagInline(admin.TabularInline):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('__str__', )
+    search_fields = ('name', )
 
 
 @admin.register(DishQuery)

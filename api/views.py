@@ -139,7 +139,7 @@ class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response({
                     'count': models.Recipe.objects.saved(self.request.user).count()
                 })
-            queryset = models.Recipe.objects.saved(self.request.user)
+            queryset = models.Recipe.objects.saved(self.request.user).order_by('-updated')
         else:
             queryset = self.filter_queryset(
                 self.get_queryset().not_liked(self.request.user).fresh(self.request.user)
