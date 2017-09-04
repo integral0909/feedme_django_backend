@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'better_filter_widget',
     'ckeditor',
+    'shopping_list',
     'django_sqs_jobs',
     'django.contrib.admin',
     'django.contrib.auth',
