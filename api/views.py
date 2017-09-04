@@ -129,6 +129,7 @@ class RecipeCollectionRetrieveView(generics.RetrieveAPIView):
 
 
 class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = models.Recipe.objects.all()
     serializer_class = serializers.Recipe
     filter_class = filters.Recipe
