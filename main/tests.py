@@ -35,3 +35,16 @@ class TestRecipe(TestCase):
             self.assertTrue(recipe.get_prep_time_display())
             self.assertTrue(recipe.get_cook_time_display())
 
+    def test_source_url_display(self):
+        for recipe in Recipe.objects.all():
+            if recipe.get_source_url_display() == '':
+                continue
+            self.assertTrue(recipe.get_source_url_display())
+
+    def test_source_url_display_empty(self):
+        rcp = Recipe.objects.all()[0]
+        rcp.source_url = ''
+        self.assertEqual(rcp.get_source_url_display(), '')
+        rcp.source_url = None
+        self.assertEqual(rcp.get_source_url_display(), '')
+

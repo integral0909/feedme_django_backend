@@ -730,7 +730,10 @@ class Recipe(Creatable):
 
     def get_source_url_display(self):
         url = urlparse(self.source_url)
-        return url.hostname.replace("www.", "")
+        try:
+            return url.hostname.replace("www.", "")
+        except AttributeError:
+            return ''
 
     def get_prep_time_display(self):
         return self._humanise_duration('prep_time_seconds')

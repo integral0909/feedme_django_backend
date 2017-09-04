@@ -316,7 +316,6 @@ class ShoppingListView(APIView):
     def post(self, request):
         """Receives the state of the users shopping list."""
         shoplist = shopping_list.models.ShoppingList.objects.create(user=request.user)
-        print(request.data)
         for item in request.data.get('shopping_list'):
             if item.get('custom_item'):
                 shopping_list.models.CustomItem.objects.create(
