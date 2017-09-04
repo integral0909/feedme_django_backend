@@ -157,7 +157,7 @@ class Recipe(serializers.ModelSerializer):
         try:
             return obj.saved
         except AttributeError:
-            return None
+            return False
 
     class Meta:
         model = models.Recipe
