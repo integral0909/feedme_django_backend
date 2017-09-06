@@ -68,6 +68,7 @@ class DishViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = models.RecipeCollection.objects.all()
     serializer_class = serializers.RecipeCollection
     lookup_field = 'slug'
@@ -111,6 +112,7 @@ class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeCollectionRetrieveView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = models.RecipeCollection.objects.all()
     serializer_class = serializers.RecipeCollection
     lookup_field = 'slug'
