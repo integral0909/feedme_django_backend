@@ -19,7 +19,7 @@ class CustomItemInline(admin.TabularInline):
 
 @admin.register(ShoppingList)
 class ShoppingListAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'items_count', 'custom_items_count', 'created')
+    list_display = ('__str__', 'user', 'items_count', 'custom_items_count', 'created')
     readonly_fields = ('created', 'items_count', 'custom_items_count')
     inlines = (CustomItemInline, ItemInline)
 

@@ -886,7 +886,7 @@ class RecipeRequest(Creatable):
                              related_name='recipe_request')
 
     def __str__(self):
-        return self.dish
+        return self.dish.title
 
 
 class View(Creatable):
