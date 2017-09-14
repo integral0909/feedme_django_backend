@@ -21,7 +21,7 @@ def deeplink_dish(request, dish_id):
 def recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
     meta_img = recipe.image_url if recipe.image_url else static('images/og-image.jpg')
-    return render(request, 'reactapp.html', {
+    return render(request, 'react_base.html', {
         'recipe': recipe, 'app_url': 'feedmee://recipe/%s/ ' % recipe.id,
         'meta_img': meta_img, 'meta_img_alt': recipe.name, 'page_title': ' | %s' % recipe.name
     })
@@ -33,7 +33,7 @@ def recipe_react(request, recipe_id):
         meta_img = static('images/og-image.jpg')
         return render(request, 'reactapp.html', {'meta_img': meta_img})
     meta_img = recipe.image_url if recipe.image_url else static('images/og-image.jpg')
-    return render(request, 'reactapp.html', {
+    return render(request, 'react_base.html', {
         'recipe': recipe, 'app_url': 'feedmee://recipe/%s/ ' % recipe.id,
         'meta_img': meta_img, 'meta_img_alt': recipe.name, 'page_title': ' | %s' % recipe.name
     })
@@ -41,7 +41,7 @@ def recipe_react(request, recipe_id):
 
 def react_app(request):
     meta_img = static('images/og-image.jpg')
-    return render(request, 'reactapp.html', {'meta_img': meta_img})
+    return render(request, 'react_base.html', {'meta_img': meta_img})
 
 
 def dish_detail(request, dish_id):
