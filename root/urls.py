@@ -49,5 +49,6 @@ urlpatterns = [
     url(r'^s3direct/', include('s3direct.urls')),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
+    url(r'^explorer/', include('explorer.urls')),
     url(r'^', include('main.urls'))
 ]

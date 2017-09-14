@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     's3direct',
+    'explorer',
     'raven.contrib.django.raven_compat',
     'better_filter_widget',
     'ckeditor',
@@ -214,6 +215,10 @@ DEEPLINKER = {
 # CORS for select endpoints.
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/'
+
+# DJANGO SQL EXPLORER
+EXPLORER_CONNECTIONS = {'Default': 'readonly'}
+EXPLORER_DEFAULT_CONNECTION = 'readonly'
 
 # GOOGLE API
 GOOGLEMAPS_API = {
