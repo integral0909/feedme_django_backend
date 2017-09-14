@@ -790,6 +790,8 @@ class Recipe(Creatable):
             self.saved = False
         except RecipeLike.DoesNotExist:
             self.saved = False
+        except TypeError:
+            self.saved = False
         return self.saved
 
 
