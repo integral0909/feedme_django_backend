@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from main.models import Restaurant, Dish, Recipe
+from main.models import Restaurant, Dish, Recipe, RecipeCollection
 from django.conf import settings
 
 
@@ -18,14 +18,6 @@ def deeplink_dish(request, dish_id):
     return render(request, 'deeplink_dish.html', {'dish': dish})
 
 
-def recipe(request, recipe_id):
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
-    meta_img = recipe.image_url if recipe.image_url else static('images/og-image.jpg')
-    return render(request, 'react_base.html', {
-        'recipe': recipe, 'app_url': 'feedmee://recipe/%s/ ' % recipe.id,
-        'meta_img': meta_img, 'meta_img_alt': recipe.name, 'page_title': ' | %s' % recipe.name
-    })
-
 def recipe_react(request, recipe_id):
     try:
         recipe = Recipe.objects.get(pk=recipe_id)
@@ -36,6 +28,19 @@ def recipe_react(request, recipe_id):
     return render(request, 'react_base.html', {
         'recipe': recipe, 'app_url': 'feedmee://recipe/%s/ ' % recipe.id,
         'meta_img': meta_img, 'meta_img_alt': recipe.name, 'page_title': ' | %s' % recipe.name
+    })
+
+
+def recipe_collection_react(request, slug):
+    try:
+        collection = RecipeCollection.objects.get(slug=slug)
+    except RecipeCollection.DoesNotExist:
+        meta_img = static('images/og-image.jpg')
+        return render(request, 'reactapp.html', {'meta_img': meta_img})
+    meta_img = collection.image_url if collection.image_url else collection.recipes.first().image_url
+    return render(request, 'react_base.html', {
+        'page_title': ' | %s' % collection.name, 'meta_img': meta_img,
+        'meta_img_alt': collection.name
     })
 
 
