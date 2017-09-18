@@ -342,7 +342,7 @@ S3DIRECT_DESTINATIONS = {
 # This controls how the `static` template tag from `staticfiles` gets expanded,
 # if you're using it.
 # We also use it in the next setting.
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = 'cdn.feedmeeapp.com'
 
 # This is used by the `static` template tag from `static`, if you're using that.
 #  Or if anything else refers directly to STATIC_URL. So it's safest to always set it
