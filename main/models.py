@@ -912,7 +912,7 @@ class Like(Creatable):
         LikeTransaction.objects.create(user=self.user, dish=self.dish,
                                        did_like=self.did_like)
 
-    def __str__(selfself):
+    def __str__(self):
         return '{0} did{1} like {2}'.format(self.user, '' if self.did_like else ' not',
                                             self.dish)
 

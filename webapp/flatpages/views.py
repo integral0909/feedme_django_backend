@@ -27,4 +27,3 @@ class FlatView(TemplateView):
                 "'template_name' or an implementation of 'get_template_names()'")
         else:
             return ['flatpages/%s' % self.template_name]
-
