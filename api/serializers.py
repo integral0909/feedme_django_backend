@@ -175,7 +175,7 @@ class RecipeLight(serializers.ModelSerializer):
 
     class Meta:
         model = models.Recipe
-        fields = ('pg_id', 'name')
+        fields = ('pg_id', 'name', 'image_url')
 
 
 class RecipeCollectionLight(serializers.ModelSerializer):
