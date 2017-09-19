@@ -20,7 +20,7 @@ from ratelimitbackend import admin
 from django_sqs_jobs.views import JobMessageView
 from django.contrib.sitemaps.views import sitemap
 from sitemaps.maps import (RecipeSitemap, RestaurantSitemap, DishSitemap, StaticViewSitemap,
-                           BlogPostSitemap)
+                           BlogPostSitemap, RecipeCollectionSitemap)
 # from ratelimitbackend import views as auth_views
 
 admin.autodiscover()
@@ -34,6 +34,7 @@ admin.site.site_header = '%s Admin' % settings.PROJECT_TITLE_ABBR
 sitemaps = {
     'dishes': DishSitemap,
     'recipes': RecipeSitemap,
+    'collections': RecipeCollectionSitemap,
     'restaurants': RestaurantSitemap,
     'static': StaticViewSitemap,
     'blogs': BlogPostSitemap

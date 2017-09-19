@@ -716,7 +716,7 @@ class Recipe(Creatable):
         return self.name
 
     def get_absolute_url(self):
-        return '/recipe/{0}/'.format(self.id)
+        return '/recipe/{0}/{1}'.format(self.id, slugify(self.name))
 
     def save(self, *args, **kwargs):
         if self.prep_time_seconds is None:
