@@ -208,7 +208,6 @@ DEEPLINKER = {
             'family': ['iPhone', 'iOS-Device']
         }
     },
-    'URL_MODULE': 'webapp.deeplinks',
     'PROTOCOL': 'feedmee://',
 }
 

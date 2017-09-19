@@ -1,12 +1,9 @@
 import os
-from django.shortcuts import render
 from django.core.management import call_command
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from main.models import Dish, Recipe
-from data_entry.models import RecipeDraft
 from common.utils.async import run_chunked_iter
-import boto3
 
 
 def worker(func):

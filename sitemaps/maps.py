@@ -1,6 +1,6 @@
 from django.contrib.sites.models import Site
 from sitemaps import SubdomainSite, SubdomainSitemap
-from main.models import Restaurant, Dish, Recipe
+from main.models import Restaurant, Dish, Recipe, RecipeCollection
 from blog.models import Post
 
 current_site = Site.objects.get_current()
@@ -32,7 +32,7 @@ class DishSitemap(SubdomainSitemap):
 
 class RecipeSitemap(SubdomainSitemap):
     changefreq = 'weekly'
-    subdomain = SubdomainSite('use', current_site)
+    subdomain = SubdomainSite('www', current_site)
     protocol = 'https'
 
     def items(self):
@@ -40,6 +40,15 @@ class RecipeSitemap(SubdomainSitemap):
 
     def lastmod(self, obj):
         return obj.updated
+
+
+class RecipeCollectionSitemap(SubdomainSitemap):
+    changefreq = 'monthly'
+    subdomain = SubdomainSite('www', current_site)
+    protocol = 'https'
+
+    def items(self):
+        return RecipeCollection.objects.all()
 
 
 class BlogPostSitemap(SubdomainSitemap):
