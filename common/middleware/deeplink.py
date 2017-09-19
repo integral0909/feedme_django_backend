@@ -54,5 +54,4 @@ def context_processor(request):
         }}
     except AttributeError as e:
         return {}
-    print(context)
     return context
