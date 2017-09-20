@@ -6,7 +6,13 @@ from blog.models import Post
 
 def display_post(request, slug):
     p = get_object_or_404(Post, slug=slug)
-    return render(request, 'blog_post.html', {'post': p})
+    extract = p.content.split('.')[:3]
+    extract = '%s.' % '.'.join(extract)
+    return render(request, 'blog_post.html', {
+        'post': p, 'meta_description': extract, 'meta_img': p.image_url,
+        'page_title': ' | %s' % p.title,
+        'meta_keywords': ', '.join((m.tag for m in p.metatags.all()))
+    })
 
 
 def list_posts(request):
