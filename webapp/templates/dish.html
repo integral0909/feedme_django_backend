@@ -92,9 +92,9 @@
     $(this).tab('show')
   })
 </script>
-{% if deeplink.useragent_is_target %}
+{% if deeplink.useragent_is_target and app_url %}
   <script>
-    window.location = 'feedmee://recipe/{{recipe.id}}';
+    window.location = '{{app_url}}';
     setTimeout(function () {
       window.location = 'https://itunes.apple.com/app/feedmee-discover-food-4-you-eat-out-give-back/id1120549992';
     }, 4000);

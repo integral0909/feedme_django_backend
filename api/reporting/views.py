@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -66,8 +66,9 @@ class RecentEngagementViewset(APIView):
     def get(self, request, format=None):
         day_ago = timezone.now() - timedelta(hours=24)
         qs = User.objects.filter(date_joined__gte=day_ago)
-        recent_users = User.objects.filter(dish_queries__created__gte=day_ago).distinct()\
-                           .count()
+        recent_users = User.objects.filter(
+            Q(dish_queries__created__gte=day_ago) | Q(recipe_queries__created__gte=day_ago)
+        ).distinct().count()
         new_users = qs.count()
         new_queries = DishQuery.objects.filter(created__gte=day_ago).count()
         new_swipes = Like.objects.filter(created__gte=day_ago).count()
