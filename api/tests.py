@@ -1,9 +1,8 @@
-import os
 import json
 from django.test import TestCase, Client
 from django.core import management
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
+from datetime import timedelta
 from main.models import *
 from shopping_list.models import ShoppingList, Item, CustomItem
 from django.utils import timezone

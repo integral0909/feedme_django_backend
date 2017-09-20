@@ -1,21 +1,21 @@
 {% load static %}
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Feedmee is a social enterprise. We believe together we can end world hunger. Every time you book a table or order food delivery through the app, we donate a meal to someone in need." />
-  <meta name="keywords" content="" />
-  <meta property="og:image" content="{% static 'images/og-image.jpg' %}" />
+  <meta name="description" content="{{ meta_description|striptags|default:"Feedmee is a social enterprise. We believe together we can end world hunger. Every time you book a table or order food delivery through the app, we donate a meal to someone in need." }}" />
+  <meta name="keywords" content="{{ meta_keywords }}" />
+  <meta property="og:image" content="{{ meta_img|default:"https://cdn.feedmeeapp.com/static/images/og-image.jpg" }}" />
   <meta property="og:image:height" content="312" />
   <meta property="og:image:width" content="596" />
-  <meta property="og:title" content="Feedmee app | Eat out, give back">
-  <meta property="og:description" content="The food app that helps you give back.  Every time you book a table or order food delivery through the app, we donate a meal to someone in need.">
-  <meta property="og:url" content="www.feedmeeapp.com">
+  <meta property="og:title" content="Feedmee{{ page_title }}">
+  <meta property="og:description" content="{{ meta_description|striptags|default:"The food app that helps you give back.  Every time you book a table or order food delivery through the app, we donate a meal to someone in need." }}">
+  <meta property="og:url" content="{{request.build_absolute_uri}}">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
-  <link rel="manifest" href="/static/favicon/manifest.json">
-  <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
-  <meta name="theme-color" content="#ffffff">
-  <title>Feedmee{% if title%} - {{title}}{% endif %}</title>
+  <link rel="manifest" href="{% static 'favicon/manifest.json' %}">
+  <link rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#e73d57">
+  <meta name="theme-color" content="#e73d57">
+  <title>Feedmee{% if title or page_title%} - {{title}}{{ page_title }}{% endif %}</title>
   <script src="{% static 'js/fdme.min.js' %}"></script>
   <link href="https://fonts.googleapis.com/css?family=Muli:400,700" rel="stylesheet">
   <link href="{% static 'css/fdme.min.css' %}" rel="stylesheet" />

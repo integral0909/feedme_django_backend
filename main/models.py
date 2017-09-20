@@ -995,6 +995,11 @@ class RecipeCollection(models.Model):
     def get_absolute_url(self):
         return '/recipes/browse/%s/' % self.slug
 
+    def check_integrity(self):
+        if settings.CDN_URL not in self.image_url and len(self.image_url) > 0:
+            self.image_url = _get_cdn_image(self.image_url)
+            self.save()
+
 
 class BookingProvider(models.Model):
     """
