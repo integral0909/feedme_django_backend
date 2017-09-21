@@ -1,4 +1,7 @@
 from django.test import TestCase, Client
+import logging
+
+logging.disable(logging.CRITICAL)
 
 
 class TestReactViews(TestCase):

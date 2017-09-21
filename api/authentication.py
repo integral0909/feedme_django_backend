@@ -11,6 +11,9 @@ from cachecontrol import CacheControl
 from cachecontrol.caches.file_cache import FileCache
 from main.models import Profile
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -71,7 +74,7 @@ class FirebaseJWTBackend(authentication.BaseAuthentication):
         try:
             token = self._get_auth_token(request)
         except FirebaseAuthTokenMissing:
-            print('Auth token missing')
+            logger.debug('Auth token missing')
             return None  # Necessary for session based api explorer
         tokenClaims = self.validate_token(token)
         auth = {'claims': tokenClaims}
