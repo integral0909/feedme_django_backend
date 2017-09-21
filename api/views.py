@@ -12,6 +12,9 @@ import shopping_list.models
 from data_entry.models import RecipeDraft, IngredientDraft
 import api.filters as filters
 from .authentication import ScraperAuthentication
+import logging
+
+logger = logging.getLogger(__name__)
 
 INIT_DONATIONS = 1834
 
@@ -111,24 +114,6 @@ class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
         return obj
 
 
-class RecipeCollectionRetrieveView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = models.RecipeCollection.objects.all()
-    serializer_class = serializers.RecipeCollection
-    lookup_field = 'slug'
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = serializers.RecipeCollectionLight(page, many=True)
-            print(serializer)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = serializers.RecipeCollectionLight(many=True)
-        return Response(serializer.data)
-
-
 
 class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -218,7 +203,7 @@ class DishRecipesViewSet(APIView):
         try:
             dish = models.Dish.objects.get(pk=dish_pk)
         except models.Dish.DoesNotExist:
-            print('DishRecipe: Dish does not exist')
+            logger.warning('DishRecipe: Dish does not exist')
             return Response({'Error': 'Dish not found'}, 400)
         else:
             serializer = serializers.Recipe(dish.recipe)
@@ -356,15 +341,15 @@ class FulfilmentEventList(APIView):
             fulfilment.save()
             return Response({"success": True})
         except models.Dish.DoesNotExist:
-            print("Dish not found")
+            logger.warning("Dish not found")
             return Response({"success": False, "created": False,
                              "Error": "Dish not found"}, 400)
         except models.DeliveryProvider.DoesNotExist:
-            print("Delivery Provider not found", delivery_type)
+            logger.warning("Delivery Provider not found:", delivery_type)
             return Response({"success": False, "created": False,
                              "Error": "Delivery Provider not found"}, 400)
         except models.BookingProvider.DoesNotExist:
-            print("Booking Provider not found", booking_type)
+            logger.warning("Booking Provider not found:", booking_type)
             return Response({"success": False, "created": False,
                              "Error": "Booking Provider not found"}, 400)
 
@@ -382,7 +367,7 @@ class RecipeRequestList(APIView):
         try:
             dish = models.Dish.objects.get(pk=dish_id)
         except models.Dish.DoesNotExist:
-            print("RecipeRequest: Dish not found")
+            logger.debug("RecipeRequest: Dish not found")
             return Response({'success': False, 'created': False,
                              'error': 'Dish not found'}, 400)
         else:

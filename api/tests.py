@@ -8,6 +8,8 @@ from shopping_list.models import ShoppingList, Item, CustomItem
 from django.utils import timezone
 from api.authentication import FirebaseJWTBackend
 
+logging.disable(logging.CRITICAL)
+
 
 def create_fixture(app_name, filename):
     print('Creating fixture..')
@@ -242,6 +244,16 @@ class TestApiEndpoints(TestCase, LoggedInTestcase):
         self.assertContains(res, '"count":5', count=1)
         # self.assertJSONEqual(res.content, )
 
+    def test_saved_dishes(self):
+        res = self.c.get('/api/dishes/', {'saved': 'true'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":0', count=1)
+
+    def test_saved_dishes_count(self):
+        res = self.c.get('/api/dishes/', {'saved': 'true', 'count': 'true'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":0', count=1)
+
     def test_like_dish(self):
         dish_id = list(self.dishes.values())[0].id
         res = self.c.post('/api/likes/dishes/', {'did_like': True, 'dish_id': dish_id})
@@ -334,6 +346,85 @@ class TestRecipeApi(TestCase, LoggedInTestcase):
         res2 = self.c.get('/api/recipes/', {'saved': 'true'})
         self.assertEqual(res2.status_code, 200)
         self.assertContains(res2, '"count":1', count=1)
+
+    def test_saved_recipes_count(self):
+        recipe_id = list(Recipe.objects.all().values())[3]['id']
+        self.c.post('/api/likes/recipes/', {'did_like': True, 'recipe_id': recipe_id})
+        res = self.c.get('/api/recipes/', {'saved': 'true', 'count': 'true'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":1', count=1)
+
+    def test_retrieve_recipe(self):
+        recipe_id = list(Recipe.objects.all().values())[3]['id']
+        res = self.c.get('/api/recipes/%s/' % recipe_id)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"saved":false', count=1)
+
+
+class TestRecipeCollectionApi(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/keywords.json',
+                'fixtures/recipes_from_dev.json',
+                'fixtures/recipe_collections.json']
+
+    def setUp(self):
+        self.setUp_session()
+
+    def test_list_collections(self):
+        res = self.c.get('/api/recipes-collections/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"count":3', count=1)
+
+    def test_retrieve_collection(self):
+        res = self.c.get('/api/recipes-collections/no-cook-recipes/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"name":"No cook recipes"', count=1)
+
+
+class TestRecipeRatingApi(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/recipes_with_duplicates2.json', ]
+
+    def setUp(self):
+        self.setUp_session()
+
+    def test_get_rating(self):
+        res = self.c.get('/api/recipes/10/ratings/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"user_rating":0', count=1)
+        self.assertContains(res, '"ratings_count":0', count=1)
+        self.assertContains(res, '"rating":"0.0"', count=1)
+
+    def test_get_rating_anonymous(self):
+        res = Client().get('/api/recipes/10/ratings/')
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"user_rating":0', count=1)
+        self.assertContains(res, '"ratings_count":0', count=1)
+        self.assertContains(res, '"rating":"0.0"', count=1)
+
+    def test_set_rating(self):
+        res = self.c.post('/api/recipes/10/ratings/', data={'rating': 4})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":true', count=1)
+        res2 = self.c.get('/api/recipes/10/ratings/', count=1)
+        self.assertContains(res2, '"user_rating":4', count=1)
+        self.assertContains(res2, '"ratings_count":1', count=1)
+        self.assertContains(res2, '"rating":"4.0"', count=1)
+
+    def test_set_rating_invalid_recipe(self):
+        res = self.c.post('/api/recipes/11111111/ratings/', data={'rating': 4})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"success":false', count=1)
+
+
+class TestGeocodeApi(TestCase, LoggedInTestcase):
+    def setUp(self):
+        self.setUp_session()
+
+    def test_geocode_address(self):
+        res = self.c.get('/api/geocode/', data={'address': '474 Murray st, Perth, Western Australia'})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"suburb":["Perth"]', count=1)
+        self.assertContains(res, '"longitude":115.8518421', count=1)
+        self.assertContains(res, '"latitude":-31.9502606', count=1)
 
 
 class TestSuburbList(TestCase, LoggedInTestcase):
