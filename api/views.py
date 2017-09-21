@@ -114,23 +114,6 @@ class RecipeCollectionViewSet(viewsets.ReadOnlyModelViewSet):
         return obj
 
 
-class RecipeCollectionRetrieveView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = models.RecipeCollection.objects.all()
-    serializer_class = serializers.RecipeCollection
-    lookup_field = 'slug'
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = serializers.RecipeCollectionLight(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = serializers.RecipeCollectionLight(many=True)
-        return Response(serializer.data)
-
-
 
 class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

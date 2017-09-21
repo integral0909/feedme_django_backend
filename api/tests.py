@@ -354,6 +354,12 @@ class TestRecipeApi(TestCase, LoggedInTestcase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, '"count":1', count=1)
 
+    def test_retrieve_recipe(self):
+        recipe_id = list(Recipe.objects.all().values())[3]['id']
+        res = self.c.get('/api/recipes/%s/' % recipe_id)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, '"saved":false', count=1)
+
 
 class TestRecipeCollectionApi(TestCase, LoggedInTestcase):
     fixtures = ['fixtures/keywords.json',
