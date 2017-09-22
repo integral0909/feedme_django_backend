@@ -1,6 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, Client, tag
 from main.models import Restaurant, Recipe
 from main.lib import weekdays
+from api.tests import LoggedInTestcase
 
 
 class TestRestaurant(TestCase):
@@ -47,4 +48,39 @@ class TestRecipe(TestCase):
         self.assertEqual(rcp.get_source_url_display(), '')
         rcp.source_url = None
         self.assertEqual(rcp.get_source_url_display(), '')
+
+
+@tag('neo-link')
+class TestRecipeNeoLink(TestCase, LoggedInTestcase):
+    fixtures = ['fixtures/keywords.json',
+                'fixtures/recipes_from_dev.json']
+
+    def setUp(self):
+        self.setUp_session()
+
+    def swipe_recipe(self, recipe):
+        did_like = bool(recipe['pg_id'] % 2)
+        print('swipe:', recipe['name'], '\n\tid:', recipe['pg_id'], '\tdid_like:', did_like)
+        self.c.post('/api/likes/recipes/', {'did_like': did_like, 'recipe_id': recipe['pg_id']})
+
+    @tag('slow', 'behaviour')
+    def test_example_behaviour(self):
+        from time import sleep
+        data = self.c.get('/api/recipes/').json()
+        print('get page 1')
+        data2 = self.c.get(data['next']).json()
+        print('get page 2')
+        print('iter page 1')
+        for recipe in data['results']:
+            sleep(0.5)
+            self.swipe_recipe(recipe)
+        print('get page 3')
+        data3 = self.c.get(data2['next']).json()
+        print('iter page 2')
+        for recipe in data2['results']:
+            sleep(0.5)
+            self.swipe_recipe(recipe)
+        print('get page 4')
+        data4 = self.c.get(data3['next']).json()
+        print('Complete')
 
