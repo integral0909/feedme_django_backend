@@ -23,6 +23,7 @@ coverage:
     project: true
   ignore:
   - manage.py
+  - custom_storages.py
   - auth/*
   - main/management/*
   - s3direct/*
