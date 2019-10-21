@@ -31,7 +31,7 @@ django-timezone-field==2.0
 django-user-agents==0.3.0
 djangorestframework==3.5.3
 docutils==0.13.1
-ecdsa==0.13
+ecdsa==0.13.3
 future==0.16.0
 gcloud==0.17.0
 googleapis-common-protos==1.5.2
