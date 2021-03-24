@@ -68,7 +68,7 @@ PyYAML==3.12
 raven==6.0.0
 requests==2.18.1
 requests-toolbelt==0.7.0
-rsa==3.4.2
+rsa==4.1
 s3transfer==0.1.10
 simplejson==3.10.0
 six==1.10.0
