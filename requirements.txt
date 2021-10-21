@@ -1,5 +1,5 @@
 appdirs==1.4.0
-Babel==2.4.0
+Babel==2.9.1
 boto==2.45.0
 boto3==1.4.3
 botocore==1.4.93
