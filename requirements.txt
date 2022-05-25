@@ -56,7 +56,7 @@ pyasn1==0.2.3
 pyasn1-modules==0.0.8
 pycrypto==2.6.1
 pycryptodome==3.4.3
-PyJWT==1.5.3
+PyJWT==2.4.0
 pyparsing==2.1.10
 Pyrebase==3.0.27
 PySocks==1.6.7
