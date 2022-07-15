@@ -6,7 +6,7 @@ botocore==1.4.93
 CacheControl==0.12.0
 certifi==2017.4.17
 chardet==3.0.4
-codecov==2.0.5
+codecov==2.0.16
 contextlib2==0.5.5
 coverage==4.3.4
 Django==1.10.5
